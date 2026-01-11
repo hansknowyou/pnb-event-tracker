@@ -1,5 +1,9 @@
-import { NextResponse } from 'next/server';
 import QRCode from 'qrcode';
+import { handleOptions, jsonResponse } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function POST(request: Request) {
   try {
@@ -7,7 +11,7 @@ export async function POST(request: Request) {
     const { url } = body;
 
     if (!url) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+      return jsonResponse({ error: 'URL is required' }, { status: 400 });
     }
 
     // Generate QR code as data URL
@@ -20,9 +24,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ qrCode: qrCodeDataUrl });
+    return jsonResponse({ qrCode: qrCodeDataUrl });
   } catch (error) {
     console.error('QR code generation error:', error);
-    return NextResponse.json({ error: 'Failed to generate QR code' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to generate QR code' }, { status: 500 });
   }
 }

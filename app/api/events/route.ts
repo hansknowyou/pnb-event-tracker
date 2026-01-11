@@ -1,17 +1,21 @@
-import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Event from '@/lib/models/Event';
 import Media from '@/lib/models/Media';
 import Route from '@/lib/models/Route';
+import { handleOptions, jsonResponse } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET() {
   try {
     await connectDB();
     const events = await Event.find({}).sort({ createdAt: -1 });
-    return NextResponse.json({ events });
+    return jsonResponse({ events });
   } catch (error) {
     console.error('Events GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to fetch events' }, { status: 500 });
   }
 }
 
@@ -21,15 +25,15 @@ export async function POST(request: Request) {
     const { name } = body;
 
     if (!name) {
-      return NextResponse.json({ error: 'Event name is required' }, { status: 400 });
+      return jsonResponse({ error: 'Event name is required' }, { status: 400 });
     }
 
     await connectDB();
     const event = await Event.create({ name });
-    return NextResponse.json({ event });
+    return jsonResponse({ event });
   } catch (error) {
     console.error('Events POST error:', error);
-    return NextResponse.json({ error: 'Failed to create event' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to create event' }, { status: 500 });
   }
 }
 
@@ -39,7 +43,7 @@ export async function DELETE(request: Request) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
+      return jsonResponse({ error: 'Event ID is required' }, { status: 400 });
     }
 
     await connectDB();
@@ -59,9 +63,9 @@ export async function DELETE(request: Request) {
     // Delete the event
     await Event.findByIdAndDelete(id);
 
-    return NextResponse.json({ success: true });
+    return jsonResponse({ success: true });
   } catch (error) {
     console.error('Events DELETE error:', error);
-    return NextResponse.json({ error: 'Failed to delete event' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to delete event' }, { status: 500 });
   }
 }

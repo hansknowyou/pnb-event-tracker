@@ -1,15 +1,19 @@
-import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Config from '@/lib/models/Config';
+import { handleOptions, jsonResponse } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET() {
   try {
     await connectDB();
     const config = await Config.findOne({ key: 'baseUrl' });
-    return NextResponse.json({ baseUrl: config?.value || '' });
+    return jsonResponse({ baseUrl: config?.value || '' });
   } catch (error) {
     console.error('Config GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch config' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to fetch config' }, { status: 500 });
   }
 }
 
@@ -19,7 +23,7 @@ export async function POST(request: Request) {
     const { baseUrl } = body;
 
     if (!baseUrl) {
-      return NextResponse.json({ error: 'Base URL is required' }, { status: 400 });
+      return jsonResponse({ error: 'Base URL is required' }, { status: 400 });
     }
 
     await connectDB();
@@ -29,9 +33,9 @@ export async function POST(request: Request) {
       { upsert: true, new: true }
     );
 
-    return NextResponse.json({ baseUrl: config.value });
+    return jsonResponse({ baseUrl: config.value });
   } catch (error) {
     console.error('Config POST error:', error);
-    return NextResponse.json({ error: 'Failed to save config' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to save config' }, { status: 500 });
   }
 }

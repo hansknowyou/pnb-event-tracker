@@ -40,7 +40,19 @@ async function connectDB(): Promise<typeof mongoose> {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(getConnectionString(), opts).then((mongoose) => {
+    const connectionString = getConnectionString();
+    console.log(`Connecting to MongoDB database: ${MONGODB_DB}`);
+
+    cached.promise = mongoose.connect(connectionString, opts).then(async (mongoose) => {
+      console.log(`Successfully connected to MongoDB database: ${MONGODB_DB}`);
+
+      // MongoDB automatically creates the database when you first write to it
+      // This ensures the database is accessible and will be created on first write
+      const db = mongoose.connection.db;
+      if (db) {
+        console.log(`Database "${db.databaseName}" is ready (will be created if it doesn't exist)`);
+      }
+
       return mongoose;
     });
   }

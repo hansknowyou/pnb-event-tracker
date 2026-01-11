@@ -1,8 +1,12 @@
-import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Event from '@/lib/models/Event';
 import Media from '@/lib/models/Media';
 import Route from '@/lib/models/Route';
+import { handleOptions, jsonResponse } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET() {
   try {
@@ -42,9 +46,9 @@ export async function GET() {
       })
     );
 
-    return NextResponse.json({ events: eventStats });
+    return jsonResponse({ events: eventStats });
   } catch (error) {
     console.error('Stats GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

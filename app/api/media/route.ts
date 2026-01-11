@@ -1,7 +1,11 @@
-import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Media from '@/lib/models/Media';
 import Route from '@/lib/models/Route';
+import { handleOptions, jsonResponse } from '@/lib/cors';
+
+export async function OPTIONS() {
+  return handleOptions();
+}
 
 export async function GET(request: Request) {
   try {
@@ -9,15 +13,15 @@ export async function GET(request: Request) {
     const eventId = searchParams.get('eventId');
 
     if (!eventId) {
-      return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
+      return jsonResponse({ error: 'Event ID is required' }, { status: 400 });
     }
 
     await connectDB();
     const media = await Media.find({ eventId }).sort({ createdAt: -1 });
-    return NextResponse.json({ media });
+    return jsonResponse({ media });
   } catch (error) {
     console.error('Media GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch media' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to fetch media' }, { status: 500 });
   }
 }
 
@@ -27,15 +31,15 @@ export async function POST(request: Request) {
     const { eventId, name } = body;
 
     if (!eventId || !name) {
-      return NextResponse.json({ error: 'Event ID and name are required' }, { status: 400 });
+      return jsonResponse({ error: 'Event ID and name are required' }, { status: 400 });
     }
 
     await connectDB();
     const media = await Media.create({ eventId, name });
-    return NextResponse.json({ media });
+    return jsonResponse({ media });
   } catch (error) {
     console.error('Media POST error:', error);
-    return NextResponse.json({ error: 'Failed to create media' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to create media' }, { status: 500 });
   }
 }
 
@@ -45,7 +49,7 @@ export async function DELETE(request: Request) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
+      return jsonResponse({ error: 'Media ID is required' }, { status: 400 });
     }
 
     await connectDB();
@@ -56,9 +60,9 @@ export async function DELETE(request: Request) {
     // Delete the media
     await Media.findByIdAndDelete(id);
 
-    return NextResponse.json({ success: true });
+    return jsonResponse({ success: true });
   } catch (error) {
     console.error('Media DELETE error:', error);
-    return NextResponse.json({ error: 'Failed to delete media' }, { status: 500 });
+    return jsonResponse({ error: 'Failed to delete media' }, { status: 500 });
   }
 }
