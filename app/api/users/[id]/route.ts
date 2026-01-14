@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
-import { getCurrentUser, hashPassword } from '@/lib/auth';
+import { getCurrentUser, hashPassword, generateToken, setAuthCookie } from '@/lib/auth';
 import { corsHeaders } from '@/lib/cors';
 
 // PATCH - Update user (admin or self)
@@ -21,7 +21,27 @@ export async function PATCH(
       );
     }
 
+    // Get the user being updated to check if it's the protected admin
+    const targetUser = await User.findById(id);
+    if (!targetUser) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404, headers: corsHeaders() }
+      );
+    }
+
     const body = await req.json();
+
+    // Protect the original admin user from being deactivated or deleted
+    if (targetUser.username === 'admin' && currentUser.userId !== id) {
+      // Only the admin themselves can update their own account
+      if (body.isActive === false) {
+        return NextResponse.json(
+          { error: 'Cannot deactivate the system administrator account' },
+          { status: 403, headers: corsHeaders() }
+        );
+      }
+    }
 
     // Check permissions
     const isSelf = currentUser.userId === id;
@@ -39,8 +59,8 @@ export async function PATCH(
 
     // Regular users can only update their own display name and language preference
     if (isSelf && !isAdmin) {
-      if (body.displayName) updateData.displayName = body.displayName;
-      if (body.languagePreference) updateData.languagePreference = body.languagePreference;
+      if (body.displayName !== undefined) updateData.displayName = body.displayName;
+      if (body.languagePreference !== undefined) updateData.languagePreference = body.languagePreference;
       if (body.password) {
         updateData.password = await hashPassword(body.password);
       }
@@ -48,8 +68,8 @@ export async function PATCH(
 
     // Admin can update everything except making themselves non-admin
     if (isAdmin) {
-      if (body.displayName) updateData.displayName = body.displayName;
-      if (body.languagePreference) updateData.languagePreference = body.languagePreference;
+      if (body.displayName !== undefined) updateData.displayName = body.displayName;
+      if (body.languagePreference !== undefined) updateData.languagePreference = body.languagePreference;
       if (body.password) {
         updateData.password = await hashPassword(body.password);
       }
@@ -72,6 +92,18 @@ export async function PATCH(
         { error: 'User not found' },
         { status: 404, headers: corsHeaders() }
       );
+    }
+
+    // If user updated their own profile, regenerate JWT token with updated data
+    if (isSelf) {
+      const token = generateToken({
+        userId: user._id.toString(),
+        username: user.username,
+        displayName: user.displayName,
+        isAdmin: user.isAdmin,
+        languagePreference: user.languagePreference,
+      });
+      await setAuthCookie(token);
     }
 
     return NextResponse.json(user, { headers: corsHeaders() });
@@ -106,6 +138,15 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Cannot delete your own account' },
         { status: 400, headers: corsHeaders() }
+      );
+    }
+
+    // Protect the original admin user from being deleted by anyone
+    const targetUser = await User.findById(id);
+    if (targetUser && targetUser.username === 'admin') {
+      return NextResponse.json(
+        { error: 'Cannot delete the system administrator account' },
+        { status: 403, headers: corsHeaders() }
       );
     }
 

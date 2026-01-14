@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, Edit, Eye } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { Production } from '@/types/production';
 
 export default function ProductionsPage() {
   const router = useRouter();
+  const t = useTranslations('production');
   const [productions, setProductions] = useState<Production[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +39,7 @@ export default function ProductionsPage() {
       const response = await fetch('/api/productions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'Untitled Production' }),
+        body: JSON.stringify({ title: t('untitled') }),
       });
 
       if (response.ok) {
@@ -46,17 +48,17 @@ export default function ProductionsPage() {
       }
     } catch (error) {
       console.error('Error creating production:', error);
-      alert('Failed to create production');
+      alert(t('createFailed'));
     }
   };
 
   const getStatusBadge = (percentage: number) => {
     if (percentage === 0) {
-      return <Badge variant="secondary">Not Started</Badge>;
+      return <Badge variant="secondary">{t('status.notStarted')}</Badge>;
     } else if (percentage === 100) {
-      return <Badge className="bg-green-600">Completed</Badge>;
+      return <Badge className="bg-green-600">{t('status.completed')}</Badge>;
     } else {
-      return <Badge variant="default">In Progress</Badge>;
+      return <Badge variant="default">{t('status.inProgress')}</Badge>;
     }
   };
 
@@ -73,7 +75,7 @@ export default function ProductionsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading productions...</div>
+          <div className="text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -84,16 +86,16 @@ export default function ProductionsPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Production Management
+            {t('title')}
           </h1>
           <p className="text-gray-600 mt-2">
-            Manage your performance productions and materials
+            {t('subtitle')}
           </p>
         </div>
 
         <Button onClick={handleCreateNew} size="lg">
           <Plus className="w-5 h-5 mr-2" />
-          New Production
+          {t('createNew')}
         </Button>
       </div>
 
@@ -104,14 +106,14 @@ export default function ProductionsPage() {
               <Plus className="w-16 h-16" />
             </div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              No productions yet
+              {t('noProductions')}
             </h3>
             <p className="text-gray-500 mb-6">
-              Create your first production to get started
+              {t('noProductionsDesc')}
             </p>
             <Button onClick={handleCreateNew}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Production
+              {t('createProduction')}
             </Button>
           </CardContent>
         </Card>
@@ -135,12 +137,12 @@ export default function ProductionsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center text-sm text-gray-600">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Created: {formatDate(production.createdAt)}
+                    {t('created')}: {formatDate(production.createdAt)}
                   </div>
 
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-600">Progress</span>
+                      <span className="text-gray-600">{t('progress')}</span>
                       <span className="font-semibold">
                         {production.completionPercentage}%
                       </span>
@@ -158,7 +160,7 @@ export default function ProductionsPage() {
                       }
                     >
                       <Edit className="w-4 h-4 mr-2" />
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Button
                       variant="outline"
@@ -169,7 +171,7 @@ export default function ProductionsPage() {
                       }
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      View
+                      {t('view')}
                     </Button>
                   </div>
                 </div>

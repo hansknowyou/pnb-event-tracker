@@ -4,14 +4,23 @@ import { corsHeaders } from '@/lib/cors';
 
 export async function GET() {
   try {
-    const user = await getCurrentUser();
+    const tokenPayload = await getCurrentUser();
 
-    if (!user) {
+    if (!tokenPayload) {
       return NextResponse.json(
         { user: null },
         { headers: corsHeaders() }
       );
     }
+
+    // Map userId to id for frontend compatibility
+    const user = {
+      id: tokenPayload.userId,
+      username: tokenPayload.username,
+      displayName: tokenPayload.displayName,
+      isAdmin: tokenPayload.isAdmin,
+      languagePreference: tokenPayload.languagePreference,
+    };
 
     return NextResponse.json(
       { user },

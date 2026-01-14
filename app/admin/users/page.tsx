@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface User {
   _id: string;
@@ -25,6 +26,8 @@ interface User {
 export default function UserManagementPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const t = useTranslations('admin');
+  const tCommon = useTranslations('common');
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -63,7 +66,7 @@ export default function UserManagementPage() {
     setMessage('');
 
     if (!newUser.username || !newUser.password || !newUser.displayName) {
-      setError('All fields are required');
+      setError(t('allFieldsRequired'));
       return;
     }
 
@@ -76,17 +79,17 @@ export default function UserManagementPage() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to create user');
+        throw new Error(data.error || t('createUserFailed'));
       }
 
-      setMessage('User created successfully!');
+      setMessage(t('userCreated'));
       setNewUser({ username: '', password: '', displayName: '' });
       setShowCreateDialog(false);
       fetchUsers();
 
       setTimeout(() => setMessage(''), 3000);
     } catch (err: any) {
-      setError(err.message || 'Failed to create user');
+      setError(err.message || t('createUserFailed'));
     }
   };
 
@@ -107,7 +110,7 @@ export default function UserManagementPage() {
   };
 
   const handleDeleteUser = async (userId: string, username: string) => {
-    if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+    if (!confirm(`${t('deleteConfirm')} "${username}"?`)) {
       return;
     }
 
@@ -117,16 +120,16 @@ export default function UserManagementPage() {
       });
 
       if (response.ok) {
-        setMessage('User deleted successfully');
+        setMessage(t('userDeleted'));
         fetchUsers();
         setTimeout(() => setMessage(''), 3000);
       } else {
         const data = await response.json();
-        setError(data.error || 'Failed to delete user');
+        setError(data.error || t('deleteUserFailed'));
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      setError('Failed to delete user');
+      setError(t('deleteUserFailed'));
     }
   };
 
@@ -137,7 +140,7 @@ export default function UserManagementPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-gray-500">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -146,22 +149,22 @@ export default function UserManagementPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">User Management</h1>
-          <p className="text-gray-600 mt-2">Manage system users and permissions</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-gray-600 mt-2">{t('description')}</p>
         </div>
 
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Create User
+              {t('createUser')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New User</DialogTitle>
+              <DialogTitle>{t('createNewUser')}</DialogTitle>
               <DialogDescription>
-                Add a new user to the system
+                {t('createNewUserDesc')}
               </DialogDescription>
             </DialogHeader>
 
@@ -173,7 +176,7 @@ export default function UserManagementPage() {
               )}
 
               <div>
-                <Label htmlFor="new-displayName">Display Name</Label>
+                <Label htmlFor="new-displayName">{t('profile.displayName', { ns: 'profile' })}</Label>
                 <Input
                   id="new-displayName"
                   value={newUser.displayName}
@@ -183,7 +186,7 @@ export default function UserManagementPage() {
               </div>
 
               <div>
-                <Label htmlFor="new-username">Username</Label>
+                <Label htmlFor="new-username">{t('profile.username', { ns: 'profile' })}</Label>
                 <Input
                   id="new-username"
                   value={newUser.username}
@@ -194,7 +197,7 @@ export default function UserManagementPage() {
               </div>
 
               <div>
-                <Label htmlFor="new-password">Password</Label>
+                <Label htmlFor="new-password">{t('login.password', { ns: 'login' })}</Label>
                 <Input
                   id="new-password"
                   type="password"
@@ -206,7 +209,7 @@ export default function UserManagementPage() {
               </div>
 
               <Button onClick={handleCreateUser} className="w-full">
-                Create User
+                {t('createUser')}
               </Button>
             </div>
           </DialogContent>
@@ -227,18 +230,21 @@ export default function UserManagementPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     {u.displayName}
-                    {u.isAdmin && <Badge>Admin</Badge>}
-                    {!u.isActive && <Badge variant="secondary">Inactive</Badge>}
+                    {u.isAdmin && <Badge>{t('admin')}</Badge>}
+                    {!u.isActive && <Badge variant="secondary">{t('inactive')}</Badge>}
                   </CardTitle>
                   <CardDescription>@{u.username}</CardDescription>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {u._id !== user.id && (
+                  {/* Protect admin user - can't toggle or delete */}
+                  {u.username === 'admin' ? (
+                    <Badge variant="outline" className="bg-blue-50">{t('protectedAdmin')}</Badge>
+                  ) : u._id !== user.id ? (
                     <>
                       <div className="flex items-center gap-2">
                         <Label htmlFor={`active-${u._id}`} className="text-sm">
-                          {u.isActive ? 'Active' : 'Inactive'}
+                          {u.isActive ? t('active') : t('inactive')}
                         </Label>
                         <Switch
                           id={`active-${u._id}`}
@@ -255,9 +261,8 @@ export default function UserManagementPage() {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </>
-                  )}
-                  {u._id === user.id && (
-                    <Badge variant="outline">You</Badge>
+                  ) : (
+                    <Badge variant="outline">{t('you')}</Badge>
                   )}
                 </div>
               </div>
@@ -265,11 +270,11 @@ export default function UserManagementPage() {
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">Language:</span>{' '}
+                  <span className="text-gray-600">{t('language')}:</span>{' '}
                   {u.languagePreference === 'zh' ? '中文' : 'English'}
                 </div>
                 <div>
-                  <span className="text-gray-600">Created:</span>{' '}
+                  <span className="text-gray-600">{t('created')}:</span>{' '}
                   {new Date(u.createdAt).toLocaleDateString()}
                 </div>
               </div>
@@ -279,7 +284,7 @@ export default function UserManagementPage() {
 
         {users.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            No users found. Create your first user to get started.
+            {t('noUsers')}
           </div>
         )}
       </div>

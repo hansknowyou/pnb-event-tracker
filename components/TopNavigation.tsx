@@ -6,11 +6,13 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Settings } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function TopNavigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout, loading } = useAuth();
+  const t = useTranslations('nav');
 
   const isEventTracking = pathname === '/' || pathname.startsWith('/events');
   const isProductionManagement = pathname.startsWith('/productions');
@@ -50,7 +52,7 @@ export default function TopNavigation() {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 )}
               >
-                Event Tracking
+                {t('eventTracking')}
               </Link>
 
               <Link
@@ -62,7 +64,7 @@ export default function TopNavigation() {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 )}
               >
-                Production Management
+                {t('productionManagement')}
               </Link>
             </div>
           </div>
@@ -79,7 +81,7 @@ export default function TopNavigation() {
                 onClick={() => router.push('/admin/users')}
               >
                 <Settings className="w-4 h-4 mr-2" />
-                Admin
+                {t('admin')}
               </Button>
             )}
 
@@ -89,12 +91,12 @@ export default function TopNavigation() {
               onClick={() => router.push('/profile')}
             >
               <User className="w-4 h-4 mr-2" />
-              Profile
+              {t('profile')}
             </Button>
 
             <Button variant="ghost" size="sm" onClick={logout}>
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {t('logout')}
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import TopNavigation from '@/components/TopNavigation';
+import IntlProvider from '@/components/IntlProvider';
 
 export default function ClientLayout({
   children,
@@ -10,8 +11,10 @@ export default function ClientLayout({
 }) {
   return (
     <AuthProvider>
-      <TopNavigation />
-      <main>{children}</main>
+      <IntlProvider>
+        <TopNavigation />
+        <main>{children}</main>
+      </IntlProvider>
     </AuthProvider>
   );
 }

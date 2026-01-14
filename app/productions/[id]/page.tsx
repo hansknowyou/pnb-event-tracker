@@ -5,6 +5,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Save, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import StepProgress from '@/components/StepProgress';
 import Step1Contract from '@/components/production-steps/Step1Contract';
 import Step2Cities from '@/components/production-steps/Step2Cities';
@@ -26,6 +27,7 @@ export default function ProductionEditPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  const t = useTranslations('production');
   const productionId = params?.id as string;
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
 
@@ -68,11 +70,11 @@ export default function ProductionEditPage() {
         const data = await response.json();
         setProduction(data);
       } else {
-        alert('Failed to load production');
+        alert(t('loadFailed'));
       }
     } catch (error) {
       console.error('Error fetching production:', error);
-      alert('Failed to load production');
+      alert(t('loadFailed'));
     }
   };
 
@@ -264,26 +266,26 @@ export default function ProductionEditPage() {
               onChange={(e) => updateProduction({ title: e.target.value })}
               onBlur={saveProduction}
               className="text-5xl font-bold border-0 border-b-4 border-transparent hover:border-gray-300 focus:border-blue-500 px-0 rounded-none h-auto py-2 shadow-none focus-visible:ring-0 bg-transparent"
-              placeholder="Production Title"
+              placeholder={t('titlePlaceholder')}
             />
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <span>
-                Last saved:{' '}
+                {t('lastSaved')}:{' '}
                 {lastSaved
                   ? lastSaved.toLocaleTimeString()
-                  : 'Not saved yet'}
+                  : t('notSavedYet')}
               </span>
               {saveStatus === 'saving' && (
-                <span className="text-blue-600">● Saving...</span>
+                <span className="text-blue-600">● {t('saving')}</span>
               )}
               {saveStatus === 'saved' && (
-                <span className="text-green-600">✓ Saved</span>
+                <span className="text-green-600">✓ {t('saved')}</span>
               )}
               {saveStatus === 'error' && (
-                <span className="text-red-600">✗ Error saving</span>
+                <span className="text-red-600">✗ {t('errorSaving')}</span>
               )}
               {hasUnsavedChanges && !saveStatus && (
-                <span className="text-yellow-600">● Unsaved changes</span>
+                <span className="text-yellow-600">● {t('unsavedChanges')}</span>
               )}
             </div>
           </div>
@@ -296,11 +298,11 @@ export default function ProductionEditPage() {
               }
             >
               <Eye className="w-4 h-4 mr-2" />
-              View Dashboard
+              {t('viewDashboard')}
             </Button>
             <Button onClick={saveProduction} disabled={isSaving}>
               <Save className="w-4 h-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save Now'}
+              {isSaving ? t('saving') : t('saveNow')}
             </Button>
           </div>
         </div>
@@ -420,11 +422,11 @@ export default function ProductionEditPage() {
             disabled={currentStep === 1}
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous
+            {t('previous')}
           </Button>
 
           <Button onClick={goToNextStep} disabled={currentStep === 13}>
-            Next
+            {t('next')}
             <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

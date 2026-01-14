@@ -8,9 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { useTranslations } from 'next-intl';
 
 export default function ProfilePage() {
   const { user, refreshUser, updateLanguagePreference } = useAuth();
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [displayName, setDisplayName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -50,9 +53,9 @@ export default function ProfilePage() {
 
       updateLanguagePreference(language);
       await refreshUser();
-      setMessage('Profile updated successfully!');
+      setMessage(t('profileUpdated'));
     } catch (err: any) {
-      setError(err.message || 'Failed to update profile');
+      setError(err.message || t('updateFailed'));
     } finally {
       setLoading(false);
     }
@@ -65,17 +68,17 @@ export default function ProfilePage() {
     setError('');
 
     if (!currentPassword || !newPassword) {
-      setError('Please fill in all password fields');
+      setError(t('allFieldsRequired'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('New passwords do not match');
+      setError(t('passwordsNoMatch'));
       return;
     }
 
     if (newPassword.length < 4) {
-      setError('Password must be at least 4 characters');
+      setError(t('passwordTooShort'));
       return;
     }
 
@@ -93,7 +96,7 @@ export default function ProfilePage() {
       });
 
       if (!loginResponse.ok) {
-        throw new Error('Current password is incorrect');
+        throw new Error(t('currentPasswordIncorrect'));
       }
 
       // Update password
@@ -104,27 +107,27 @@ export default function ProfilePage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to change password');
+        throw new Error(t('passwordChangeFailed'));
       }
 
-      setMessage('Password changed successfully!');
+      setMessage(t('passwordChanged'));
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {
-      setError(err.message || 'Failed to change password');
+      setError(err.message || t('passwordChangeFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   if (!user) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen">{tCommon('loading')}</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-8">Profile Settings</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
       {message && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
@@ -141,19 +144,19 @@ export default function ProfilePage() {
       {/* Account Information */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>View your account details</CardDescription>
+          <CardTitle>{t('accountInfo')}</CardTitle>
+          <CardDescription>{t('accountInfoDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Username</Label>
+            <Label>{t('username')}</Label>
             <Input value={user.username} disabled className="bg-gray-50" />
           </div>
 
           <div>
-            <Label>Role</Label>
+            <Label>{t('role')}</Label>
             <Input
-              value={user.isAdmin ? 'Administrator' : 'User'}
+              value={user.isAdmin ? t('administrator') : t('user')}
               disabled
               className="bg-gray-50"
             />
@@ -164,35 +167,35 @@ export default function ProfilePage() {
       {/* Profile Settings */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Profile Settings</CardTitle>
-          <CardDescription>Update your display name and language preference</CardDescription>
+          <CardTitle>{t('profileSettings')}</CardTitle>
+          <CardDescription>{t('profileSettingsDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="displayName">Display Name</Label>
+            <Label htmlFor="displayName">{t('displayName')}</Label>
             <Input
               id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Enter display name"
+              placeholder={t('displayNamePlaceholder')}
             />
           </div>
 
           <div>
-            <Label htmlFor="language">Language Preference</Label>
+            <Label htmlFor="language">{t('languagePreference')}</Label>
             <Select value={language} onValueChange={(val: 'en' | 'zh') => setLanguage(val)}>
               <SelectTrigger id="language">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="zh">中文 (Chinese)</SelectItem>
+                <SelectItem value="en">{t('english')}</SelectItem>
+                <SelectItem value="zh">{t('chinese')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Button onClick={handleUpdateProfile} disabled={loading}>
-            {loading ? 'Saving...' : 'Save Profile'}
+            {loading ? t('saving') : t('saveProfile')}
           </Button>
         </CardContent>
       </Card>
@@ -200,12 +203,12 @@ export default function ProfilePage() {
       {/* Change Password */}
       <Card>
         <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>Update your account password</CardDescription>
+          <CardTitle>{t('changePassword')}</CardTitle>
+          <CardDescription>{t('changePasswordDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="currentPassword">Current Password</Label>
+            <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
             <Input
               id="currentPassword"
               type="password"
@@ -218,7 +221,7 @@ export default function ProfilePage() {
           <Separator />
 
           <div>
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword">{t('newPassword')}</Label>
             <Input
               id="newPassword"
               type="password"
@@ -229,7 +232,7 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -240,7 +243,7 @@ export default function ProfilePage() {
           </div>
 
           <Button onClick={handleChangePassword} disabled={loading}>
-            {loading ? 'Changing...' : 'Change Password'}
+            {loading ? t('changing') : t('changePasswordButton')}
           </Button>
         </CardContent>
       </Card>

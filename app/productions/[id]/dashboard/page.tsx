@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useTranslations } from 'next-intl';
 import {
   Edit,
   FileDown,
@@ -22,6 +23,8 @@ import { STEPS } from '@/types/production';
 export default function ProductionDashboard() {
   const router = useRouter();
   const params = useParams();
+  const t = useTranslations('production');
+  const tCommon = useTranslations('common');
   const productionId = params?.id as string;
   const [production, setProduction] = useState<Production | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,7 +73,7 @@ export default function ProductionDashboard() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copied to clipboard!');
+      alert(t('copiedToClipboard'));
     } catch (error) {
       console.error('Failed to copy:', error);
     }
@@ -127,7 +130,7 @@ export default function ProductionDashboard() {
           onClick={() => window.open(url, '_blank')}
         >
           <ExternalLink className="w-3 h-3 mr-1" />
-          Open
+          {t('open')}
         </Button>
         <Button
           size="sm"
@@ -135,7 +138,7 @@ export default function ProductionDashboard() {
           onClick={() => copyToClipboard(url)}
         >
           <Copy className="w-3 h-3 mr-1" />
-          Copy
+          {t('copy')}
         </Button>
       </div>
     );
@@ -149,7 +152,7 @@ export default function ProductionDashboard() {
       return (
         <div className="flex items-center gap-2 text-gray-500">
           <span className="text-red-500">✗</span>
-          <span>{label}: Not filled</span>
+          <span>{label}: {t('notFilled')}</span>
         </div>
       );
     }
@@ -173,7 +176,7 @@ export default function ProductionDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-gray-500">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -181,7 +184,7 @@ export default function ProductionDashboard() {
   if (!production) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">Production not found</div>
+        <div className="text-gray-500">{t('notFound')}</div>
       </div>
     );
   }
@@ -204,13 +207,13 @@ export default function ProductionDashboard() {
                   onBlur={() => updateTitle(production.title)}
                   disabled={isSavingTitle}
                   className="text-5xl font-bold border-0 border-b-4 border-transparent hover:border-gray-300 focus:border-blue-500 px-0 rounded-none h-auto py-2 shadow-none focus-visible:ring-0 bg-transparent mb-4"
-                  placeholder="Production Title"
+                  placeholder={t('titlePlaceholder')}
                 />
                 <div className="flex gap-6 text-sm text-gray-600">
-                  <span>Created: {formatDate(production.createdAt)}</span>
-                  <span>Updated: {formatDate(production.updatedAt)}</span>
+                  <span>{t('created')}: {formatDate(production.createdAt)}</span>
+                  <span>{t('updated')}: {formatDate(production.updatedAt)}</span>
                   <span className="font-semibold text-blue-600">
-                    Completion: {production.completionPercentage}%
+                    {t('completion')}: {production.completionPercentage}%
                   </span>
                 </div>
               </div>
@@ -220,11 +223,11 @@ export default function ProductionDashboard() {
                   onClick={() => router.push(`/productions/${productionId}`)}
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  Edit Form
+                  {t('editForm')}
                 </Button>
                 <Button variant="outline">
                   <FileDown className="w-4 h-4 mr-2" />
-                  Export PDF
+                  {t('exportPDF')}
                 </Button>
               </div>
             </div>
@@ -245,7 +248,7 @@ export default function ProductionDashboard() {
                 onClick={() => router.push(`/productions/${productionId}?step=1`)}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Edit
+                {t('edit')}
               </Button>
             </div>
           </CardHeader>
@@ -277,7 +280,7 @@ export default function ProductionDashboard() {
                 onClick={() => router.push(`/productions/${productionId}?step=2`)}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Edit
+                {t('edit')}
               </Button>
             </div>
           </CardHeader>
