@@ -1,20 +1,35 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { VenueContract } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step3Props {
   data: VenueContract[];
   onChange: (data: VenueContract[]) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledge?: KnowledgeBaseItem[];
+  onKnowledgeChange?: () => void;
 }
 
-export default function Step3VenueContracts({ data, onChange, onBlur }: Step3Props) {
+export default function Step3VenueContracts({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledge = [],
+  onKnowledgeChange
+}: Step3Props) {
+  const [showKnowledge, setShowKnowledge] = useState(false);
   const addVenue = () => {
     const newVenue: VenueContract = {
       id: Date.now().toString(),
@@ -37,9 +52,30 @@ export default function Step3VenueContracts({ data, onChange, onBlur }: Step3Pro
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Step 3: 场馆合同签订</h3>
-        <p className="text-gray-600">Venue Contracts</p>
+      <div className="flex justify-between items-start gap-4">
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Step 3: 场馆合同签订</h3>
+          <p className="text-gray-600">Venue Contracts</p>
+        </div>
+        {productionId && onKnowledgeChange && (
+          <div className="flex gap-2">
+            <KnowledgeLinkButton
+              section="step3"
+              linkedIds={linkedKnowledge.map(k => k._id)}
+              productionId={productionId}
+              onChange={onKnowledgeChange}
+            />
+            {linkedKnowledge.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKnowledge(true)}
+              >
+                View Knowledge ({linkedKnowledge.length})
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -109,6 +145,12 @@ export default function Step3VenueContracts({ data, onChange, onBlur }: Step3Pro
           Add Venue Contract
         </Button>
       </div>
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledge}
+        open={showKnowledge}
+        onClose={() => setShowKnowledge(false)}
+      />
     </div>
   );
 }

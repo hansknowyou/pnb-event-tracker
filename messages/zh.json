@@ -2,6 +2,7 @@
   "nav": {
     "eventTracking": "活动跟踪",
     "productionManagement": "活动管理",
+    "knowledgeBase": "知识库",
     "profile": "个人资料",
     "admin": "管理员",
     "logout": "登出"
@@ -315,6 +316,18 @@
       "completed": "已完成",
       "remove": "移除"
     }
+  },
+  "knowledge": {
+    "title": "知识库",
+    "addItem": "添加知识项",
+    "editItem": "编辑知识",
+    "manageKnowledge": "管理知识",
+    "viewKnowledge": "查看知识",
+    "linkProduction": "关联活动",
+    "viewProduction": "查看活动",
+    "unlinkProduction": "取消关联活动",
+    "deleteConfirm": "您确定要删除此知识项吗？",
+    "unlinkConfirm": "您确定要取消关联此活动吗？"
   },
   "common": {
     "save": "保存",

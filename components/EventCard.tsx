@@ -3,10 +3,13 @@
 import { EventWithStats } from '@/types';
 import { useState } from 'react';
 import MediaItem from './MediaItem';
+import ProductionLinkButtons from './ProductionLinkButtons';
+import type { Production } from '@/types/production';
 
 interface EventCardProps {
   event: EventWithStats;
   baseUrl: string;
+  linkedProduction?: Production | null;
   onDelete: () => void;
   onAddMedia: (eventId: string, mediaName: string) => void;
   onDeleteMedia: (mediaId: string) => void;
@@ -14,11 +17,13 @@ interface EventCardProps {
   onDeleteRoute: (routeId: string) => void;
   onAdjustRouteClick: (routeId: string, adjustment: number) => void;
   onGenerateQR: (url: string, routeName: string) => void;
+  onUpdate: () => void;
 }
 
 export default function EventCard({
   event,
   baseUrl,
+  linkedProduction,
   onDelete,
   onAddMedia,
   onDeleteMedia,
@@ -26,6 +31,7 @@ export default function EventCard({
   onDeleteRoute,
   onAdjustRouteClick,
   onGenerateQR,
+  onUpdate,
 }: EventCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddingMedia, setIsAddingMedia] = useState(false);
@@ -68,6 +74,13 @@ export default function EventCard({
             <p className="text-sm text-gray-600">
               Total Clicks: <span className="font-bold text-green-600">{event.totalClicks || 0}</span>
             </p>
+            <div className="mt-2">
+              <ProductionLinkButtons
+                event={event}
+                linkedProduction={linkedProduction}
+                onUpdate={onUpdate}
+              />
+            </div>
           </div>
         </div>
         <div className="flex gap-2">

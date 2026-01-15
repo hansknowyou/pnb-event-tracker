@@ -1,23 +1,61 @@
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { Videos } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step9Props {
   data: Videos;
   onChange: (data: Videos) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledge?: KnowledgeBaseItem[];
+  onKnowledgeChange?: () => void;
 }
 
-export default function Step9Videos({ data, onChange, onBlur }: Step9Props) {
+export default function Step9Videos({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledge = [],
+  onKnowledgeChange
+}: Step9Props) {
+  const [showKnowledge, setShowKnowledge] = useState(false);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Step 9: 视频媒体制作</h3>
-        <p className="text-gray-600">Video Production</p>
+      <div className="flex justify-between items-start gap-4">
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Step 9: 视频媒体制作</h3>
+          <p className="text-gray-600">Video Production</p>
+        </div>
+        {productionId && onKnowledgeChange && (
+          <div className="flex gap-2">
+            <KnowledgeLinkButton
+              section="step9"
+              linkedIds={linkedKnowledge.map(k => k._id)}
+              productionId={productionId}
+              onChange={onKnowledgeChange}
+            />
+            {linkedKnowledge.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKnowledge(true)}
+              >
+                View Knowledge ({linkedKnowledge.length})
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 9.1 Conference Loop Video */}
@@ -130,6 +168,12 @@ export default function Step9Videos({ data, onChange, onBlur }: Step9Props) {
           </div>
         </CardContent>
       </Card>
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledge}
+        open={showKnowledge}
+        onClose={() => setShowKnowledge(false)}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,15 +9,29 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { SocialMedia, Platform, Post } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step12Props {
   data: SocialMedia;
   onChange: (data: SocialMedia) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledge?: KnowledgeBaseItem[];
+  onKnowledgeChange?: () => void;
 }
 
-export default function Step12SocialMedia({ data, onChange, onBlur }: Step12Props) {
+export default function Step12SocialMedia({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledge = [],
+  onKnowledgeChange
+}: Step12Props) {
+  const [showKnowledge, setShowKnowledge] = useState(false);
   // Platform management
   const addPlatform = () => {
     const newPlatform: Platform = {
@@ -94,9 +109,30 @@ export default function Step12SocialMedia({ data, onChange, onBlur }: Step12Prop
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Step 12: 社媒宣传</h3>
-        <p className="text-gray-600">Social Media</p>
+      <div className="flex justify-between items-start gap-4">
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Step 12: 社媒宣传</h3>
+          <p className="text-gray-600">Social Media</p>
+        </div>
+        {productionId && onKnowledgeChange && (
+          <div className="flex gap-2">
+            <KnowledgeLinkButton
+              section="step12"
+              linkedIds={linkedKnowledge.map(k => k._id)}
+              productionId={productionId}
+              onChange={onKnowledgeChange}
+            />
+            {linkedKnowledge.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKnowledge(true)}
+              >
+                View Knowledge ({linkedKnowledge.length})
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 12.1 Website Update */}
@@ -310,6 +346,12 @@ export default function Step12SocialMedia({ data, onChange, onBlur }: Step12Prop
           </div>
         </CardContent>
       </Card>
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledge}
+        open={showKnowledge}
+        onClose={() => setShowKnowledge(false)}
+      />
     </div>
   );
 }

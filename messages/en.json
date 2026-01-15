@@ -2,6 +2,7 @@
   "nav": {
     "eventTracking": "Event Tracking",
     "productionManagement": "Production Management",
+    "knowledgeBase": "Knowledge Base",
     "profile": "Profile",
     "admin": "Admin",
     "logout": "Logout"
@@ -315,6 +316,18 @@
       "completed": "Completed",
       "remove": "Remove"
     }
+  },
+  "knowledge": {
+    "title": "Knowledge Base",
+    "addItem": "Add Knowledge Item",
+    "editItem": "Edit Knowledge",
+    "manageKnowledge": "Manage Knowledge",
+    "viewKnowledge": "View Knowledge",
+    "linkProduction": "Link Production",
+    "viewProduction": "View Production",
+    "unlinkProduction": "Unlink Production",
+    "deleteConfirm": "Are you sure you want to delete this knowledge item?",
+    "unlinkConfirm": "Are you sure you want to unlink this production?"
   },
   "common": {
     "save": "Save",

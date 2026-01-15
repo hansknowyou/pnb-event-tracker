@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
 import QRCodeModal from "@/components/QRCodeModal";
 import { EventWithStats } from "@/types";
+import type { Production } from "@/types/production";
 
 export default function Home() {
   const [baseUrl, setBaseUrl] = useState("");
   const [baseUrlInput, setBaseUrlInput] = useState("");
   const [events, setEvents] = useState<EventWithStats[]>([]);
+  const [linkedProductions, setLinkedProductions] = useState<Record<string, Production>>({});
   const [loading, setLoading] = useState(true);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [eventName, setEventName] = useState("");
@@ -40,10 +42,54 @@ export default function Home() {
       const res = await fetch("/api/stats");
       const data = await res.json();
       setEvents(data.events || []);
+
+      // Fetch linked productions
+      await fetchLinkedProductions(data.events || []);
     } catch (error) {
       console.error("Failed to fetch stats:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLinkedProductions = async (events: EventWithStats[]) => {
+    try {
+      // Get unique production IDs from events
+      const productionIds = events
+        .filter(e => e.linkedProductionId)
+        .map(e => e.linkedProductionId)
+        .filter((id, index, self) => id && self.indexOf(id) === index); // Remove duplicates
+
+      if (productionIds.length === 0) {
+        setLinkedProductions({});
+        return;
+      }
+
+      // Fetch production details
+      const productionPromises = productionIds.map(async (id) => {
+        const res = await fetch(`/api/productions/${id}`);
+        if (res.ok) {
+          return await res.json();
+        }
+        return null;
+      });
+
+      const productions = await Promise.all(productionPromises);
+
+      // Map productions by their ID for quick lookup
+      const productionsMap: Record<string, Production> = {};
+      events.forEach(event => {
+        if (event.linkedProductionId) {
+          const production = productions.find(p => p && p._id === event.linkedProductionId);
+          if (production) {
+            productionsMap[event._id] = production;
+          }
+        }
+      });
+
+      setLinkedProductions(productionsMap);
+    } catch (error) {
+      console.error("Failed to fetch linked productions:", error);
     }
   };
 
@@ -258,6 +304,7 @@ export default function Home() {
                 key={event._id}
                 event={event}
                 baseUrl={baseUrl}
+                linkedProduction={linkedProductions[event._id] || null}
                 onDelete={() => deleteEvent(event._id)}
                 onAddMedia={addMedia}
                 onDeleteMedia={deleteMedia}
@@ -265,6 +312,7 @@ export default function Home() {
                 onDeleteRoute={deleteRoute}
                 onAdjustRouteClick={adjustRouteClick}
                 onGenerateQR={generateQRCode}
+                onUpdate={fetchStats}
               />
             ))}
           </div>

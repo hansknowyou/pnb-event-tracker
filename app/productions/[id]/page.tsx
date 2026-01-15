@@ -21,6 +21,7 @@ import Step11PerformanceShooting from '@/components/production-steps/Step11Perfo
 import Step12SocialMedia from '@/components/production-steps/Step12SocialMedia';
 import Step13Advertising from '@/components/production-steps/Step13Advertising';
 import type { Production } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 import { calculateCompletionPercentage } from '@/lib/completionCalculator';
 
 export default function ProductionEditPage() {
@@ -38,11 +39,132 @@ export default function ProductionEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [linkedKnowledgeStep1, setLinkedKnowledgeStep1] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep2, setLinkedKnowledgeStep2] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep3, setLinkedKnowledgeStep3] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep4, setLinkedKnowledgeStep4] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5Videos, setLinkedKnowledgeStep5Videos] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5Photos, setLinkedKnowledgeStep5Photos] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5ActorPhotos, setLinkedKnowledgeStep5ActorPhotos] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5OtherPhotos, setLinkedKnowledgeStep5OtherPhotos] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5Logos, setLinkedKnowledgeStep5Logos] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep5Texts, setLinkedKnowledgeStep5Texts] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep6, setLinkedKnowledgeStep6] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep7, setLinkedKnowledgeStep7] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep8, setLinkedKnowledgeStep8] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep9, setLinkedKnowledgeStep9] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep10, setLinkedKnowledgeStep10] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep11, setLinkedKnowledgeStep11] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep12, setLinkedKnowledgeStep12] = useState<KnowledgeBaseItem[]>([]);
+  const [linkedKnowledgeStep13, setLinkedKnowledgeStep13] = useState<KnowledgeBaseItem[]>([]);
 
   // Fetch production data
   useEffect(() => {
     fetchProduction();
   }, [productionId]);
+
+  // Fetch knowledge base items linked to step 1
+  const fetchKnowledgeForStep1 = async () => {
+    // Refetch production to get updated knowledge links
+    await fetchProduction();
+    // The useEffect will handle fetching knowledge items when production changes
+  };
+
+  // Re-fetch knowledge items when production changes
+  useEffect(() => {
+    if (production) {
+      // Fetch knowledge items for each section
+      fetchKnowledgeForField('knowledgeLinks_step1', setLinkedKnowledgeStep1);
+      fetchKnowledgeForField('knowledgeLinks_step2', setLinkedKnowledgeStep2);
+      fetchKnowledgeForField('knowledgeLinks_step3', setLinkedKnowledgeStep3);
+      fetchKnowledgeForField('knowledgeLinks_step4', setLinkedKnowledgeStep4);
+      fetchKnowledgeForField('knowledgeLinks_step5_videos', setLinkedKnowledgeStep5Videos);
+      fetchKnowledgeForField('knowledgeLinks_step5_photos', setLinkedKnowledgeStep5Photos);
+      fetchKnowledgeForField('knowledgeLinks_step5_actorPhotos', setLinkedKnowledgeStep5ActorPhotos);
+      fetchKnowledgeForField('knowledgeLinks_step5_otherPhotos', setLinkedKnowledgeStep5OtherPhotos);
+      fetchKnowledgeForField('knowledgeLinks_step5_logos', setLinkedKnowledgeStep5Logos);
+      fetchKnowledgeForField('knowledgeLinks_step5_texts', setLinkedKnowledgeStep5Texts);
+      fetchKnowledgeForField('knowledgeLinks_step6', setLinkedKnowledgeStep6);
+      fetchKnowledgeForField('knowledgeLinks_step7', setLinkedKnowledgeStep7);
+      fetchKnowledgeForField('knowledgeLinks_step8', setLinkedKnowledgeStep8);
+      fetchKnowledgeForField('knowledgeLinks_step9', setLinkedKnowledgeStep9);
+      fetchKnowledgeForField('knowledgeLinks_step10', setLinkedKnowledgeStep10);
+      fetchKnowledgeForField('knowledgeLinks_step11', setLinkedKnowledgeStep11);
+      fetchKnowledgeForField('knowledgeLinks_step12', setLinkedKnowledgeStep12);
+      fetchKnowledgeForField('knowledgeLinks_step13', setLinkedKnowledgeStep13);
+    }
+  }, [
+    production?.knowledgeLinks_step1,
+    production?.knowledgeLinks_step2,
+    production?.knowledgeLinks_step3,
+    production?.knowledgeLinks_step4,
+    production?.knowledgeLinks_step5_videos,
+    production?.knowledgeLinks_step5_photos,
+    production?.knowledgeLinks_step5_actorPhotos,
+    production?.knowledgeLinks_step5_otherPhotos,
+    production?.knowledgeLinks_step5_logos,
+    production?.knowledgeLinks_step5_texts,
+    production?.knowledgeLinks_step6,
+    production?.knowledgeLinks_step7,
+    production?.knowledgeLinks_step8,
+    production?.knowledgeLinks_step9,
+    production?.knowledgeLinks_step10,
+    production?.knowledgeLinks_step11,
+    production?.knowledgeLinks_step12,
+    production?.knowledgeLinks_step13,
+  ]);
+
+  // Generic fetch function for knowledge base items
+  const fetchKnowledgeForField = async (
+    fieldName: keyof Production,
+    setter: React.Dispatch<React.SetStateAction<KnowledgeBaseItem[]>>
+  ) => {
+    const links = production?.[fieldName] as string[] | undefined;
+    if (!links || links.length === 0) {
+      setter([]);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/knowledge-base/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: links }),
+      });
+
+      if (response.ok) {
+        const items = await response.json();
+        setter(items);
+      }
+    } catch (error) {
+      console.error(`Error fetching linked knowledge for ${String(fieldName)}:`, error);
+    }
+  };
+
+  // Wrapper functions that refetch production data first, then fetch knowledge
+  const refetchAndFetchKnowledge = async (fieldName: keyof Production, setter: React.Dispatch<React.SetStateAction<KnowledgeBaseItem[]>>) => {
+    // First, refetch the production to get updated knowledge links
+    await fetchProduction();
+    // The useEffect will handle fetching knowledge items when production changes
+  };
+
+  const fetchKnowledgeForStep2 = () => refetchAndFetchKnowledge('knowledgeLinks_step2', setLinkedKnowledgeStep2);
+  const fetchKnowledgeForStep3 = () => refetchAndFetchKnowledge('knowledgeLinks_step3', setLinkedKnowledgeStep3);
+  const fetchKnowledgeForStep4 = () => refetchAndFetchKnowledge('knowledgeLinks_step4', setLinkedKnowledgeStep4);
+  const fetchKnowledgeForStep5Videos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_videos', setLinkedKnowledgeStep5Videos);
+  const fetchKnowledgeForStep5Photos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_photos', setLinkedKnowledgeStep5Photos);
+  const fetchKnowledgeForStep5ActorPhotos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_actorPhotos', setLinkedKnowledgeStep5ActorPhotos);
+  const fetchKnowledgeForStep5OtherPhotos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_otherPhotos', setLinkedKnowledgeStep5OtherPhotos);
+  const fetchKnowledgeForStep5Logos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_logos', setLinkedKnowledgeStep5Logos);
+  const fetchKnowledgeForStep5Texts = () => refetchAndFetchKnowledge('knowledgeLinks_step5_texts', setLinkedKnowledgeStep5Texts);
+  const fetchKnowledgeForStep6 = () => refetchAndFetchKnowledge('knowledgeLinks_step6', setLinkedKnowledgeStep6);
+  const fetchKnowledgeForStep7 = () => refetchAndFetchKnowledge('knowledgeLinks_step7', setLinkedKnowledgeStep7);
+  const fetchKnowledgeForStep8 = () => refetchAndFetchKnowledge('knowledgeLinks_step8', setLinkedKnowledgeStep8);
+  const fetchKnowledgeForStep9 = () => refetchAndFetchKnowledge('knowledgeLinks_step9', setLinkedKnowledgeStep9);
+  const fetchKnowledgeForStep10 = () => refetchAndFetchKnowledge('knowledgeLinks_step10', setLinkedKnowledgeStep10);
+  const fetchKnowledgeForStep11 = () => refetchAndFetchKnowledge('knowledgeLinks_step11', setLinkedKnowledgeStep11);
+  const fetchKnowledgeForStep12 = () => refetchAndFetchKnowledge('knowledgeLinks_step12', setLinkedKnowledgeStep12);
+  const fetchKnowledgeForStep13 = () => refetchAndFetchKnowledge('knowledgeLinks_step13', setLinkedKnowledgeStep13);
 
   // Update current step when URL parameter changes
   useEffect(() => {
@@ -314,6 +436,9 @@ export default function ProductionEditPage() {
               data={production.step1_contract}
               onChange={(data) => updateProduction({ step1_contract: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep1}
+              onKnowledgeChange={fetchKnowledgeForStep1}
             />
           )}
 
@@ -322,6 +447,9 @@ export default function ProductionEditPage() {
               data={production.step2_cities}
               onChange={(data) => updateProduction({ step2_cities: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep2}
+              onKnowledgeChange={fetchKnowledgeForStep2}
             />
           )}
 
@@ -330,6 +458,9 @@ export default function ProductionEditPage() {
               data={production.step3_venueContracts}
               onChange={(data) => updateProduction({ step3_venueContracts: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep3}
+              onKnowledgeChange={fetchKnowledgeForStep3}
             />
           )}
 
@@ -338,6 +469,9 @@ export default function ProductionEditPage() {
               data={production.step4_itinerary}
               onChange={(data) => updateProduction({ step4_itinerary: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep4}
+              onKnowledgeChange={fetchKnowledgeForStep4}
             />
           )}
 
@@ -346,6 +480,19 @@ export default function ProductionEditPage() {
               data={production.step5_materials}
               onChange={(data) => updateProduction({ step5_materials: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledgeVideos={linkedKnowledgeStep5Videos}
+              linkedKnowledgePhotos={linkedKnowledgeStep5Photos}
+              linkedKnowledgeActorPhotos={linkedKnowledgeStep5ActorPhotos}
+              linkedKnowledgeOtherPhotos={linkedKnowledgeStep5OtherPhotos}
+              linkedKnowledgeLogos={linkedKnowledgeStep5Logos}
+              linkedKnowledgeTexts={linkedKnowledgeStep5Texts}
+              onKnowledgeChangeVideos={fetchKnowledgeForStep5Videos}
+              onKnowledgeChangePhotos={fetchKnowledgeForStep5Photos}
+              onKnowledgeChangeActorPhotos={fetchKnowledgeForStep5ActorPhotos}
+              onKnowledgeChangeOtherPhotos={fetchKnowledgeForStep5OtherPhotos}
+              onKnowledgeChangeLogos={fetchKnowledgeForStep5Logos}
+              onKnowledgeChangeTexts={fetchKnowledgeForStep5Texts}
             />
           )}
 
@@ -354,6 +501,9 @@ export default function ProductionEditPage() {
               data={production.step6_venueInfo}
               onChange={(data) => updateProduction({ step6_venueInfo: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep6}
+              onKnowledgeChange={fetchKnowledgeForStep6}
             />
           )}
 
@@ -362,6 +512,9 @@ export default function ProductionEditPage() {
               data={production.step7_designs}
               onChange={(data) => updateProduction({ step7_designs: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep7}
+              onKnowledgeChange={fetchKnowledgeForStep7}
             />
           )}
 
@@ -370,6 +523,9 @@ export default function ProductionEditPage() {
               data={production.step8_promotionalImages}
               onChange={(data) => updateProduction({ step8_promotionalImages: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep8}
+              onKnowledgeChange={fetchKnowledgeForStep8}
             />
           )}
 
@@ -378,6 +534,9 @@ export default function ProductionEditPage() {
               data={production.step9_videos}
               onChange={(data) => updateProduction({ step9_videos: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep9}
+              onKnowledgeChange={fetchKnowledgeForStep9}
             />
           )}
 
@@ -386,6 +545,9 @@ export default function ProductionEditPage() {
               data={production.step10_pressConference}
               onChange={(data) => updateProduction({ step10_pressConference: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep10}
+              onKnowledgeChange={fetchKnowledgeForStep10}
             />
           )}
 
@@ -394,6 +556,9 @@ export default function ProductionEditPage() {
               data={production.step11_performanceShooting}
               onChange={(data) => updateProduction({ step11_performanceShooting: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep11}
+              onKnowledgeChange={fetchKnowledgeForStep11}
             />
           )}
 
@@ -402,6 +567,9 @@ export default function ProductionEditPage() {
               data={production.step12_socialMedia}
               onChange={(data) => updateProduction({ step12_socialMedia: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep12}
+              onKnowledgeChange={fetchKnowledgeForStep12}
             />
           )}
 
@@ -410,6 +578,9 @@ export default function ProductionEditPage() {
               data={production.step13_advertising}
               onChange={(data) => updateProduction({ step13_advertising: data })}
               onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={linkedKnowledgeStep13}
+              onKnowledgeChange={fetchKnowledgeForStep13}
             />
           )}
         </div>

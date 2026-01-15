@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,15 +8,29 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { Advertising, TargetAudience, OfflineAdvertising } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step13Props {
   data: Advertising;
   onChange: (data: Advertising) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledge?: KnowledgeBaseItem[];
+  onKnowledgeChange?: () => void;
 }
 
-export default function Step13Advertising({ data, onChange, onBlur }: Step13Props) {
+export default function Step13Advertising({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledge = [],
+  onKnowledgeChange
+}: Step13Props) {
+  const [showKnowledge, setShowKnowledge] = useState(false);
   // Online advertising management
   const addOnline = () => {
     const newOnline: TargetAudience = {
@@ -90,9 +105,30 @@ export default function Step13Advertising({ data, onChange, onBlur }: Step13Prop
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Step 13: 投流宣传</h3>
-        <p className="text-gray-600">Advertising</p>
+      <div className="flex justify-between items-start gap-4">
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Step 13: 投流宣传</h3>
+          <p className="text-gray-600">Advertising</p>
+        </div>
+        {productionId && onKnowledgeChange && (
+          <div className="flex gap-2">
+            <KnowledgeLinkButton
+              section="step13"
+              linkedIds={linkedKnowledge.map(k => k._id)}
+              productionId={productionId}
+              onChange={onKnowledgeChange}
+            />
+            {linkedKnowledge.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKnowledge(true)}
+              >
+                View Knowledge ({linkedKnowledge.length})
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 13.1 Online Advertising */}
@@ -278,6 +314,12 @@ export default function Step13Advertising({ data, onChange, onBlur }: Step13Prop
           </Button>
         </CardContent>
       </Card>
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledge}
+        open={showKnowledge}
+        onClose={() => setShowKnowledge(false)}
+      />
     </div>
   );
 }

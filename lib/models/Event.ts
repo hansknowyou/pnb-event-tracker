@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 export interface IEvent {
   _id?: string;
   name: string;
+  linkedProductionId?: string; // Link to Production
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -12,6 +13,11 @@ const EventSchema = new mongoose.Schema<IEvent>(
     name: {
       type: String,
       required: true,
+    },
+    linkedProductionId: {
+      type: String,
+      ref: 'Production',
+      default: null,
     },
   },
   {

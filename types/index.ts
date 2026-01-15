@@ -1,6 +1,7 @@
 export interface Event {
   _id: string;
   name: string;
+  linkedProductionId?: string; // Link to Production
   createdAt?: string;
   updatedAt?: string;
   totalClicks?: number;

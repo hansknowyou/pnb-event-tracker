@@ -269,6 +269,26 @@ export interface IProduction extends Document {
   step11_performanceShooting: IPerformanceShooting;
   step12_socialMedia: ISocialMedia;
   step13_advertising: IAdvertising;
+
+  // Knowledge Base Links (19 sections: 13 steps + 6 subsections of step 5)
+  knowledgeLinks_step1?: string[];
+  knowledgeLinks_step2?: string[];
+  knowledgeLinks_step3?: string[];
+  knowledgeLinks_step4?: string[];
+  knowledgeLinks_step5_videos?: string[];
+  knowledgeLinks_step5_photos?: string[];
+  knowledgeLinks_step5_actorPhotos?: string[];
+  knowledgeLinks_step5_otherPhotos?: string[];
+  knowledgeLinks_step5_logos?: string[];
+  knowledgeLinks_step5_texts?: string[];
+  knowledgeLinks_step6?: string[];
+  knowledgeLinks_step7?: string[];
+  knowledgeLinks_step8?: string[];
+  knowledgeLinks_step9?: string[];
+  knowledgeLinks_step10?: string[];
+  knowledgeLinks_step11?: string[];
+  knowledgeLinks_step12?: string[];
+  knowledgeLinks_step13?: string[];
 }
 
 const ProductionSchema = new Schema<IProduction>(
@@ -543,6 +563,26 @@ const ProductionSchema = new Schema<IProduction>(
         notes: { type: String, default: '' },
       }],
     },
+
+    // Knowledge Base Links
+    knowledgeLinks_step1: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step2: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step3: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step4: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_videos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_photos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_actorPhotos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_otherPhotos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_logos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_texts: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step6: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step7: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step8: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step9: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step10: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step11: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step12: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step13: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
   },
   {
     timestamps: true,

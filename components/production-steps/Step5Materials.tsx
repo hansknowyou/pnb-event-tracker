@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,15 +8,54 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { Materials, Video, Logo } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step5Props {
   data: Materials;
   onChange: (data: Materials) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledgeVideos?: KnowledgeBaseItem[];
+  linkedKnowledgePhotos?: KnowledgeBaseItem[];
+  linkedKnowledgeActorPhotos?: KnowledgeBaseItem[];
+  linkedKnowledgeOtherPhotos?: KnowledgeBaseItem[];
+  linkedKnowledgeLogos?: KnowledgeBaseItem[];
+  linkedKnowledgeTexts?: KnowledgeBaseItem[];
+  onKnowledgeChangeVideos?: () => void;
+  onKnowledgeChangePhotos?: () => void;
+  onKnowledgeChangeActorPhotos?: () => void;
+  onKnowledgeChangeOtherPhotos?: () => void;
+  onKnowledgeChangeLogos?: () => void;
+  onKnowledgeChangeTexts?: () => void;
 }
 
-export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
+export default function Step5Materials({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledgeVideos = [],
+  linkedKnowledgePhotos = [],
+  linkedKnowledgeActorPhotos = [],
+  linkedKnowledgeOtherPhotos = [],
+  linkedKnowledgeLogos = [],
+  linkedKnowledgeTexts = [],
+  onKnowledgeChangeVideos,
+  onKnowledgeChangePhotos,
+  onKnowledgeChangeActorPhotos,
+  onKnowledgeChangeOtherPhotos,
+  onKnowledgeChangeLogos,
+  onKnowledgeChangeTexts
+}: Step5Props) {
+  const [showKnowledgeVideos, setShowKnowledgeVideos] = useState(false);
+  const [showKnowledgePhotos, setShowKnowledgePhotos] = useState(false);
+  const [showKnowledgeActorPhotos, setShowKnowledgeActorPhotos] = useState(false);
+  const [showKnowledgeOtherPhotos, setShowKnowledgeOtherPhotos] = useState(false);
+  const [showKnowledgeLogos, setShowKnowledgeLogos] = useState(false);
+  const [showKnowledgeTexts, setShowKnowledgeTexts] = useState(false);
   // Video management
   const addVideo = () => {
     const newVideo: Video = {
@@ -72,7 +112,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.1 Videos (minimum 3) */}
       <Card>
         <CardHeader>
-          <CardTitle>5.1 Past Performance Videos (Minimum 3)</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.1 Past Performance Videos (Minimum 3)</CardTitle>
+            {productionId && onKnowledgeChangeVideos && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_videos"
+                  linkedIds={linkedKnowledgeVideos.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangeVideos}
+                />
+                {linkedKnowledgeVideos.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgeVideos(true)}
+                  >
+                    View ({linkedKnowledgeVideos.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {data.videos.length < 3 && (
@@ -120,7 +181,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.2 Performance Photos */}
       <Card>
         <CardHeader>
-          <CardTitle>5.2 Performance Scene Photos (5-10 photos)</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.2 Performance Scene Photos (5-10 photos)</CardTitle>
+            {productionId && onKnowledgeChangePhotos && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_photos"
+                  linkedIds={linkedKnowledgePhotos.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangePhotos}
+                />
+                {linkedKnowledgePhotos.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgePhotos(true)}
+                  >
+                    View ({linkedKnowledgePhotos.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -149,7 +231,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.3 Actor Photos */}
       <Card>
         <CardHeader>
-          <CardTitle>5.3 Main Actor Headshot Photos</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.3 Main Actor Headshot Photos</CardTitle>
+            {productionId && onKnowledgeChangeActorPhotos && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_actorPhotos"
+                  linkedIds={linkedKnowledgeActorPhotos.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangeActorPhotos}
+                />
+                {linkedKnowledgeActorPhotos.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgeActorPhotos(true)}
+                  >
+                    View ({linkedKnowledgeActorPhotos.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -178,7 +281,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.4 Other Element Photos */}
       <Card>
         <CardHeader>
-          <CardTitle>5.4 Other Element Photos</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.4 Other Element Photos</CardTitle>
+            {productionId && onKnowledgeChangeOtherPhotos && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_otherPhotos"
+                  linkedIds={linkedKnowledgeOtherPhotos.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangeOtherPhotos}
+                />
+                {linkedKnowledgeOtherPhotos.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgeOtherPhotos(true)}
+                  >
+                    View ({linkedKnowledgeOtherPhotos.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -207,7 +331,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.5 Logos */}
       <Card>
         <CardHeader>
-          <CardTitle>5.5 Organization Logos</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.5 Organization Logos</CardTitle>
+            {productionId && onKnowledgeChangeLogos && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_logos"
+                  linkedIds={linkedKnowledgeLogos.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangeLogos}
+                />
+                {linkedKnowledgeLogos.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgeLogos(true)}
+                  >
+                    View ({linkedKnowledgeLogos.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {data.logos.map((logo, index) => (
@@ -308,7 +453,28 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
       {/* 5.6 Texts */}
       <Card>
         <CardHeader>
-          <CardTitle>5.6 Performance Copy/Text</CardTitle>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>5.6 Performance Copy/Text</CardTitle>
+            {productionId && onKnowledgeChangeTexts && (
+              <div className="flex gap-2">
+                <KnowledgeLinkButton
+                  section="step5_texts"
+                  linkedIds={linkedKnowledgeTexts.map(k => k._id)}
+                  productionId={productionId}
+                  onChange={onKnowledgeChangeTexts}
+                />
+                {linkedKnowledgeTexts.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowKnowledgeTexts(true)}
+                  >
+                    View ({linkedKnowledgeTexts.length})
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -342,6 +508,37 @@ export default function Step5Materials({ data, onChange, onBlur }: Step5Props) {
           </div>
         </CardContent>
       </Card>
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgeVideos}
+        open={showKnowledgeVideos}
+        onClose={() => setShowKnowledgeVideos(false)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgePhotos}
+        open={showKnowledgePhotos}
+        onClose={() => setShowKnowledgePhotos(false)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgeActorPhotos}
+        open={showKnowledgeActorPhotos}
+        onClose={() => setShowKnowledgeActorPhotos(false)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgeOtherPhotos}
+        open={showKnowledgeOtherPhotos}
+        onClose={() => setShowKnowledgeOtherPhotos(false)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgeLogos}
+        open={showKnowledgeLogos}
+        onClose={() => setShowKnowledgeLogos(false)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledgeTexts}
+        open={showKnowledgeTexts}
+        onClose={() => setShowKnowledgeTexts(false)}
+      />
     </div>
   );
 }

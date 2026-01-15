@@ -268,6 +268,26 @@ export interface Production {
   step11_performanceShooting: PerformanceShooting;
   step12_socialMedia: SocialMedia;
   step13_advertising: Advertising;
+
+  // Knowledge Base Links (19 sections: 13 steps + 6 subsections of step 5)
+  knowledgeLinks_step1?: string[];
+  knowledgeLinks_step2?: string[];
+  knowledgeLinks_step3?: string[];
+  knowledgeLinks_step4?: string[];
+  knowledgeLinks_step5_videos?: string[];
+  knowledgeLinks_step5_photos?: string[];
+  knowledgeLinks_step5_actorPhotos?: string[];
+  knowledgeLinks_step5_otherPhotos?: string[];
+  knowledgeLinks_step5_logos?: string[];
+  knowledgeLinks_step5_texts?: string[];
+  knowledgeLinks_step6?: string[];
+  knowledgeLinks_step7?: string[];
+  knowledgeLinks_step8?: string[];
+  knowledgeLinks_step9?: string[];
+  knowledgeLinks_step10?: string[];
+  knowledgeLinks_step11?: string[];
+  knowledgeLinks_step12?: string[];
+  knowledgeLinks_step13?: string[];
 }
 
 // Step information for the form

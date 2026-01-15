@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,15 +8,29 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
+import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
+import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import type { PromotionalImages, ImageVersion, Poster4x3 } from '@/types/production';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step8Props {
   data: PromotionalImages;
   onChange: (data: PromotionalImages) => void;
   onBlur: () => void;
+  productionId?: string;
+  linkedKnowledge?: KnowledgeBaseItem[];
+  onKnowledgeChange?: () => void;
 }
 
-export default function Step8PromotionalImages({ data, onChange, onBlur }: Step8Props) {
+export default function Step8PromotionalImages({
+  data,
+  onChange,
+  onBlur,
+  productionId,
+  linkedKnowledge = [],
+  onKnowledgeChange
+}: Step8Props) {
+  const [showKnowledge, setShowKnowledge] = useState(false);
   // Helper functions for managing different image types
   const addImageVersion = (type: keyof Omit<PromotionalImages, 'poster4_3'>) => {
     const newImage: ImageVersion = {
@@ -159,9 +174,30 @@ export default function Step8PromotionalImages({ data, onChange, onBlur }: Step8
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-2xl font-bold mb-2">Step 8: 图片媒体宣传图制作</h3>
-        <p className="text-gray-600">Promotional Images</p>
+      <div className="flex justify-between items-start gap-4">
+        <div>
+          <h3 className="text-2xl font-bold mb-2">Step 8: 图片媒体宣传图制作</h3>
+          <p className="text-gray-600">Promotional Images</p>
+        </div>
+        {productionId && onKnowledgeChange && (
+          <div className="flex gap-2">
+            <KnowledgeLinkButton
+              section="step8"
+              linkedIds={linkedKnowledge.map(k => k._id)}
+              productionId={productionId}
+              onChange={onKnowledgeChange}
+            />
+            {linkedKnowledge.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowKnowledge(true)}
+              >
+                View Knowledge ({linkedKnowledge.length})
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {renderImageSection(
@@ -297,6 +333,12 @@ export default function Step8PromotionalImages({ data, onChange, onBlur }: Step8
         'cover5_2',
         data.cover5_2
       )}
+
+      <KnowledgeViewDialog
+        knowledgeItems={linkedKnowledge}
+        open={showKnowledge}
+        onClose={() => setShowKnowledge(false)}
+      />
     </div>
   );
 }

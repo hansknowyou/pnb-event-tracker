@@ -16,6 +16,7 @@ export default function TopNavigation() {
 
   const isEventTracking = pathname === '/' || pathname.startsWith('/events');
   const isProductionManagement = pathname.startsWith('/productions');
+  const isKnowledgeBase = pathname.startsWith('/knowledge-base');
   const isLogin = pathname === '/login';
 
   // Don't show navigation on login page
@@ -65,6 +66,18 @@ export default function TopNavigation() {
                 )}
               >
                 {t('productionManagement')}
+              </Link>
+
+              <Link
+                href="/knowledge-base"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  isKnowledgeBase
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                )}
+              >
+                {t('knowledgeBase')}
               </Link>
             </div>
           </div>
