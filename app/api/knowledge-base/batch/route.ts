@@ -23,7 +23,14 @@ export async function POST(req: NextRequest) {
       isDeleted: false,
     });
 
-    return NextResponse.json(items, { headers: corsHeaders() });
+    // Convert to objects and ensure tags field exists
+    const itemsWithTags = items.map(item => {
+      const obj = item.toObject();
+      obj.tags = item.tags || [];
+      return obj;
+    });
+
+    return NextResponse.json(itemsWithTags, { headers: corsHeaders() });
   } catch (error: unknown) {
     console.error('Error fetching knowledge base items:', error);
     return NextResponse.json(

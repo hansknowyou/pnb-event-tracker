@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import KnowledgeItemCard from '@/components/KnowledgeItemCard';
+import TagFilter from '@/components/TagFilter';
 import { useAuth } from '@/contexts/AuthContext';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 import { useTranslations } from 'next-intl';
@@ -14,24 +15,71 @@ export default function KnowledgeBasePage() {
   const { user } = useAuth();
   const t = useTranslations('knowledge');
   const [items, setItems] = useState<KnowledgeBaseItem[]>([]);
+  const [allItems, setAllItems] = useState<KnowledgeBaseItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [allTags, setAllTags] = useState<string[]>([]);
 
   useEffect(() => {
     fetchItems();
   }, []);
+
+  useEffect(() => {
+    // Filter items when selected tags change
+    if (selectedTags.length === 0) {
+      setItems(allItems);
+    } else {
+      fetchItemsByTags(selectedTags);
+    }
+  }, [selectedTags, allItems]);
 
   const fetchItems = async () => {
     try {
       const response = await fetch('/api/knowledge-base');
       if (response.ok) {
         const data = await response.json();
+        setAllItems(data);
         setItems(data);
+
+        // Extract all unique tags
+        const tags = new Set<string>();
+        data.forEach((item: KnowledgeBaseItem) => {
+          if (item.tags) {
+            item.tags.forEach((tag) => tags.add(tag));
+          }
+        });
+        setAllTags(Array.from(tags).sort());
       }
     } catch (error) {
       console.error('Error fetching knowledge base items:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchItemsByTags = async (tags: string[]) => {
+    try {
+      const tagsParam = tags.join(',');
+      const response = await fetch(`/api/knowledge-base?tags=${encodeURIComponent(tagsParam)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setItems(data);
+      }
+    } catch (error) {
+      console.error('Error fetching filtered knowledge base items:', error);
+    }
+  };
+
+  const handleTagSelect = (tag: string) => {
+    setSelectedTags([...selectedTags, tag]);
+  };
+
+  const handleTagDeselect = (tag: string) => {
+    setSelectedTags(selectedTags.filter((t) => t !== tag));
+  };
+
+  const handleClearAllTags = () => {
+    setSelectedTags([]);
   };
 
   const handlePrint = () => {
@@ -89,6 +137,14 @@ export default function KnowledgeBasePage() {
           )}
         </div>
       </div>
+
+      <TagFilter
+        allTags={allTags}
+        selectedTags={selectedTags}
+        onTagSelect={handleTagSelect}
+        onTagDeselect={handleTagDeselect}
+        onClearAll={handleClearAllTags}
+      />
 
       {items.length === 0 ? (
         <div className="text-center py-12">

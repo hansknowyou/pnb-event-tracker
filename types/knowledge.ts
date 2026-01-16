@@ -4,6 +4,7 @@ export interface KnowledgeBaseItem {
   description: string; // HTML from TipTap
   imageUrl?: string;
   imageKey?: string;
+  tags: string[];
   createdBy: string;
   createdAt: string;
   updatedAt: string;

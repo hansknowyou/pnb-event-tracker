@@ -5,6 +5,7 @@ export interface IKnowledgeBaseItem extends Document {
   description: string; // Rich text HTML from TipTap
   imageUrl?: string; // S3 URL
   imageKey?: string; // S3 key for deletion
+  tags: string[]; // Tags for categorization and filtering
   createdBy: string; // User ID
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +33,16 @@ const KnowledgeBaseItemSchema = new Schema<IKnowledgeBaseItem>(
       type: String,
       default: '',
     },
+    tags: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function(tags: string[]) {
+          return tags.every(tag => tag.length <= 50);
+        },
+        message: 'Each tag must be 50 characters or less',
+      },
+    },
     createdBy: {
       type: String,
       required: true,
@@ -49,6 +60,7 @@ const KnowledgeBaseItemSchema = new Schema<IKnowledgeBaseItem>(
 // Create index for faster queries
 KnowledgeBaseItemSchema.index({ isDeleted: 1 });
 KnowledgeBaseItemSchema.index({ createdBy: 1 });
+KnowledgeBaseItemSchema.index({ tags: 1 }); // For tag filtering
 
 const KnowledgeBaseItem =
   mongoose.models.KnowledgeBaseItem ||

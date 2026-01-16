@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import TipTapEditor from '@/components/TipTapEditor';
+import TagInput from '@/components/TagInput';
 import { useAuth } from '@/contexts/AuthContext';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 import { useTranslations } from 'next-intl';
@@ -32,6 +33,8 @@ export default function EditKnowledgeBasePage({
   const [item, setItem] = useState<KnowledgeBaseItem | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -41,53 +44,28 @@ export default function EditKnowledgeBasePage({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Auto-save functionality
-  useEffect(() => {
-    if (!hasUnsavedChanges) return;
-
-    const timer = setTimeout(() => {
-      handleSave();
-    }, 30000); // 30 seconds
-
-    return () => clearTimeout(timer);
-  }, [title, description, hasUnsavedChanges]);
-
-  useEffect(() => {
-    fetchItem();
-  }, [resolvedParams.id]);
-
-  useEffect(() => {
-    if (item) {
-      const changed =
-        title !== item.title ||
-        description !== item.description;
-      setHasUnsavedChanges(changed);
-      if (changed) {
-        setSaveStatus('unsaved');
-      }
-    }
-  }, [title, description, item]);
-
-  const fetchItem = async () => {
+  // Fetch all existing tags - MUST be defined before handleSave
+  const fetchTags = useCallback(async () => {
     try {
-      const response = await fetch(`/api/knowledge-base/${resolvedParams.id}`);
+      const response = await fetch('/api/knowledge-base');
       if (response.ok) {
-        const data = await response.json();
-        setItem(data);
-        setTitle(data.title);
-        setDescription(data.description || '');
-      } else {
-        router.push('/knowledge-base');
+        const items = await response.json();
+        // Extract all unique tags
+        const allTags = new Set<string>();
+        items.forEach((item: any) => {
+          if (item.tags) {
+            item.tags.forEach((tag: string) => allTags.add(tag));
+          }
+        });
+        setAvailableTags(Array.from(allTags).sort());
       }
     } catch (error) {
-      console.error('Error fetching knowledge base item:', error);
-      router.push('/knowledge-base');
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch tags:', error);
     }
-  };
+  }, []);
 
-  const handleSave = async () => {
+  // Define handleSave with useCallback
+  const handleSave = useCallback(async () => {
     if (!title.trim()) {
       setSaveStatus('error');
       return;
@@ -105,6 +83,7 @@ export default function EditKnowledgeBasePage({
         body: JSON.stringify({
           title: title.trim(),
           description,
+          tags,
         }),
       });
 
@@ -113,16 +92,81 @@ export default function EditKnowledgeBasePage({
       }
 
       const data = await response.json();
+      // Update both item and local state to match server response
       setItem(data);
+      setTitle(data.title);
+      setDescription(data.description || '');
+      setTags(data.tags || []);
       setHasUnsavedChanges(false);
       setSaveStatus('saved');
+
+      // Refetch tags to update available tags list with any new tags
+      await fetchTags();
     } catch (err) {
       console.error('Error updating knowledge base item:', err);
       setSaveStatus('error');
     } finally {
       setSaving(false);
     }
-  };
+  }, [resolvedParams.id, title, description, tags, fetchTags]);
+
+  // Define fetchItem
+  const fetchItem = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/knowledge-base/${resolvedParams.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setItem(data);
+        setTitle(data.title);
+        setDescription(data.description || '');
+        setTags(data.tags || []);
+      } else {
+        router.push('/knowledge-base');
+      }
+    } catch (error) {
+      console.error('Error fetching knowledge base item:', error);
+      router.push('/knowledge-base');
+    } finally {
+      setLoading(false);
+    }
+  }, [resolvedParams.id, router]);
+
+  // Fetch item on mount
+  useEffect(() => {
+    fetchItem();
+  }, [fetchItem]);
+
+  // Fetch tags on mount
+  useEffect(() => {
+    fetchTags();
+  }, [fetchTags]);
+
+  // Track unsaved changes
+  useEffect(() => {
+    if (item) {
+      const tagsChanged = JSON.stringify(tags) !== JSON.stringify(item.tags || []);
+      const changed =
+        title !== item.title ||
+        description !== item.description ||
+        tagsChanged;
+      setHasUnsavedChanges(changed);
+      // Only set to 'unsaved' if there are changes AND we're not currently saving
+      if (changed && saveStatus !== 'saving') {
+        setSaveStatus('unsaved');
+      }
+    }
+  }, [title, description, tags, item, saveStatus]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    const timer = setTimeout(() => {
+      handleSave();
+    }, 30000); // 30 seconds
+
+    return () => clearTimeout(timer);
+  }, [hasUnsavedChanges, handleSave]);
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -244,6 +288,20 @@ export default function EditKnowledgeBasePage({
               value={description}
               onChange={setDescription}
               placeholder="Add detailed information, instructions, or resources..."
+            />
+          </div>
+
+          {/* Tags */}
+          <div>
+            <Label>Tags</Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Add tags to categorize and make this item easier to find
+            </p>
+            <TagInput
+              tags={tags}
+              onChange={setTags}
+              placeholder="Type to search or create tags..."
+              availableTags={availableTags}
             />
           </div>
 

@@ -22,7 +22,14 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(item, { headers: corsHeaders() });
+    console.log('GET - item.tags from DB:', item.tags);
+
+    // Convert to object and explicitly include tags field
+    const itemObject = item.toObject();
+    itemObject.tags = item.tags || [];
+    console.log('GET - Final response tags:', itemObject.tags);
+
+    return NextResponse.json(itemObject, { headers: corsHeaders() });
   } catch (error: unknown) {
     console.error('Error fetching knowledge base item:', error);
     return NextResponse.json(
@@ -87,10 +94,24 @@ export async function PATCH(
     if (body.imageKey !== undefined) {
       item.imageKey = body.imageKey;
     }
+    if (body.tags !== undefined) {
+      if (Array.isArray(body.tags)) {
+        console.log('Setting tags to:', body.tags);
+        item.tags = body.tags;
+        item.markModified('tags'); // CRITICAL: Mark array as modified for Mongoose
+      }
+    }
 
     await item.save();
+    console.log('After save, item.tags:', item.tags);
 
-    return NextResponse.json(item, { headers: corsHeaders() });
+    // Convert to object and explicitly include tags field
+    const itemObject = item.toObject();
+    // Explicitly add tags since it may not be included for old documents
+    itemObject.tags = item.tags || [];
+    console.log('Final response tags:', itemObject.tags);
+
+    return NextResponse.json(itemObject, { headers: corsHeaders() });
   } catch (error: unknown) {
     console.error('Error updating knowledge base item:', error);
     return NextResponse.json(

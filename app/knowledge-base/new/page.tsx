@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import TipTapEditor from '@/components/TipTapEditor';
+import TagInput from '@/components/TagInput';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 
@@ -17,6 +18,8 @@ export default function NewKnowledgeBasePage() {
   const t = useTranslations('knowledge');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,6 +29,30 @@ export default function NewKnowledgeBasePage() {
       router.push('/knowledge-base');
     }
   }, [user, router]);
+
+  // Fetch all existing tags
+  const fetchTags = async () => {
+    try {
+      const response = await fetch('/api/knowledge-base');
+      if (response.ok) {
+        const items = await response.json();
+        // Extract all unique tags
+        const allTags = new Set<string>();
+        items.forEach((item: any) => {
+          if (item.tags) {
+            item.tags.forEach((tag: string) => allTags.add(tag));
+          }
+        });
+        setAvailableTags(Array.from(allTags).sort());
+      }
+    } catch (error) {
+      console.error('Failed to fetch tags:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
 
   // Don't render if not admin
   if (!user || !user.isAdmin) {
@@ -50,6 +77,7 @@ export default function NewKnowledgeBasePage() {
         body: JSON.stringify({
           title: title.trim(),
           description,
+          tags,
         }),
       });
 
@@ -59,6 +87,10 @@ export default function NewKnowledgeBasePage() {
       }
 
       const data = await response.json();
+
+      // Refetch tags to update available tags list
+      await fetchTags();
+
       router.push(`/knowledge-base/${data._id}`);
     } catch (err) {
       console.error('Error creating knowledge base item:', err);
@@ -120,6 +152,20 @@ export default function NewKnowledgeBasePage() {
               value={description}
               onChange={setDescription}
               placeholder="Add detailed information, instructions, or resources..."
+            />
+          </div>
+
+          {/* Tags */}
+          <div>
+            <Label>Tags</Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Add tags to categorize and make this item easier to find
+            </p>
+            <TagInput
+              tags={tags}
+              onChange={setTags}
+              placeholder="Type to search or create tags..."
+              availableTags={availableTags}
             />
           </div>
 

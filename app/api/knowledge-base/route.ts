@@ -4,17 +4,38 @@ import KnowledgeBaseItem from '@/lib/models/KnowledgeBaseItem';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch all non-deleted knowledge base items
-export async function GET() {
+// GET - Fetch all non-deleted knowledge base items (with optional tag filtering)
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
 
+    // Get tags from query params for filtering
+    const { searchParams } = new URL(req.url);
+    const tagsParam = searchParams.get('tags');
+
+    const query: any = { isDeleted: false };
+
+    // If tags are specified, filter by tags
+    if (tagsParam) {
+      const tags = tagsParam.split(',').map(tag => tag.trim()).filter(Boolean);
+      if (tags.length > 0) {
+        query.tags = { $in: tags };
+      }
+    }
+
     // Fetch all non-deleted items, sorted by most recently updated
-    const items = await KnowledgeBaseItem.find({ isDeleted: false }).sort({
+    const items = await KnowledgeBaseItem.find(query).sort({
       updatedAt: -1,
     });
 
-    return NextResponse.json(items, { headers: corsHeaders() });
+    // Convert to objects and ensure tags field exists
+    const itemsWithTags = items.map(item => {
+      const obj = item.toObject();
+      obj.tags = item.tags || [];
+      return obj;
+    });
+
+    return NextResponse.json(itemsWithTags, { headers: corsHeaders() });
   } catch (error: unknown) {
     console.error('Error fetching knowledge base items:', error);
     return NextResponse.json(
@@ -61,11 +82,16 @@ export async function POST(req: NextRequest) {
       description: body.description || '',
       imageUrl: body.imageUrl || '',
       imageKey: body.imageKey || '',
+      tags: Array.isArray(body.tags) ? body.tags : [],
       createdBy: user.userId,
       isDeleted: false,
     });
 
-    return NextResponse.json(item, { status: 201, headers: corsHeaders() });
+    // Convert to object and explicitly include tags
+    const itemObject = item.toObject();
+    itemObject.tags = item.tags || [];
+
+    return NextResponse.json(itemObject, { status: 201, headers: corsHeaders() });
   } catch (error: unknown) {
     console.error('Error creating knowledge base item:', error);
     return NextResponse.json(

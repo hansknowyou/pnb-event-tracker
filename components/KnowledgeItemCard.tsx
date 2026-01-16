@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 import Image from 'next/image';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
+import { getTagColor } from '@/lib/tagColors';
 
 interface KnowledgeItemCardProps {
   item: KnowledgeBaseItem;
@@ -56,6 +57,21 @@ export default function KnowledgeItemCard({
           <p className="text-sm text-gray-600 line-clamp-3">
             {truncatedDescription}
           </p>
+        )}
+        {item.tags && item.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {item.tags.map((tag, index) => {
+              const colorClasses = getTagColor(tag);
+              return (
+                <span
+                  key={index}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${colorClasses}`}
+                >
+                  {tag}
+                </span>
+              );
+            })}
+          </div>
         )}
         <div className="text-xs text-gray-500">
           Updated: {new Date(item.updatedAt).toLocaleDateString()}
