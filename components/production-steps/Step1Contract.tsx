@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
+import AssignButton from '@/components/AssignButton';
 import type { Contract } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -17,6 +19,8 @@ interface Step1Props {
   productionId?: string;
   linkedKnowledge?: KnowledgeBaseItem[];
   onKnowledgeChange?: () => void;
+  assignedUserId?: string;
+  onAssignmentChange?: (section: string, userId: string | null) => void;
 }
 
 export default function Step1Contract({
@@ -25,36 +29,49 @@ export default function Step1Contract({
   onBlur,
   productionId,
   linkedKnowledge = [],
-  onKnowledgeChange
+  onKnowledgeChange,
+  assignedUserId,
+  onAssignmentChange,
 }: Step1Props) {
+  const t = useTranslations('knowledgeLink');
+  const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="text-2xl font-bold mb-2">Step 1: 演出合同签订</h3>
+          <h3 className="text-2xl font-bold mb-2">{tStep('step1')}</h3>
           <p className="text-gray-600">Contract Signing</p>
         </div>
-        {productionId && onKnowledgeChange && (
-          <div className="flex gap-2">
-            <KnowledgeLinkButton
+        <div className="flex gap-2">
+          {onKnowledgeChange && (
+            <>
+              <KnowledgeLinkButton
+                section="step1"
+                linkedIds={linkedKnowledge.map(k => k._id)}
+                onChange={onKnowledgeChange}
+              />
+              {linkedKnowledge.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowKnowledge(true)}
+                >
+                  {t('view')} ({linkedKnowledge.length})
+                </Button>
+              )}
+            </>
+          )}
+          {productionId && onAssignmentChange && (
+            <AssignButton
               section="step1"
-              linkedIds={linkedKnowledge.map(k => k._id)}
+              assignedUserId={assignedUserId}
               productionId={productionId}
-              onChange={onKnowledgeChange}
+              onChange={onAssignmentChange}
             />
-            {linkedKnowledge.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowKnowledge(true)}
-              >
-                View Knowledge ({linkedKnowledge.length})
-              </Button>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="space-y-4">

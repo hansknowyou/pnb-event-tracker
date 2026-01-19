@@ -17,6 +17,8 @@ export default function TopNavigation() {
   const isEventTracking = pathname === '/' || pathname.startsWith('/events');
   const isProductionManagement = pathname.startsWith('/productions');
   const isKnowledgeBase = pathname.startsWith('/knowledge-base');
+  const isVenues = pathname.startsWith('/venues');
+  const isCommunities = pathname.startsWith('/communities');
   const isLogin = pathname === '/login';
 
   // Don't show navigation on login page
@@ -40,7 +42,7 @@ export default function TopNavigation() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
-              <div className="text-xl font-bold">PNB</div>
+              <div className="text-xl font-bold">CCCDA</div>
             </div>
 
             <div className="flex space-x-1">
@@ -78,6 +80,30 @@ export default function TopNavigation() {
                 )}
               >
                 {t('knowledgeBase')}
+              </Link>
+
+              <Link
+                href="/venues"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  isVenues
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                )}
+              >
+                {t('venues')}
+              </Link>
+
+              <Link
+                href="/communities"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  isCommunities
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                )}
+              >
+                {t('communities')}
               </Link>
             </div>
           </div>

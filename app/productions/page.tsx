@@ -123,6 +123,7 @@ export default function ProductionsPage() {
             <Card
               key={production._id}
               className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => router.push(`/productions/${production._id}`)}
             >
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -155,9 +156,10 @@ export default function ProductionsPage() {
                       variant="outline"
                       size="sm"
                       className="flex-1"
-                      onClick={() =>
-                        router.push(`/productions/${production._id}`)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/productions/${production._id}`);
+                      }}
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       {t('edit')}
@@ -166,9 +168,10 @@ export default function ProductionsPage() {
                       variant="outline"
                       size="sm"
                       className="flex-1"
-                      onClick={() =>
-                        router.push(`/productions/${production._id}/dashboard`)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/productions/${production._id}/dashboard`);
+                      }}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       {t('view')}

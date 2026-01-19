@@ -1,0 +1,45 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { Users, MapPin, UserCog, ListOrdered } from 'lucide-react';
+
+export default function AdminNav() {
+  const pathname = usePathname();
+  const t = useTranslations('admin');
+
+  const navItems = [
+    { href: '/admin/users', label: t('users'), icon: Users },
+    { href: '/admin/cities', label: t('cities'), icon: MapPin },
+    { href: '/admin/staff-roles', label: t('staffRoles'), icon: UserCog },
+    { href: '/admin/step-config', label: t('stepConfig'), icon: ListOrdered },
+  ];
+
+  return (
+    <div className="border-b mb-6">
+      <nav className="flex space-x-4">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                isActive
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}

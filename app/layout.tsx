@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PNB Event Tracking & Production Management",
-  description: "Event tracking and production management system for PNB",
+  title: "CCCDA Event Tracking & Production Management",
+  description: "Event tracking and production management system for CCCDA",
 };
 
 export default function RootLayout({

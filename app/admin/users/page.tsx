@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import AdminNav from '@/components/AdminNav';
 
 interface User {
   _id: string;
@@ -147,6 +148,7 @@ export default function UserManagementPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <AdminNav />
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">{t('title')}</h1>

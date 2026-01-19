@@ -20,8 +20,11 @@ import Step10PressConference from '@/components/production-steps/Step10PressConf
 import Step11PerformanceShooting from '@/components/production-steps/Step11PerformanceShooting';
 import Step12SocialMedia from '@/components/production-steps/Step12SocialMedia';
 import Step13Advertising from '@/components/production-steps/Step13Advertising';
+import Step14SponsorshipPackages from '@/components/production-steps/Step14SponsorshipPackages';
+import Step15CommunityAlliances from '@/components/production-steps/Step15CommunityAlliances';
+import { useGlobalKnowledge } from '@/hooks/useGlobalKnowledge';
 import type { Production } from '@/types/production';
-import type { KnowledgeBaseItem } from '@/types/knowledge';
+import type { StepConfig } from '@/types/productionStepConfig';
 import { calculateCompletionPercentage } from '@/lib/completionCalculator';
 
 export default function ProductionEditPage() {
@@ -32,145 +35,54 @@ export default function ProductionEditPage() {
   const productionId = params?.id as string;
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
 
-  // Get initial step from URL query parameter, default to 1
-  const initialStep = parseInt(searchParams.get('step') || '1', 10);
+  // Get initial step from URL query parameter, default to step1
+  const initialStepKey = searchParams.get('step') || 'step1';
   const [production, setProduction] = useState<Production | null>(null);
-  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [currentStepKey, setCurrentStepKey] = useState(initialStepKey);
+  const [stepConfig, setStepConfig] = useState<StepConfig[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [linkedKnowledgeStep1, setLinkedKnowledgeStep1] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep2, setLinkedKnowledgeStep2] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep3, setLinkedKnowledgeStep3] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep4, setLinkedKnowledgeStep4] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5Videos, setLinkedKnowledgeStep5Videos] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5Photos, setLinkedKnowledgeStep5Photos] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5ActorPhotos, setLinkedKnowledgeStep5ActorPhotos] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5OtherPhotos, setLinkedKnowledgeStep5OtherPhotos] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5Logos, setLinkedKnowledgeStep5Logos] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep5Texts, setLinkedKnowledgeStep5Texts] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep6, setLinkedKnowledgeStep6] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep7, setLinkedKnowledgeStep7] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep8, setLinkedKnowledgeStep8] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep9, setLinkedKnowledgeStep9] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep10, setLinkedKnowledgeStep10] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep11, setLinkedKnowledgeStep11] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep12, setLinkedKnowledgeStep12] = useState<KnowledgeBaseItem[]>([]);
-  const [linkedKnowledgeStep13, setLinkedKnowledgeStep13] = useState<KnowledgeBaseItem[]>([]);
 
-  // Fetch production data
+  // Global knowledge hook
+  const { getLinkedIds, getLinkedItems, refetch: refetchKnowledge } = useGlobalKnowledge();
+
+  // Fetch production data and step config
   useEffect(() => {
     fetchProduction();
+    fetchStepConfig();
   }, [productionId]);
 
-  // Fetch knowledge base items linked to step 1
-  const fetchKnowledgeForStep1 = async () => {
-    // Refetch production to get updated knowledge links
-    await fetchProduction();
-    // The useEffect will handle fetching knowledge items when production changes
-  };
-
-  // Re-fetch knowledge items when production changes
-  useEffect(() => {
-    if (production) {
-      // Fetch knowledge items for each section
-      fetchKnowledgeForField('knowledgeLinks_step1', setLinkedKnowledgeStep1);
-      fetchKnowledgeForField('knowledgeLinks_step2', setLinkedKnowledgeStep2);
-      fetchKnowledgeForField('knowledgeLinks_step3', setLinkedKnowledgeStep3);
-      fetchKnowledgeForField('knowledgeLinks_step4', setLinkedKnowledgeStep4);
-      fetchKnowledgeForField('knowledgeLinks_step5_videos', setLinkedKnowledgeStep5Videos);
-      fetchKnowledgeForField('knowledgeLinks_step5_photos', setLinkedKnowledgeStep5Photos);
-      fetchKnowledgeForField('knowledgeLinks_step5_actorPhotos', setLinkedKnowledgeStep5ActorPhotos);
-      fetchKnowledgeForField('knowledgeLinks_step5_otherPhotos', setLinkedKnowledgeStep5OtherPhotos);
-      fetchKnowledgeForField('knowledgeLinks_step5_logos', setLinkedKnowledgeStep5Logos);
-      fetchKnowledgeForField('knowledgeLinks_step5_texts', setLinkedKnowledgeStep5Texts);
-      fetchKnowledgeForField('knowledgeLinks_step6', setLinkedKnowledgeStep6);
-      fetchKnowledgeForField('knowledgeLinks_step7', setLinkedKnowledgeStep7);
-      fetchKnowledgeForField('knowledgeLinks_step8', setLinkedKnowledgeStep8);
-      fetchKnowledgeForField('knowledgeLinks_step9', setLinkedKnowledgeStep9);
-      fetchKnowledgeForField('knowledgeLinks_step10', setLinkedKnowledgeStep10);
-      fetchKnowledgeForField('knowledgeLinks_step11', setLinkedKnowledgeStep11);
-      fetchKnowledgeForField('knowledgeLinks_step12', setLinkedKnowledgeStep12);
-      fetchKnowledgeForField('knowledgeLinks_step13', setLinkedKnowledgeStep13);
-    }
-  }, [
-    production?.knowledgeLinks_step1,
-    production?.knowledgeLinks_step2,
-    production?.knowledgeLinks_step3,
-    production?.knowledgeLinks_step4,
-    production?.knowledgeLinks_step5_videos,
-    production?.knowledgeLinks_step5_photos,
-    production?.knowledgeLinks_step5_actorPhotos,
-    production?.knowledgeLinks_step5_otherPhotos,
-    production?.knowledgeLinks_step5_logos,
-    production?.knowledgeLinks_step5_texts,
-    production?.knowledgeLinks_step6,
-    production?.knowledgeLinks_step7,
-    production?.knowledgeLinks_step8,
-    production?.knowledgeLinks_step9,
-    production?.knowledgeLinks_step10,
-    production?.knowledgeLinks_step11,
-    production?.knowledgeLinks_step12,
-    production?.knowledgeLinks_step13,
-  ]);
-
-  // Generic fetch function for knowledge base items
-  const fetchKnowledgeForField = async (
-    fieldName: keyof Production,
-    setter: React.Dispatch<React.SetStateAction<KnowledgeBaseItem[]>>
-  ) => {
-    const links = production?.[fieldName] as string[] | undefined;
-    if (!links || links.length === 0) {
-      setter([]);
-      return;
-    }
-
+  const fetchStepConfig = async () => {
     try {
-      const response = await fetch('/api/knowledge-base/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: links }),
-      });
-
+      const response = await fetch('/api/production-step-config');
       if (response.ok) {
-        const items = await response.json();
-        setter(items);
+        const data = await response.json();
+        setStepConfig(data.steps || []);
       }
     } catch (error) {
-      console.error(`Error fetching linked knowledge for ${String(fieldName)}:`, error);
+      console.error('Error fetching step config:', error);
     }
   };
 
-  // Wrapper functions that refetch production data first, then fetch knowledge
-  const refetchAndFetchKnowledge = async (fieldName: keyof Production, setter: React.Dispatch<React.SetStateAction<KnowledgeBaseItem[]>>) => {
-    // First, refetch the production to get updated knowledge links
-    await fetchProduction();
-    // The useEffect will handle fetching knowledge items when production changes
+  // Get enabled steps in order
+  const enabledSteps = stepConfig
+    .filter((s) => s.enabled)
+    .sort((a, b) => a.order - b.order);
+
+  // Get current step number from step key for rendering
+  const getCurrentStepNumber = (stepKey: string): number => {
+    const match = stepKey.match(/step(\d+)/);
+    return match ? parseInt(match[1], 10) : 1;
   };
 
-  const fetchKnowledgeForStep2 = () => refetchAndFetchKnowledge('knowledgeLinks_step2', setLinkedKnowledgeStep2);
-  const fetchKnowledgeForStep3 = () => refetchAndFetchKnowledge('knowledgeLinks_step3', setLinkedKnowledgeStep3);
-  const fetchKnowledgeForStep4 = () => refetchAndFetchKnowledge('knowledgeLinks_step4', setLinkedKnowledgeStep4);
-  const fetchKnowledgeForStep5Videos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_videos', setLinkedKnowledgeStep5Videos);
-  const fetchKnowledgeForStep5Photos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_photos', setLinkedKnowledgeStep5Photos);
-  const fetchKnowledgeForStep5ActorPhotos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_actorPhotos', setLinkedKnowledgeStep5ActorPhotos);
-  const fetchKnowledgeForStep5OtherPhotos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_otherPhotos', setLinkedKnowledgeStep5OtherPhotos);
-  const fetchKnowledgeForStep5Logos = () => refetchAndFetchKnowledge('knowledgeLinks_step5_logos', setLinkedKnowledgeStep5Logos);
-  const fetchKnowledgeForStep5Texts = () => refetchAndFetchKnowledge('knowledgeLinks_step5_texts', setLinkedKnowledgeStep5Texts);
-  const fetchKnowledgeForStep6 = () => refetchAndFetchKnowledge('knowledgeLinks_step6', setLinkedKnowledgeStep6);
-  const fetchKnowledgeForStep7 = () => refetchAndFetchKnowledge('knowledgeLinks_step7', setLinkedKnowledgeStep7);
-  const fetchKnowledgeForStep8 = () => refetchAndFetchKnowledge('knowledgeLinks_step8', setLinkedKnowledgeStep8);
-  const fetchKnowledgeForStep9 = () => refetchAndFetchKnowledge('knowledgeLinks_step9', setLinkedKnowledgeStep9);
-  const fetchKnowledgeForStep10 = () => refetchAndFetchKnowledge('knowledgeLinks_step10', setLinkedKnowledgeStep10);
-  const fetchKnowledgeForStep11 = () => refetchAndFetchKnowledge('knowledgeLinks_step11', setLinkedKnowledgeStep11);
-  const fetchKnowledgeForStep12 = () => refetchAndFetchKnowledge('knowledgeLinks_step12', setLinkedKnowledgeStep12);
-  const fetchKnowledgeForStep13 = () => refetchAndFetchKnowledge('knowledgeLinks_step13', setLinkedKnowledgeStep13);
+  const currentStepNumber = getCurrentStepNumber(currentStepKey);
 
   // Update current step when URL parameter changes
   useEffect(() => {
-    const step = parseInt(searchParams.get('step') || '1', 10);
-    if (step >= 1 && step <= 13) {
-      setCurrentStep(step);
+    const stepKey = searchParams.get('step') || 'step1';
+    if (stepKey.match(/^step\d+$/)) {
+      setCurrentStepKey(stepKey);
     }
   }, [searchParams]);
 
@@ -204,7 +116,7 @@ export default function ProductionEditPage() {
   const isEmpty = (value: any): boolean => {
     if (value === null || value === undefined) return true;
     if (typeof value === 'string') return value.trim().length === 0;
-    if (typeof value === 'boolean') return false; // booleans are never "empty"
+    if (typeof value === 'boolean') return false;
     return false;
   };
 
@@ -212,22 +124,15 @@ export default function ProductionEditPage() {
   const cleanProductionData = (prod: Production): Production => {
     return {
       ...prod,
-      // Step 2: Cities - keep only if city, date, or time is filled
       step2_cities: prod.step2_cities.filter(city =>
         !isEmpty(city.city) || !isEmpty(city.date) || !isEmpty(city.time)
       ),
-
-      // Step 3: Venue Contracts - keep only if venue name or contract link is filled
       step3_venueContracts: prod.step3_venueContracts.filter(venue =>
         !isEmpty(venue.venueName) || !isEmpty(venue.contractLink)
       ),
-
-      // Step 5: Materials
       step5_materials: {
         ...prod.step5_materials,
-        // Videos - keep only if link is filled
         videos: prod.step5_materials.videos.filter(video => !isEmpty(video.link)),
-        // Logos - keep only if organization name is filled or any logo URL is filled
         logos: prod.step5_materials.logos.filter(logo =>
           !isEmpty(logo.organizationName) ||
           !isEmpty(logo.colorHorizontal) ||
@@ -236,13 +141,9 @@ export default function ProductionEditPage() {
           !isEmpty(logo.whiteVertical)
         ),
       },
-
-      // Step 6: Venue Info - keep only if venue name or address is filled
       step6_venueInfo: prod.step6_venueInfo.filter(venue =>
         !isEmpty(venue.venueName) || !isEmpty(venue.address)
       ),
-
-      // Step 8: Promotional Images - filter all image arrays
       step8_promotionalImages: {
         poster16_9: prod.step8_promotionalImages.poster16_9.filter(img =>
           !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
@@ -263,8 +164,6 @@ export default function ProductionEditPage() {
           !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
         ),
       },
-
-      // Step 12: Social Media - filter platforms and posts
       step12_socialMedia: {
         ...prod.step12_socialMedia,
         platforms: prod.step12_socialMedia.platforms
@@ -274,8 +173,6 @@ export default function ProductionEditPage() {
             posts: platform.posts.filter(post => !isEmpty(post.postLink))
           })),
       },
-
-      // Step 13: Advertising
       step13_advertising: {
         online: prod.step13_advertising.online.filter(item =>
           !isEmpty(item.platformName) || !isEmpty(item.resourceLink)
@@ -293,10 +190,7 @@ export default function ProductionEditPage() {
     setIsSaving(true);
     setSaveStatus('saving');
     try {
-      // Clean empty items before saving
       const cleanedProduction = cleanProductionData(production);
-
-      // Calculate completion percentage before saving
       const completionPercentage = calculateCompletionPercentage(cleanedProduction);
 
       const response = await fetch(`/api/productions/${productionId}`, {
@@ -309,7 +203,6 @@ export default function ProductionEditPage() {
       });
 
       if (response.ok) {
-        // Update local state with cleaned data to remove empty items from UI
         setProduction(cleanedProduction);
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
@@ -338,26 +231,67 @@ export default function ProductionEditPage() {
     [production]
   );
 
-  const handleStepChange = (step: number) => {
+  // Handle assignment changes
+  const handleAssignmentChange = useCallback(
+    (section: string, userId: string | null) => {
+      if (production) {
+        const newAssignments: Record<string, string> = { ...(production.assignments || {}) };
+        if (userId) {
+          newAssignments[section] = userId;
+        } else {
+          delete newAssignments[section];
+        }
+        setProduction({ ...production, assignments: newAssignments });
+        // Auto-save assignment changes
+        saveProduction();
+      }
+    },
+    [production]
+  );
+
+  const handleStepChange = (stepKey: string) => {
     if (hasUnsavedChanges) {
       saveProduction();
     }
-    setCurrentStep(step);
-    // Update URL with new step
-    router.push(`/productions/${productionId}?step=${step}`, { scroll: false });
+    setCurrentStepKey(stepKey);
+    router.push(`/productions/${productionId}?step=${stepKey}`, { scroll: false });
   };
 
   const goToNextStep = () => {
-    if (currentStep < 13) {
-      handleStepChange(currentStep + 1);
+    if (enabledSteps.length === 0) {
+      const nextNum = currentStepNumber + 1;
+      if (nextNum <= 15) {
+        handleStepChange(`step${nextNum}`);
+      }
+      return;
+    }
+    const currentIndex = enabledSteps.findIndex((s) => s.stepKey === currentStepKey);
+    if (currentIndex < enabledSteps.length - 1) {
+      handleStepChange(enabledSteps[currentIndex + 1].stepKey);
     }
   };
 
   const goToPreviousStep = () => {
-    if (currentStep > 1) {
-      handleStepChange(currentStep - 1);
+    if (enabledSteps.length === 0) {
+      const prevNum = currentStepNumber - 1;
+      if (prevNum >= 1) {
+        handleStepChange(`step${prevNum}`);
+      }
+      return;
+    }
+    const currentIndex = enabledSteps.findIndex((s) => s.stepKey === currentStepKey);
+    if (currentIndex > 0) {
+      handleStepChange(enabledSteps[currentIndex - 1].stepKey);
     }
   };
+
+  const isFirstStep = enabledSteps.length > 0
+    ? currentStepKey === enabledSteps[0]?.stepKey
+    : currentStepNumber === 1;
+
+  const isLastStep = enabledSteps.length > 0
+    ? currentStepKey === enabledSteps[enabledSteps.length - 1]?.stepKey
+    : currentStepNumber === 15;
 
   if (!production) {
     return (
@@ -368,15 +302,15 @@ export default function ProductionEditPage() {
   }
 
   const completionPercentage = calculateCompletionPercentage(production);
-  const completedSteps: number[] = []; // TODO: Calculate per-step completion
 
   return (
     <div className="min-h-screen bg-gray-50">
       <StepProgress
-        currentStep={currentStep}
-        completedSteps={completedSteps}
+        currentStepKey={currentStepKey}
+        completedStepKeys={[]}
         onStepClick={handleStepChange}
         completionPercentage={completionPercentage}
+        stepConfig={stepConfig}
       />
 
       <div className="container mx-auto px-4 py-8">
@@ -393,9 +327,7 @@ export default function ProductionEditPage() {
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <span>
                 {t('lastSaved')}:{' '}
-                {lastSaved
-                  ? lastSaved.toLocaleTimeString()
-                  : t('notSavedYet')}
+                {lastSaved ? lastSaved.toLocaleTimeString() : t('notSavedYet')}
               </span>
               {saveStatus === 'saving' && (
                 <span className="text-blue-600">● {t('saving')}</span>
@@ -415,9 +347,7 @@ export default function ProductionEditPage() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() =>
-                router.push(`/productions/${productionId}/dashboard`)
-              }
+              onClick={() => router.push(`/productions/${productionId}/dashboard`)}
             >
               <Eye className="w-4 h-4 mr-2" />
               {t('viewDashboard')}
@@ -431,156 +361,198 @@ export default function ProductionEditPage() {
 
         {/* Form Content */}
         <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
-          {currentStep === 1 && (
+          {currentStepNumber === 1 && (
             <Step1Contract
               data={production.step1_contract}
               onChange={(data) => updateProduction({ step1_contract: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep1}
-              onKnowledgeChange={fetchKnowledgeForStep1}
+              linkedKnowledge={getLinkedItems('step1')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step1}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 2 && (
+          {currentStepNumber === 2 && (
             <Step2Cities
               data={production.step2_cities}
               onChange={(data) => updateProduction({ step2_cities: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep2}
-              onKnowledgeChange={fetchKnowledgeForStep2}
+              linkedKnowledge={getLinkedItems('step2')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step2}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 3 && (
+          {currentStepNumber === 3 && (
             <Step3VenueContracts
               data={production.step3_venueContracts}
               onChange={(data) => updateProduction({ step3_venueContracts: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep3}
-              onKnowledgeChange={fetchKnowledgeForStep3}
+              linkedKnowledge={getLinkedItems('step3')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step3}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 4 && (
+          {currentStepNumber === 4 && (
             <Step4Itinerary
               data={production.step4_itinerary}
               onChange={(data) => updateProduction({ step4_itinerary: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep4}
-              onKnowledgeChange={fetchKnowledgeForStep4}
+              linkedKnowledge={getLinkedItems('step4')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step4}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 5 && (
+          {currentStepNumber === 5 && (
             <Step5Materials
               data={production.step5_materials}
               onChange={(data) => updateProduction({ step5_materials: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledgeVideos={linkedKnowledgeStep5Videos}
-              linkedKnowledgePhotos={linkedKnowledgeStep5Photos}
-              linkedKnowledgeActorPhotos={linkedKnowledgeStep5ActorPhotos}
-              linkedKnowledgeOtherPhotos={linkedKnowledgeStep5OtherPhotos}
-              linkedKnowledgeLogos={linkedKnowledgeStep5Logos}
-              linkedKnowledgeTexts={linkedKnowledgeStep5Texts}
-              onKnowledgeChangeVideos={fetchKnowledgeForStep5Videos}
-              onKnowledgeChangePhotos={fetchKnowledgeForStep5Photos}
-              onKnowledgeChangeActorPhotos={fetchKnowledgeForStep5ActorPhotos}
-              onKnowledgeChangeOtherPhotos={fetchKnowledgeForStep5OtherPhotos}
-              onKnowledgeChangeLogos={fetchKnowledgeForStep5Logos}
-              onKnowledgeChangeTexts={fetchKnowledgeForStep5Texts}
+              getLinkedItems={getLinkedItems}
+              onKnowledgeChange={refetchKnowledge}
+              assignments={production.assignments}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 6 && (
+          {currentStepNumber === 6 && (
             <Step6VenueInfo
               data={production.step6_venueInfo}
               onChange={(data) => updateProduction({ step6_venueInfo: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep6}
-              onKnowledgeChange={fetchKnowledgeForStep6}
+              linkedKnowledge={getLinkedItems('step6')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step6}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 7 && (
+          {currentStepNumber === 7 && (
             <Step7Designs
               data={production.step7_designs}
               onChange={(data) => updateProduction({ step7_designs: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep7}
-              onKnowledgeChange={fetchKnowledgeForStep7}
+              getLinkedItems={getLinkedItems}
+              onKnowledgeChange={refetchKnowledge}
+              assignments={production.assignments}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 8 && (
+          {currentStepNumber === 8 && (
             <Step8PromotionalImages
               data={production.step8_promotionalImages}
               onChange={(data) => updateProduction({ step8_promotionalImages: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep8}
-              onKnowledgeChange={fetchKnowledgeForStep8}
+              getLinkedItems={getLinkedItems}
+              onKnowledgeChange={refetchKnowledge}
+              assignments={production.assignments}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 9 && (
+          {currentStepNumber === 9 && (
             <Step9Videos
               data={production.step9_videos}
               onChange={(data) => updateProduction({ step9_videos: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep9}
-              onKnowledgeChange={fetchKnowledgeForStep9}
+              linkedKnowledge={getLinkedItems('step9')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step9}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 10 && (
+          {currentStepNumber === 10 && (
             <Step10PressConference
               data={production.step10_pressConference}
               onChange={(data) => updateProduction({ step10_pressConference: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep10}
-              onKnowledgeChange={fetchKnowledgeForStep10}
+              linkedKnowledge={getLinkedItems('step10')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step10}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 11 && (
+          {currentStepNumber === 11 && (
             <Step11PerformanceShooting
               data={production.step11_performanceShooting}
               onChange={(data) => updateProduction({ step11_performanceShooting: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep11}
-              onKnowledgeChange={fetchKnowledgeForStep11}
+              linkedKnowledge={getLinkedItems('step11')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step11}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 12 && (
+          {currentStepNumber === 12 && (
             <Step12SocialMedia
               data={production.step12_socialMedia}
               onChange={(data) => updateProduction({ step12_socialMedia: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep12}
-              onKnowledgeChange={fetchKnowledgeForStep12}
+              linkedKnowledge={getLinkedItems('step12')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step12}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
 
-          {currentStep === 13 && (
+          {currentStepNumber === 13 && (
             <Step13Advertising
               data={production.step13_advertising}
               onChange={(data) => updateProduction({ step13_advertising: data })}
               onBlur={saveProduction}
               productionId={productionId}
-              linkedKnowledge={linkedKnowledgeStep13}
-              onKnowledgeChange={fetchKnowledgeForStep13}
+              linkedKnowledge={getLinkedItems('step13')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step13}
+              onAssignmentChange={handleAssignmentChange}
+            />
+          )}
+
+          {currentStepNumber === 14 && (
+            <Step14SponsorshipPackages
+              data={production.step14_sponsorshipPackages || []}
+              onChange={(data) => updateProduction({ step14_sponsorshipPackages: data })}
+              onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={getLinkedItems('step14')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step14}
+              onAssignmentChange={handleAssignmentChange}
+            />
+          )}
+
+          {currentStepNumber === 15 && (
+            <Step15CommunityAlliances
+              data={production.step15_communityAlliances || []}
+              onChange={(data) => updateProduction({ step15_communityAlliances: data })}
+              onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={getLinkedItems('step15')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step15}
+              onAssignmentChange={handleAssignmentChange}
             />
           )}
         </div>
@@ -590,13 +562,13 @@ export default function ProductionEditPage() {
           <Button
             variant="outline"
             onClick={goToPreviousStep}
-            disabled={currentStep === 1}
+            disabled={isFirstStep}
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             {t('previous')}
           </Button>
 
-          <Button onClick={goToNextStep} disabled={currentStep === 13}>
+          <Button onClick={goToNextStep} disabled={isLastStep}>
             {t('next')}
             <ChevronRight className="w-4 h-4 ml-2" />
           </Button>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
+import AssignButton from '@/components/AssignButton';
 import type { PressConference } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -19,6 +21,8 @@ interface Step10Props {
   productionId?: string;
   linkedKnowledge?: KnowledgeBaseItem[];
   onKnowledgeChange?: () => void;
+  assignedUserId?: string;
+  onAssignmentChange?: (section: string, userId: string | null) => void;
 }
 
 export default function Step10PressConference({
@@ -27,36 +31,49 @@ export default function Step10PressConference({
   onBlur,
   productionId,
   linkedKnowledge = [],
-  onKnowledgeChange
+  onKnowledgeChange,
+  assignedUserId,
+  onAssignmentChange,
 }: Step10Props) {
+  const t = useTranslations('knowledgeLink');
+  const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="text-2xl font-bold mb-2">Step 10: 媒体发布会收集</h3>
+          <h3 className="text-2xl font-bold mb-2">{tStep('step10')}</h3>
           <p className="text-gray-600">Press Conference</p>
         </div>
-        {productionId && onKnowledgeChange && (
-          <div className="flex gap-2">
-            <KnowledgeLinkButton
+        <div className="flex gap-2">
+          {onKnowledgeChange && (
+            <>
+              <KnowledgeLinkButton
+                section="step10"
+                linkedIds={linkedKnowledge.map(k => k._id)}
+                onChange={onKnowledgeChange}
+              />
+              {linkedKnowledge.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowKnowledge(true)}
+                >
+                  {t('view')} ({linkedKnowledge.length})
+                </Button>
+              )}
+            </>
+          )}
+          {productionId && onAssignmentChange && (
+            <AssignButton
               section="step10"
-              linkedIds={linkedKnowledge.map(k => k._id)}
+              assignedUserId={assignedUserId}
               productionId={productionId}
-              onChange={onKnowledgeChange}
+              onChange={onAssignmentChange}
             />
-            {linkedKnowledge.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowKnowledge(true)}
-              >
-                View Knowledge ({linkedKnowledge.length})
-              </Button>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 10.1 Venue Info */}

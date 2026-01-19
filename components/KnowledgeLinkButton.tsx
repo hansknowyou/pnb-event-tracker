@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BookOpen } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,21 +14,20 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import type { KnowledgeBaseItem, KnowledgeSection } from '@/types/knowledge';
+import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface KnowledgeLinkButtonProps {
-  section: KnowledgeSection;
+  section: string;
   linkedIds: string[];
-  productionId: string;
   onChange: () => void;
 }
 
 export default function KnowledgeLinkButton({
   section,
   linkedIds,
-  productionId,
   onChange,
 }: KnowledgeLinkButtonProps) {
+  const t = useTranslations('knowledgeLink');
   const [open, setOpen] = useState(false);
   const [allItems, setAllItems] = useState<KnowledgeBaseItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>(linkedIds);
@@ -71,34 +71,18 @@ export default function KnowledgeLinkButton({
     setSaving(true);
 
     try {
-      // Find items to add (in selectedIds but not in linkedIds)
-      const toAdd = selectedIds.filter((id) => !linkedIds.includes(id));
-
-      // Find items to remove (in linkedIds but not in selectedIds)
-      const toRemove = linkedIds.filter((id) => !selectedIds.includes(id));
-
-      // Add new links
-      for (const itemId of toAdd) {
-        await fetch(`/api/productions/${productionId}/knowledge-links`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ section, knowledgeItemId: itemId }),
-        });
-      }
-
-      // Remove old links
-      for (const itemId of toRemove) {
-        await fetch(
-          `/api/productions/${productionId}/knowledge-links?section=${section}&knowledgeItemId=${itemId}`,
-          { method: 'DELETE' }
-        );
-      }
+      // Save to global knowledge links
+      await fetch('/api/global-knowledge', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section, knowledgeIds: selectedIds }),
+      });
 
       onChange();
       setOpen(false);
     } catch (error) {
       console.error('Error saving knowledge links:', error);
-      alert('Failed to save knowledge links');
+      alert(t('saveFailed'));
     } finally {
       setSaving(false);
     }
@@ -113,26 +97,25 @@ export default function KnowledgeLinkButton({
       >
         <BookOpen className="w-4 h-4 mr-2" />
         {linkedIds.length > 0
-          ? `Knowledge (${linkedIds.length})`
-          : 'Add Knowledge'}
+          ? `${t('knowledge')} (${linkedIds.length})`
+          : t('addKnowledge')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Manage Knowledge Links</DialogTitle>
+            <DialogTitle>{t('manageLinks')}</DialogTitle>
             <DialogDescription>
-              Select knowledge base items to link to this section. Linked items
-              will be easily accessible for reference.
+              {t('manageDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3 py-4">
             {loading ? (
-              <div className="text-center py-8 text-gray-500">Loading...</div>
+              <div className="text-center py-8 text-gray-500">{t('loading')}</div>
             ) : allItems.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No knowledge base items available. Create one first.
+                {t('noItems')}
               </div>
             ) : (
               allItems.map((item) => (
@@ -165,10 +148,10 @@ export default function KnowledgeLinkButton({
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? t('saving') : t('saveChanges')}
             </Button>
           </DialogFooter>
         </DialogContent>

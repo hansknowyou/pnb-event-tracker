@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
+import AssignButton from '@/components/AssignButton';
 import type { PromotionalImages, ImageVersion, Poster4x3 } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -18,8 +20,10 @@ interface Step8Props {
   onChange: (data: PromotionalImages) => void;
   onBlur: () => void;
   productionId?: string;
-  linkedKnowledge?: KnowledgeBaseItem[];
+  getLinkedItems?: (section: string) => KnowledgeBaseItem[];
   onKnowledgeChange?: () => void;
+  assignments?: Record<string, string>;
+  onAssignmentChange?: (section: string, userId: string | null) => void;
 }
 
 export default function Step8PromotionalImages({
@@ -27,10 +31,54 @@ export default function Step8PromotionalImages({
   onChange,
   onBlur,
   productionId,
-  linkedKnowledge = [],
-  onKnowledgeChange
+  getLinkedItems,
+  onKnowledgeChange,
+  assignments,
+  onAssignmentChange,
 }: Step8Props) {
-  const [showKnowledge, setShowKnowledge] = useState(false);
+  const t = useTranslations('knowledgeLink');
+  const tStep = useTranslations('stepConfig');
+  const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
+
+  // Get linked items for each section
+  const linkedStep8 = getLinkedItems?.('step8') || [];
+  const linked16x9 = getLinkedItems?.('step8_16x9') || [];
+  const linked1x1Thumbnail = getLinkedItems?.('step8_1x1_thumbnail') || [];
+  const linked1x1Poster = getLinkedItems?.('step8_1x1_poster') || [];
+  const linked9x16 = getLinkedItems?.('step8_9x16') || [];
+  const linked4x3 = getLinkedItems?.('step8_4x3') || [];
+  const linked5x2 = getLinkedItems?.('step8_5x2') || [];
+  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[]) => (
+    <div className="flex gap-2">
+      {onKnowledgeChange && (
+        <>
+          <KnowledgeLinkButton
+            section={section}
+            linkedIds={linkedItems.map(k => k._id)}
+            onChange={onKnowledgeChange}
+          />
+          {linkedItems.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowKnowledge(section)}
+            >
+              {t('view')} ({linkedItems.length})
+            </Button>
+          )}
+        </>
+      )}
+      {productionId && onAssignmentChange && (
+        <AssignButton
+          section={section}
+          assignedUserId={assignments?.[section]}
+          productionId={productionId}
+          onChange={onAssignmentChange}
+        />
+      )}
+    </div>
+  );
+
   // Helper functions for managing different image types
   const addImageVersion = (type: keyof Omit<PromotionalImages, 'poster4_3'>) => {
     const newImage: ImageVersion = {
@@ -91,12 +139,19 @@ export default function Step8PromotionalImages({
     title: string,
     description: string,
     type: keyof Omit<PromotionalImages, 'poster4_3'>,
-    images: ImageVersion[]
+    images: ImageVersion[],
+    section: string,
+    linkedItems: KnowledgeBaseItem[]
   ) => (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <p className="text-sm text-gray-600">{description}</p>
+        <div className="flex justify-between items-start gap-4">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <p className="text-sm text-gray-600">{description}</p>
+          </div>
+          {renderSectionButtons(section, linkedItems)}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {images.map((img, index) => (
@@ -176,65 +231,60 @@ export default function Step8PromotionalImages({
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="text-2xl font-bold mb-2">Step 8: 图片媒体宣传图制作</h3>
+          <h3 className="text-2xl font-bold mb-2">{tStep('step8')}</h3>
           <p className="text-gray-600">Promotional Images</p>
         </div>
-        {productionId && onKnowledgeChange && (
-          <div className="flex gap-2">
-            <KnowledgeLinkButton
-              section="step8"
-              linkedIds={linkedKnowledge.map(k => k._id)}
-              productionId={productionId}
-              onChange={onKnowledgeChange}
-            />
-            {linkedKnowledge.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowKnowledge(true)}
-              >
-                View Knowledge ({linkedKnowledge.length})
-              </Button>
-            )}
-          </div>
-        )}
+        {renderSectionButtons('step8', linkedStep8)}
       </div>
 
       {renderImageSection(
         '8.1 16:9 Poster',
         'Name and date only',
         'poster16_9',
-        data.poster16_9
+        data.poster16_9,
+        'step8_16x9',
+        linked16x9
       )}
 
       {renderImageSection(
         '8.2 1:1 Thumbnail',
         'No text - for ticket cover',
         'thumbnail1_1',
-        data.thumbnail1_1
+        data.thumbnail1_1,
+        'step8_1x1_thumbnail',
+        linked1x1Thumbnail
       )}
 
       {renderImageSection(
         '8.3 1:1 Poster',
         'With name, date, and logos',
         'poster1_1',
-        data.poster1_1
+        data.poster1_1,
+        'step8_1x1_poster',
+        linked1x1Poster
       )}
 
       {renderImageSection(
         '8.4 9:16 Poster',
         'With name, date, and logos',
         'poster9_16',
-        data.poster9_16
+        data.poster9_16,
+        'step8_9x16',
+        linked9x16
       )}
 
       {/* 8.5 4:3 Poster (special with usage field) */}
       <Card>
         <CardHeader>
-          <CardTitle>8.5 4:3 Poster</CardTitle>
-          <p className="text-sm text-gray-600">
-            With name, date, logos, ticketing info, QR code - for print & digital
-          </p>
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <CardTitle>8.5 4:3 Poster</CardTitle>
+              <p className="text-sm text-gray-600">
+                With name, date, logos, ticketing info, QR code - for print & digital
+              </p>
+            </div>
+            {renderSectionButtons('step8_4x3', linked4x3)}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {data.poster4_3.map((poster, index) => (
@@ -331,13 +381,46 @@ export default function Step8PromotionalImages({
         '8.6 5:2 Pure Image',
         'No text - for Facebook cover',
         'cover5_2',
-        data.cover5_2
+        data.cover5_2,
+        'step8_5x2',
+        linked5x2
       )}
 
+      {/* Knowledge View Dialogs */}
       <KnowledgeViewDialog
-        knowledgeItems={linkedKnowledge}
-        open={showKnowledge}
-        onClose={() => setShowKnowledge(false)}
+        knowledgeItems={linkedStep8}
+        open={showKnowledge === 'step8'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked16x9}
+        open={showKnowledge === 'step8_16x9'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked1x1Thumbnail}
+        open={showKnowledge === 'step8_1x1_thumbnail'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked1x1Poster}
+        open={showKnowledge === 'step8_1x1_poster'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked9x16}
+        open={showKnowledge === 'step8_9x16'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked4x3}
+        open={showKnowledge === 'step8_4x3'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linked5x2}
+        open={showKnowledge === 'step8_5x2'}
+        onClose={() => setShowKnowledge(null)}
       />
     </div>
   );

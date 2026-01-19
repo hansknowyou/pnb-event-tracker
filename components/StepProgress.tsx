@@ -2,21 +2,45 @@
 
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { STEPS } from '@/types/production';
+import { STEPS, StepInfo } from '@/types/production';
+import type { StepConfig } from '@/types/productionStepConfig';
 
 interface StepProgressProps {
-  currentStep: number;
-  completedSteps: number[];
-  onStepClick: (step: number) => void;
+  currentStepKey: string;
+  completedStepKeys: string[];
+  onStepClick: (stepKey: string) => void;
   completionPercentage: number;
+  stepConfig?: StepConfig[];
 }
 
 export default function StepProgress({
-  currentStep,
-  completedSteps,
+  currentStepKey,
+  completedStepKeys,
   onStepClick,
   completionPercentage,
+  stepConfig,
 }: StepProgressProps) {
+  // Use config order if available, otherwise fall back to default STEPS order
+  const orderedSteps = stepConfig
+    ? stepConfig
+        .filter((s) => s.enabled)
+        .sort((a, b) => a.order - b.order)
+        .map((config, index) => {
+          const defaultStep = STEPS.find(
+            (s) => `step${s.number}` === config.stepKey
+          );
+          return {
+            stepKey: config.stepKey,
+            displayOrder: index + 1,
+            name: defaultStep?.name || config.stepKey,
+          };
+        })
+    : STEPS.map((s) => ({
+        stepKey: `step${s.number}`,
+        displayOrder: s.number,
+        name: s.name,
+      }));
+
   return (
     <div className="bg-white border-b sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4">
@@ -39,14 +63,14 @@ export default function StepProgress({
         {/* Steps */}
         <div className="overflow-x-auto">
           <div className="flex space-x-2 pb-2 min-w-max">
-            {STEPS.map((step) => {
-              const isCompleted = completedSteps.includes(step.number);
-              const isCurrent = currentStep === step.number;
+            {orderedSteps.map((step) => {
+              const isCompleted = completedStepKeys.includes(step.stepKey);
+              const isCurrent = currentStepKey === step.stepKey;
 
               return (
                 <button
-                  key={step.number}
-                  onClick={() => onStepClick(step.number)}
+                  key={step.stepKey}
+                  onClick={() => onStepClick(step.stepKey)}
                   className={cn(
                     'flex items-center space-x-2 px-3 py-2 rounded-lg border-2 transition-all',
                     isCurrent
@@ -66,7 +90,11 @@ export default function StepProgress({
                         : 'bg-gray-200 text-gray-600'
                     )}
                   >
-                    {isCompleted ? <Check className="w-4 h-4" /> : step.number}
+                    {isCompleted ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      step.displayOrder
+                    )}
                   </div>
                   <span className="text-sm font-medium whitespace-nowrap">
                     {step.name}

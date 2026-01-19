@@ -16,6 +16,7 @@ export interface City {
 // Step 3: Venue Contracts
 export interface VenueContract {
   id: string;
+  linkedVenueId?: string; // Link to venue database
   venueName: string;
   contractLink: string;
   notes: string;
@@ -87,6 +88,7 @@ export interface VenueRequiredForms {
 
 export interface VenueInfo {
   id: string;
+  linkedVenueId?: string; // Link to venue database
   venueName: string;
   address: string;
   contacts: string;
@@ -246,6 +248,25 @@ export interface Advertising {
   offline: OfflineAdvertising[];
 }
 
+// Step 14: Sponsorship Package Planning
+export interface SponsorshipPackage {
+  id: string;
+  name: string;
+  planDetail: string;
+  fileLink: string;
+  note: string;
+}
+
+// Step 15: Community Alliance
+export interface CommunityAlliance {
+  id: string;
+  communityId: string;
+  communityName: string;
+  allianceDetail: string;
+  files: string;
+  note: string;
+}
+
 // Main Production Type
 export interface Production {
   _id: string;
@@ -254,7 +275,7 @@ export interface Production {
   updatedAt: string;
   completionPercentage: number;
 
-  // 13 Steps
+  // Steps
   step1_contract: Contract;
   step2_cities: City[];
   step3_venueContracts: VenueContract[];
@@ -268,8 +289,10 @@ export interface Production {
   step11_performanceShooting: PerformanceShooting;
   step12_socialMedia: SocialMedia;
   step13_advertising: Advertising;
+  step14_sponsorshipPackages: SponsorshipPackage[];
+  step15_communityAlliances: CommunityAlliance[];
 
-  // Knowledge Base Links (19 sections: 13 steps + 6 subsections of step 5)
+  // Knowledge Base Links (20 sections: 14 steps + 6 subsections of step 5)
   knowledgeLinks_step1?: string[];
   knowledgeLinks_step2?: string[];
   knowledgeLinks_step3?: string[];
@@ -288,6 +311,11 @@ export interface Production {
   knowledgeLinks_step11?: string[];
   knowledgeLinks_step12?: string[];
   knowledgeLinks_step13?: string[];
+  knowledgeLinks_step14?: string[];
+  knowledgeLinks_step15?: string[];
+
+  // Step assignments (user ID for each step/sub-step)
+  assignments?: Record<string, string>;
 }
 
 // Step information for the form
@@ -311,6 +339,8 @@ export const STEPS: StepInfo[] = [
   { number: 11, name: '演出拍摄收集', description: 'Performance Shooting' },
   { number: 12, name: '社媒宣传', description: 'Social Media' },
   { number: 13, name: '投流宣传', description: 'Advertising' },
+  { number: 14, name: '赞助方案筹备', description: 'Sponsorship Package Planning' },
+  { number: 15, name: '社团联合', description: 'Community Alliance' },
 ];
 
 // Status type for steps
