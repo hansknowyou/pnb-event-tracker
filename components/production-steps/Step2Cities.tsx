@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -68,6 +68,10 @@ export default function Step2Cities({
           <p className="text-gray-600">Cities & Dates</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -123,8 +127,7 @@ export default function Step2Cities({
                     placeholder="e.g., New York"
                     value={city.city}
                     onChange={(e) => updateCity(city.id, 'city', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -135,8 +138,7 @@ export default function Step2Cities({
                     type="date"
                     value={city.date}
                     onChange={(e) => updateCity(city.id, 'date', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -147,8 +149,7 @@ export default function Step2Cities({
                     type="time"
                     value={city.time}
                     onChange={(e) => updateCity(city.id, 'time', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div className="md:col-span-2">
@@ -158,8 +159,7 @@ export default function Step2Cities({
                     rows={2}
                     value={city.notes}
                     onChange={(e) => updateCity(city.id, 'notes', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
             </CardContent>

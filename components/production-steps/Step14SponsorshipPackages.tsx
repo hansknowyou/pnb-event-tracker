@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -68,6 +68,10 @@ export default function Step14SponsorshipPackages({
           <p className="text-gray-600">Sponsorship Package Planning</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -127,8 +131,7 @@ export default function Step14SponsorshipPackages({
                     placeholder="e.g., Gold Sponsor Package"
                     value={pkg.name}
                     onChange={(e) => updatePackage(pkg.id, 'name', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -138,8 +141,7 @@ export default function Step14SponsorshipPackages({
                     rows={4}
                     value={pkg.planDetail}
                     onChange={(e) => updatePackage(pkg.id, 'planDetail', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -150,8 +152,7 @@ export default function Step14SponsorshipPackages({
                       placeholder="https://..."
                       value={pkg.fileLink}
                       onChange={(e) => updatePackage(pkg.id, 'fileLink', e.target.value)}
-                      onBlur={onBlur}
-                      className="flex-1"
+                                            className="flex-1"
                     />
                     {pkg.fileLink && (
                       <a
@@ -174,8 +175,7 @@ export default function Step14SponsorshipPackages({
                     rows={2}
                     value={pkg.note}
                     onChange={(e) => updatePackage(pkg.id, 'note', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
             </CardContent>

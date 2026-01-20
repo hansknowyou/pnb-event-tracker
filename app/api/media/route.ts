@@ -66,3 +66,33 @@ export async function DELETE(request: Request) {
     return jsonResponse({ error: 'Failed to delete media' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, name } = body;
+
+    if (!id || !name) {
+      return jsonResponse(
+        { error: 'Media ID and name are required' },
+        { status: 400 }
+      );
+    }
+
+    await connectDB();
+    const media = await Media.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true }
+    );
+
+    if (!media) {
+      return jsonResponse({ error: 'Media not found' }, { status: 404 });
+    }
+
+    return jsonResponse({ media });
+  } catch (error) {
+    console.error('Media PATCH error:', error);
+    return jsonResponse({ error: 'Failed to update media' }, { status: 500 });
+  }
+}

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, Edit, Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import type { Production } from '@/types/production';
 
 export default function ProductionsPage() {
@@ -71,18 +72,10 @@ export default function ProductionsPage() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">{t('loading')}</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      <LoadingOverlay isLoading={loading} message={t('loading')} />
+      <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -183,6 +176,7 @@ export default function ProductionsPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

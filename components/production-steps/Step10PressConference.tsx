@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -47,6 +48,10 @@ export default function Step10PressConference({
           <p className="text-gray-600">Press Conference</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -91,8 +96,7 @@ export default function Step10PressConference({
                 ...data,
                 venue: { ...data.venue, datetime: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Location</Label>
@@ -103,8 +107,7 @@ export default function Step10PressConference({
                 ...data,
                 venue: { ...data.venue, location: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -116,8 +119,7 @@ export default function Step10PressConference({
                 ...data,
                 venue: { ...data.venue, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -146,8 +148,7 @@ export default function Step10PressConference({
                   ...data,
                   [key]: { ...(data as any)[key], link: e.target.value }
                 })}
-                onBlur={onBlur}
-              />
+                              />
             </div>
             <div>
               <Label>Notes</Label>
@@ -159,8 +160,7 @@ export default function Step10PressConference({
                   ...data,
                   [key]: { ...(data as any)[key], notes: e.target.value }
                 })}
-                onBlur={onBlur}
-              />
+                              />
             </div>
           </CardContent>
         </Card>
@@ -182,8 +182,7 @@ export default function Step10PressConference({
                 ...data,
                 rollupBannerPDF: { ...data.rollupBannerPDF, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -208,8 +207,7 @@ export default function Step10PressConference({
                 ...data,
                 rollupBannerPDF: { ...data.rollupBannerPDF, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -230,8 +228,7 @@ export default function Step10PressConference({
                 ...data,
                 smallPoster: { ...data.smallPoster, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -256,8 +253,7 @@ export default function Step10PressConference({
                 ...data,
                 smallPoster: { ...data.smallPoster, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -278,8 +274,7 @@ export default function Step10PressConference({
                 ...data,
                 onSiteFootage: { ...data.onSiteFootage, closeUps: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Backdrop/Screen/Scenery Link</Label>
@@ -291,8 +286,7 @@ export default function Step10PressConference({
                 ...data,
                 onSiteFootage: { ...data.onSiteFootage, scenery: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -304,8 +298,7 @@ export default function Step10PressConference({
                 ...data,
                 onSiteFootage: { ...data.onSiteFootage, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>

@@ -23,6 +23,7 @@ import Step13Advertising from '@/components/production-steps/Step13Advertising';
 import Step14SponsorshipPackages from '@/components/production-steps/Step14SponsorshipPackages';
 import Step15CommunityAlliances from '@/components/production-steps/Step15CommunityAlliances';
 import { useGlobalKnowledge } from '@/hooks/useGlobalKnowledge';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import type { Production } from '@/types/production';
 import type { StepConfig } from '@/types/productionStepConfig';
 import { calculateCompletionPercentage } from '@/lib/completionCalculator';
@@ -38,6 +39,7 @@ export default function ProductionEditPage() {
   // Get initial step from URL query parameter, default to step1
   const initialStepKey = searchParams.get('step') || 'step1';
   const [production, setProduction] = useState<Production | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentStepKey, setCurrentStepKey] = useState(initialStepKey);
   const [stepConfig, setStepConfig] = useState<StepConfig[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -99,6 +101,7 @@ export default function ProductionEditPage() {
 
   const fetchProduction = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`/api/productions/${productionId}`);
       if (response.ok) {
         const data = await response.json();
@@ -109,6 +112,8 @@ export default function ProductionEditPage() {
     } catch (error) {
       console.error('Error fetching production:', error);
       alert(t('loadFailed'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -233,7 +238,7 @@ export default function ProductionEditPage() {
 
   // Handle assignment changes
   const handleAssignmentChange = useCallback(
-    (section: string, userId: string | null) => {
+    async (section: string, userId: string | null) => {
       if (production) {
         const newAssignments: Record<string, string> = { ...(production.assignments || {}) };
         if (userId) {
@@ -241,12 +246,22 @@ export default function ProductionEditPage() {
         } else {
           delete newAssignments[section];
         }
-        setProduction({ ...production, assignments: newAssignments });
-        // Auto-save assignment changes
-        saveProduction();
+        const updatedProduction = { ...production, assignments: newAssignments };
+        setProduction(updatedProduction);
+
+        // Save assignment directly to API to avoid race condition
+        try {
+          await fetch(`/api/productions/${productionId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ assignments: newAssignments }),
+          });
+        } catch (error) {
+          console.error('Error saving assignment:', error);
+        }
       }
     },
-    [production]
+    [production, productionId]
   );
 
   const handleStepChange = (stepKey: string) => {
@@ -294,17 +309,15 @@ export default function ProductionEditPage() {
     : currentStepNumber === 15;
 
   if (!production) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">Loading...</div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="Loading..." />;
   }
 
   const completionPercentage = calculateCompletionPercentage(production);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <LoadingOverlay isLoading={loading || isSaving} message={isSaving ? "Saving..." : "Loading..."} />
+      <div className="min-h-screen bg-gray-50">
       <StepProgress
         currentStepKey={currentStepKey}
         completedStepKeys={[]}
@@ -574,6 +587,7 @@ export default function ProductionEditPage() {
           </Button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

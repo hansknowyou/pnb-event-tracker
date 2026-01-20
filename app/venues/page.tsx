@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import VenueCard from '@/components/VenueCard';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Venue } from '@/types/venue';
 import { useTranslations } from 'next-intl';
@@ -38,18 +39,10 @@ export default function VenuesPage() {
     window.print();
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      <LoadingOverlay isLoading={loading} message="Loading..." />
+      <div className="container mx-auto px-4 py-8">
       <style jsx global>{`
         @media print {
           nav,
@@ -110,6 +103,7 @@ export default function VenuesPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

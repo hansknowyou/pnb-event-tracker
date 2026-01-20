@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CommunityCard from '@/components/CommunityCard';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import type { Community } from '@/types/community';
@@ -50,18 +51,10 @@ export default function CommunitiesPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      <LoadingOverlay isLoading={loading} message="Loading..." />
+      <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">{t('title')}</h1>
@@ -96,6 +89,7 @@ export default function CommunitiesPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

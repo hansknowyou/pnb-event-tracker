@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -119,6 +119,10 @@ export default function Step13Advertising({
           <p className="text-gray-600">Advertising</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -179,8 +183,7 @@ export default function Step13Advertising({
                   placeholder="e.g., Google Ads, Facebook Ads, WeChat Ads"
                   value={item.platformName}
                   onChange={(e) => updateOnline(item.id, 'platformName', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -216,8 +219,7 @@ export default function Step13Advertising({
                   placeholder="https://..."
                   value={item.resourceLink}
                   onChange={(e) => updateOnline(item.id, 'resourceLink', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -227,8 +229,7 @@ export default function Step13Advertising({
                   rows={2}
                   value={item.notes}
                   onChange={(e) => updateOnline(item.id, 'notes', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
             </div>
           ))}
@@ -271,8 +272,7 @@ export default function Step13Advertising({
                   placeholder="e.g., Local Chinese Association, Community Center"
                   value={item.organizationName}
                   onChange={(e) => updateOffline(item.id, 'organizationName', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -308,8 +308,7 @@ export default function Step13Advertising({
                   placeholder="https://..."
                   value={item.googleResourceLink}
                   onChange={(e) => updateOffline(item.id, 'googleResourceLink', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -319,8 +318,7 @@ export default function Step13Advertising({
                   rows={2}
                   value={item.notes}
                   onChange={(e) => updateOffline(item.id, 'notes', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
             </div>
           ))}

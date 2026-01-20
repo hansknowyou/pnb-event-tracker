@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -62,7 +62,6 @@ export default function Step6VenueInfo({
       linkedVenueId: linkedVenue?._id,
       venueName: linkedVenue?.name || '',
     });
-    onBlur();
   };
 
   const handleVenueImport = (venueInfoId: string, linkedVenue: Venue) => {
@@ -78,7 +77,6 @@ export default function Step6VenueInfo({
       contacts: staffContacts,
       otherInfo: linkedVenue.intro || '',
     });
-    onBlur();
   };
 
   const removeVenue = (id: string) => {
@@ -99,6 +97,10 @@ export default function Step6VenueInfo({
           <p className="text-gray-600">Venue Information</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -166,8 +168,7 @@ export default function Step6VenueInfo({
                     placeholder={venue.linkedVenueId ? "Linked from venue database" : "e.g., Lincoln Center"}
                     value={venue.venueName}
                     onChange={(e) => updateVenue(venue.id, { venueName: e.target.value })}
-                    onBlur={onBlur}
-                    disabled={!!venue.linkedVenueId}
+                                        disabled={!!venue.linkedVenueId}
                     className={venue.linkedVenueId ? "bg-gray-50" : ""}
                   />
                   {venue.linkedVenueId && (
@@ -181,8 +182,7 @@ export default function Step6VenueInfo({
                     placeholder="Full address"
                     value={venue.address}
                     onChange={(e) => updateVenue(venue.id, { address: e.target.value })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -192,8 +192,7 @@ export default function Step6VenueInfo({
                     rows={2}
                     value={venue.contacts}
                     onChange={(e) => updateVenue(venue.id, { contacts: e.target.value })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -203,8 +202,7 @@ export default function Step6VenueInfo({
                     rows={2}
                     value={venue.otherInfo}
                     onChange={(e) => updateVenue(venue.id, { otherInfo: e.target.value })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
 
@@ -221,8 +219,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       requiredForms: { ...venue.requiredForms, link: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -234,8 +231,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       requiredForms: { ...venue.requiredForms, notes: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
 
@@ -252,8 +248,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       ticketDesign: { ...venue.ticketDesign, link: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -265,8 +260,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       ticketDesign: { ...venue.ticketDesign, pricing: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
 
@@ -283,8 +277,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       seatMap: { ...venue.seatMap, link: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -296,8 +289,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       seatMap: { ...venue.seatMap, notes: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
 
@@ -314,8 +306,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       ticketLink: { ...venue.ticketLink, link: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -327,8 +318,7 @@ export default function Step6VenueInfo({
                     onChange={(e) => updateVenue(venue.id, {
                       ticketLink: { ...venue.ticketLink, notes: e.target.value }
                     })}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
             </CardContent>

@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import AdminNav from '@/components/AdminNav';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import type { StepConfig, StepDefinition } from '@/types/productionStepConfig';
 import { getDefaultStepConfig } from '@/types/productionStepConfig';
 
@@ -202,20 +203,11 @@ export default function StepConfigPage() {
     return null;
   }
 
-  if (loading) {
-    return (
+  return (
+    <>
+      <LoadingOverlay isLoading={loading || saving} message={saving ? "Saving..." : "Loading..."} />
       <div className="container mx-auto px-4 py-8">
         <AdminNav />
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <AdminNav />
 
       <Card>
         <CardHeader>
@@ -276,6 +268,7 @@ export default function StepConfigPage() {
           </DndContext>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }

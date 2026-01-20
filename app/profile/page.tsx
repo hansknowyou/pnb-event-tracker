@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useTranslations } from 'next-intl';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 export default function ProfilePage() {
   const { user, refreshUser, updateLanguagePreference } = useAuth();
@@ -122,11 +123,13 @@ export default function ProfilePage() {
   };
 
   if (!user) {
-    return <div className="flex justify-center items-center h-screen">{tCommon('loading')}</div>;
+    return <LoadingOverlay isLoading={true} message={tCommon('loading')} />;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <>
+      <LoadingOverlay isLoading={loading} message="Saving..." />
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
       <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
       {message && (
@@ -247,6 +250,7 @@ export default function ProfilePage() {
           </Button>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -48,8 +48,14 @@ export default function Step8PromotionalImages({
   const linked9x16 = getLinkedItems?.('step8_9x16') || [];
   const linked4x3 = getLinkedItems?.('step8_4x3') || [];
   const linked5x2 = getLinkedItems?.('step8_5x2') || [];
-  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[]) => (
+  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
+      {showSave && (
+        <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+          <Save className="w-4 h-4 mr-1" />
+          Save
+        </Button>
+      )}
       {onKnowledgeChange && (
         <>
           <KnowledgeLinkButton
@@ -191,8 +197,7 @@ export default function Step8PromotionalImages({
                 placeholder="https://..."
                 value={img.chineseLink}
                 onChange={(e) => updateImage(type, img.id, 'chineseLink', e.target.value)}
-                onBlur={onBlur}
-              />
+                              />
             </div>
 
             <div>
@@ -202,8 +207,7 @@ export default function Step8PromotionalImages({
                 placeholder="https://..."
                 value={img.englishLink}
                 onChange={(e) => updateImage(type, img.id, 'englishLink', e.target.value)}
-                onBlur={onBlur}
-              />
+                              />
             </div>
 
             <div>
@@ -213,8 +217,7 @@ export default function Step8PromotionalImages({
                 rows={2}
                 value={img.notes}
                 onChange={(e) => updateImage(type, img.id, 'notes', e.target.value)}
-                onBlur={onBlur}
-              />
+                              />
             </div>
           </div>
         ))}
@@ -234,7 +237,7 @@ export default function Step8PromotionalImages({
           <h3 className="text-2xl font-bold mb-2">{tStep('step8')}</h3>
           <p className="text-gray-600">Promotional Images</p>
         </div>
-        {renderSectionButtons('step8', linkedStep8)}
+        {renderSectionButtons('step8', linkedStep8, true)}
       </div>
 
       {renderImageSection(
@@ -342,8 +345,7 @@ export default function Step8PromotionalImages({
                   placeholder="https://..."
                   value={poster.chineseLink}
                   onChange={(e) => update4x3Poster(poster.id, 'chineseLink', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -353,8 +355,7 @@ export default function Step8PromotionalImages({
                   placeholder="https://..."
                   value={poster.englishLink}
                   onChange={(e) => update4x3Poster(poster.id, 'englishLink', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div>
@@ -364,8 +365,7 @@ export default function Step8PromotionalImages({
                   rows={2}
                   value={poster.notes}
                   onChange={(e) => update4x3Poster(poster.id, 'notes', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
             </div>
           ))}

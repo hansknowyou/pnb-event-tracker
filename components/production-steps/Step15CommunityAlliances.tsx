@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -99,7 +99,6 @@ export default function Step15CommunityAlliances({
           : alliance
       )
     );
-    onBlur();
   };
 
   return (
@@ -110,6 +109,10 @@ export default function Step15CommunityAlliances({
           <p className="text-gray-600">Community Alliance</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -195,7 +198,6 @@ export default function Step15CommunityAlliances({
                     rows={4}
                     value={alliance.allianceDetail}
                     onChange={(e) => updateAlliance(alliance.id, 'allianceDetail', e.target.value)}
-                    onBlur={onBlur}
                   />
                 </div>
 
@@ -207,7 +209,6 @@ export default function Step15CommunityAlliances({
                       placeholder="https://drive.google.com/..."
                       value={alliance.files}
                       onChange={(e) => updateAlliance(alliance.id, 'files', e.target.value)}
-                      onBlur={onBlur}
                       className="flex-1"
                     />
                     {alliance.files && (
@@ -234,7 +235,6 @@ export default function Step15CommunityAlliances({
                     rows={2}
                     value={alliance.note}
                     onChange={(e) => updateAlliance(alliance.id, 'note', e.target.value)}
-                    onBlur={onBlur}
                   />
                 </div>
               </div>

@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -43,8 +44,14 @@ export default function Step7Designs({
   const linkedBackdrop = getLinkedItems?.('step7_backdrop') || [];
   const linkedBanner = getLinkedItems?.('step7_banner') || [];
 
-  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[]) => (
+  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
+      {showSave && (
+        <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+          <Save className="w-4 h-4 mr-1" />
+          Save
+        </Button>
+      )}
       {onKnowledgeChange && (
         <>
           <KnowledgeLinkButton
@@ -81,7 +88,7 @@ export default function Step7Designs({
           <h3 className="text-2xl font-bold mb-2">{tStep('step7')}</h3>
           <p className="text-gray-600">Backdrop & Banner Design</p>
         </div>
-        {renderSectionButtons('step7', linkedStep7)}
+        {renderSectionButtons('step7', linkedStep7, true)}
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2 text-sm">
@@ -122,8 +129,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, sourceFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -136,8 +142,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, pdfFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -150,8 +155,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, pngFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -164,8 +168,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, qrCodes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -178,8 +181,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, trackingQrCodes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -192,8 +194,7 @@ export default function Step7Designs({
                 ...data,
                 backdrop: { ...data.backdrop, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -217,8 +218,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, sourceFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -231,8 +231,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, pdfFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -245,8 +244,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, pngFile: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -259,8 +257,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, qrCodes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -273,8 +270,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, trackingQrCodes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
 
           <div>
@@ -287,8 +283,7 @@ export default function Step7Designs({
                 ...data,
                 rollupBanner: { ...data.rollupBanner, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>

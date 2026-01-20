@@ -13,10 +13,13 @@ interface EventCardProps {
   onDelete: () => void;
   onAddMedia: (eventId: string, mediaName: string) => void;
   onDeleteMedia: (mediaId: string) => void;
+  onUpdateMedia: (mediaId: string, name: string) => void;
   onAddRoute: (mediaId: string, routeName: string, redirectUrl: string) => void;
   onDeleteRoute: (routeId: string) => void;
+  onUpdateRoute: (routeId: string, routeName: string) => void;
   onAdjustRouteClick: (routeId: string, adjustment: number) => void;
   onGenerateQR: (url: string, routeName: string) => void;
+  onUpdateEvent: (eventId: string, name: string) => void;
   onUpdate: () => void;
 }
 
@@ -27,16 +30,21 @@ export default function EventCard({
   onDelete,
   onAddMedia,
   onDeleteMedia,
+  onUpdateMedia,
   onAddRoute,
   onDeleteRoute,
+  onUpdateRoute,
   onAdjustRouteClick,
   onGenerateQR,
+  onUpdateEvent,
   onUpdate,
 }: EventCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddingMedia, setIsAddingMedia] = useState(false);
   const [mediaName, setMediaName] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(event.name);
 
   const handleDelete = async () => {
     if (
@@ -59,6 +67,25 @@ export default function EventCard({
     setIsAddingMedia(false);
   };
 
+  const handleSaveTitle = async () => {
+    if (!editedTitle.trim() || editedTitle === event.name) {
+      setEditedTitle(event.name);
+      setIsEditingTitle(false);
+      return;
+    }
+    await onUpdateEvent(event._id, editedTitle);
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveTitle();
+    } else if (e.key === 'Escape') {
+      setEditedTitle(event.name);
+      setIsEditingTitle(false);
+    }
+  };
+
   return (
     <div className="border-2 border-gray-400 rounded-lg p-5 bg-gray-50 shadow-md">
       <div className="flex justify-between items-center mb-4">
@@ -70,7 +97,25 @@ export default function EventCard({
             {isExpanded ? '▼' : '▶'}
           </button>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{event.name}</h2>
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleSaveTitle}
+                onKeyDown={handleTitleKeyDown}
+                className="text-xl font-bold text-gray-900 border-b-2 border-blue-500 outline-none bg-transparent"
+                autoFocus
+              />
+            ) : (
+              <h2
+                className="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600"
+                onClick={() => setIsEditingTitle(true)}
+                title="Click to edit"
+              >
+                {event.name}
+              </h2>
+            )}
             <p className="text-sm text-gray-600">
               Total Clicks: <span className="font-bold text-green-600">{event.totalClicks || 0}</span>
             </p>
@@ -131,8 +176,10 @@ export default function EventCard({
                   media={media}
                   baseUrl={baseUrl}
                   onDelete={() => onDeleteMedia(media._id)}
+                  onUpdateMedia={onUpdateMedia}
                   onAddRoute={onAddRoute}
                   onDeleteRoute={onDeleteRoute}
+                  onUpdateRoute={onUpdateRoute}
                   onAdjustRouteClick={onAdjustRouteClick}
                   onGenerateQR={onGenerateQR}
                 />

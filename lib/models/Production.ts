@@ -18,6 +18,7 @@ interface ICity {
 // Step 3: Venue Contracts
 interface IVenueContract {
   id: string;
+  linkedVenueId?: string;
   venueName: string;
   contractLink: string;
   notes: string;
@@ -89,6 +90,7 @@ interface IVenueRequiredForms {
 
 interface IVenueInfo {
   id: string;
+  linkedVenueId?: string;
   venueName: string;
   address: string;
   contacts: string;
@@ -248,6 +250,25 @@ interface IAdvertising {
   offline: IOfflineAdvertising[];
 }
 
+// Step 14: Sponsorship Packages
+interface ISponsorshipPackage {
+  id: string;
+  name: string;
+  planDetail: string;
+  fileLink: string;
+  note: string;
+}
+
+// Step 15: Community Alliance
+interface ICommunityAlliance {
+  id: string;
+  communityId: string;
+  communityName: string;
+  allianceDetail: string;
+  files: string;
+  note: string;
+}
+
 // Main Production Interface
 export interface IProduction extends Document {
   title: string;
@@ -269,8 +290,13 @@ export interface IProduction extends Document {
   step11_performanceShooting: IPerformanceShooting;
   step12_socialMedia: ISocialMedia;
   step13_advertising: IAdvertising;
+  step14_sponsorshipPackages: ISponsorshipPackage[];
+  step15_communityAlliances: ICommunityAlliance[];
 
-  // Knowledge Base Links (19 sections: 13 steps + 6 subsections of step 5)
+  // Step assignments (user ID for each step/sub-step)
+  assignments?: Record<string, string>;
+
+  // Knowledge Base Links (21 sections: 15 steps + 6 subsections of step 5)
   knowledgeLinks_step1?: string[];
   knowledgeLinks_step2?: string[];
   knowledgeLinks_step3?: string[];
@@ -289,6 +315,8 @@ export interface IProduction extends Document {
   knowledgeLinks_step11?: string[];
   knowledgeLinks_step12?: string[];
   knowledgeLinks_step13?: string[];
+  knowledgeLinks_step14?: string[];
+  knowledgeLinks_step15?: string[];
 }
 
 const ProductionSchema = new Schema<IProduction>(
@@ -314,6 +342,7 @@ const ProductionSchema = new Schema<IProduction>(
     // Step 3: Venue Contracts
     step3_venueContracts: [{
       id: { type: String, required: true },
+      linkedVenueId: { type: String },
       venueName: { type: String, default: '' },
       contractLink: { type: String, default: '' },
       notes: { type: String, default: '' },
@@ -363,6 +392,7 @@ const ProductionSchema = new Schema<IProduction>(
     // Step 6: Venue Info
     step6_venueInfo: [{
       id: { type: String, required: true },
+      linkedVenueId: { type: String },
       venueName: { type: String, default: '' },
       address: { type: String, default: '' },
       contacts: { type: String, default: '' },
@@ -564,6 +594,28 @@ const ProductionSchema = new Schema<IProduction>(
       }],
     },
 
+    // Step 14: Sponsorship Packages
+    step14_sponsorshipPackages: [{
+      id: { type: String, required: true },
+      name: { type: String, default: '' },
+      planDetail: { type: String, default: '' },
+      fileLink: { type: String, default: '' },
+      note: { type: String, default: '' },
+    }],
+
+    // Step 15: Community Alliances
+    step15_communityAlliances: [{
+      id: { type: String, required: true },
+      communityId: { type: String, default: '' },
+      communityName: { type: String, default: '' },
+      allianceDetail: { type: String, default: '' },
+      files: { type: String, default: '' },
+      note: { type: String, default: '' },
+    }],
+
+    // Step assignments
+    assignments: { type: Map, of: String, default: {} },
+
     // Knowledge Base Links
     knowledgeLinks_step1: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step2: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
@@ -583,6 +635,8 @@ const ProductionSchema = new Schema<IProduction>(
     knowledgeLinks_step11: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step12: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step13: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step14: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step15: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
   },
   {
     timestamps: true,

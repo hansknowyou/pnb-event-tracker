@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -46,6 +47,10 @@ export default function Step9Videos({
           <p className="text-gray-600">Video Production</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -94,8 +99,7 @@ export default function Step9Videos({
                 ...data,
                 conferenceLoop: { ...data.conferenceLoop, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -107,8 +111,7 @@ export default function Step9Videos({
                 ...data,
                 conferenceLoop: { ...data.conferenceLoop, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -132,8 +135,7 @@ export default function Step9Videos({
                 ...data,
                 mainPromo: { ...data.mainPromo, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -145,8 +147,7 @@ export default function Step9Videos({
                 ...data,
                 mainPromo: { ...data.mainPromo, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -167,8 +168,7 @@ export default function Step9Videos({
                 ...data,
                 actorIntro: { ...data.actorIntro, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -180,8 +180,7 @@ export default function Step9Videos({
                 ...data,
                 actorIntro: { ...data.actorIntro, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>

@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import AdminNav from '@/components/AdminNav';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface User {
   _id: string;
@@ -138,16 +139,10 @@ export default function UserManagementPage() {
     return null;
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">{tCommon('loading')}</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      <LoadingOverlay isLoading={loading} message={tCommon('loading')} />
+      <div className="container mx-auto px-4 py-8">
       <AdminNav />
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -290,6 +285,7 @@ export default function UserManagementPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

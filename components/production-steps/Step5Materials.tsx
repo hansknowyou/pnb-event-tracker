@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -95,8 +95,14 @@ export default function Step5Materials({
     });
   };
 
-  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[]) => (
+  const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
+      {showSave && (
+        <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+          <Save className="w-4 h-4 mr-1" />
+          Save
+        </Button>
+      )}
       {onKnowledgeChange && (
         <>
           <KnowledgeLinkButton
@@ -133,7 +139,7 @@ export default function Step5Materials({
           <h3 className="text-2xl font-bold mb-2">{tStep('step5')}</h3>
           <p className="text-gray-600">Material Collection</p>
         </div>
-        {renderSectionButtons('step5', linkedStep5)}
+        {renderSectionButtons('step5', linkedStep5, true)}
       </div>
 
       {/* 5.1 Videos (minimum 3) */}
@@ -168,15 +174,13 @@ export default function Step5Materials({
                 placeholder="Video link (https://...)"
                 value={video.link}
                 onChange={(e) => updateVideo(video.id, 'link', e.target.value)}
-                onBlur={onBlur}
-              />
+                              />
               <Textarea
                 placeholder="Notes..."
                 rows={2}
                 value={video.notes}
                 onChange={(e) => updateVideo(video.id, 'notes', e.target.value)}
-                onBlur={onBlur}
-              />
+                              />
             </div>
           ))}
 
@@ -203,8 +207,7 @@ export default function Step5Materials({
               placeholder="https://..."
               value={data.photos.link}
               onChange={(e) => onChange({ ...data, photos: { ...data.photos, link: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -213,8 +216,7 @@ export default function Step5Materials({
               rows={2}
               value={data.photos.notes}
               onChange={(e) => onChange({ ...data, photos: { ...data.photos, notes: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -235,8 +237,7 @@ export default function Step5Materials({
               placeholder="https://..."
               value={data.actorPhotos.link}
               onChange={(e) => onChange({ ...data, actorPhotos: { ...data.actorPhotos, link: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -245,8 +246,7 @@ export default function Step5Materials({
               rows={2}
               value={data.actorPhotos.notes}
               onChange={(e) => onChange({ ...data, actorPhotos: { ...data.actorPhotos, notes: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -267,8 +267,7 @@ export default function Step5Materials({
               placeholder="https://..."
               value={data.otherPhotos.link}
               onChange={(e) => onChange({ ...data, otherPhotos: { ...data.otherPhotos, link: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -277,8 +276,7 @@ export default function Step5Materials({
               rows={2}
               value={data.otherPhotos.notes}
               onChange={(e) => onChange({ ...data, otherPhotos: { ...data.otherPhotos, notes: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -329,8 +327,7 @@ export default function Step5Materials({
                     placeholder="Organization name"
                     value={logo.organizationName}
                     onChange={(e) => updateLogo(logo.id, 'organizationName', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -340,8 +337,7 @@ export default function Step5Materials({
                     placeholder="https://..."
                     value={logo.colorHorizontal}
                     onChange={(e) => updateLogo(logo.id, 'colorHorizontal', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -351,8 +347,7 @@ export default function Step5Materials({
                     placeholder="https://..."
                     value={logo.colorVertical}
                     onChange={(e) => updateLogo(logo.id, 'colorVertical', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -362,8 +357,7 @@ export default function Step5Materials({
                     placeholder="https://..."
                     value={logo.whiteHorizontal}
                     onChange={(e) => updateLogo(logo.id, 'whiteHorizontal', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -373,8 +367,7 @@ export default function Step5Materials({
                     placeholder="https://..."
                     value={logo.whiteVertical}
                     onChange={(e) => updateLogo(logo.id, 'whiteVertical', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
             </div>
@@ -402,8 +395,7 @@ export default function Step5Materials({
               placeholder="Title"
               value={data.texts.title}
               onChange={(e) => onChange({ ...data, texts: { ...data.texts, title: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Long Description</Label>
@@ -412,8 +404,7 @@ export default function Step5Materials({
               rows={4}
               value={data.texts.longDescription}
               onChange={(e) => onChange({ ...data, texts: { ...data.texts, longDescription: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Short Description</Label>
@@ -422,8 +413,7 @@ export default function Step5Materials({
               rows={2}
               value={data.texts.shortDescription}
               onChange={(e) => onChange({ ...data, texts: { ...data.texts, shortDescription: e.target.value } })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>

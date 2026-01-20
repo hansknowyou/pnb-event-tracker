@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -64,7 +64,6 @@ export default function Step3VenueContracts({
           : v
       )
     );
-    onBlur();
   };
 
   const removeVenue = (id: string) => {
@@ -85,6 +84,10 @@ export default function Step3VenueContracts({
           <p className="text-gray-600">Venue Contracts</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -150,8 +153,7 @@ export default function Step3VenueContracts({
                     placeholder={venue.linkedVenueId ? "Linked from venue database" : "e.g., Lincoln Center"}
                     value={venue.venueName}
                     onChange={(e) => updateVenue(venue.id, 'venueName', e.target.value)}
-                    onBlur={onBlur}
-                    disabled={!!venue.linkedVenueId}
+                                        disabled={!!venue.linkedVenueId}
                     className={venue.linkedVenueId ? "bg-gray-50" : ""}
                   />
                   {venue.linkedVenueId && (
@@ -168,8 +170,7 @@ export default function Step3VenueContracts({
                     placeholder="https://..."
                     value={venue.contractLink}
                     onChange={(e) => updateVenue(venue.id, 'contractLink', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
 
                 <div>
@@ -179,8 +180,7 @@ export default function Step3VenueContracts({
                     rows={3}
                     value={venue.notes}
                     onChange={(e) => updateVenue(venue.id, 'notes', e.target.value)}
-                    onBlur={onBlur}
-                  />
+                                      />
                 </div>
               </div>
             </CardContent>

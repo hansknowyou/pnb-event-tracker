@@ -69,3 +69,33 @@ export async function DELETE(request: Request) {
     return jsonResponse({ error: 'Failed to delete event' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, name } = body;
+
+    if (!id || !name) {
+      return jsonResponse(
+        { error: 'Event ID and name are required' },
+        { status: 400 }
+      );
+    }
+
+    await connectDB();
+    const event = await Event.findByIdAndUpdate(
+      id,
+      { name },
+      { new: true }
+    );
+
+    if (!event) {
+      return jsonResponse({ error: 'Event not found' }, { status: 404 });
+    }
+
+    return jsonResponse({ event });
+  } catch (error) {
+    console.error('Events PATCH error:', error);
+    return jsonResponse({ error: 'Failed to update event' }, { status: 500 });
+  }
+}

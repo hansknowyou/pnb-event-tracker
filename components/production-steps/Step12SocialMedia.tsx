@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -123,6 +123,10 @@ export default function Step12SocialMedia({
           <p className="text-gray-600">Social Media</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -181,8 +185,7 @@ export default function Step12SocialMedia({
                 ...data,
                 websiteUpdated: { ...data.websiteUpdated, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -194,8 +197,7 @@ export default function Step12SocialMedia({
                 ...data,
                 websiteUpdated: { ...data.websiteUpdated, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>
@@ -225,8 +227,7 @@ export default function Step12SocialMedia({
                   placeholder="e.g., WeChat, Facebook, Instagram"
                   value={platform.platformName}
                   onChange={(e) => updatePlatform(platform.id, 'platformName', e.target.value)}
-                  onBlur={onBlur}
-                />
+                                  />
               </div>
 
               <div className="border-t pt-4">
@@ -275,8 +276,7 @@ export default function Step12SocialMedia({
                             onChange={(e) =>
                               updatePost(platform.id, post.id, 'publishDate', e.target.value)
                             }
-                            onBlur={onBlur}
-                          />
+                                                      />
                         </div>
                       </div>
 
@@ -289,8 +289,7 @@ export default function Step12SocialMedia({
                           onChange={(e) =>
                             updatePost(platform.id, post.id, 'postLink', e.target.value)
                           }
-                          onBlur={onBlur}
-                        />
+                                                  />
                       </div>
 
                       <div>
@@ -302,8 +301,7 @@ export default function Step12SocialMedia({
                           onChange={(e) =>
                             updatePost(platform.id, post.id, 'notes', e.target.value)
                           }
-                          onBlur={onBlur}
-                        />
+                                                  />
                       </div>
                     </div>
                   ))}
@@ -345,8 +343,7 @@ export default function Step12SocialMedia({
                 ...data,
                 facebookEvent: { ...data.facebookEvent, link: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
           <div>
             <Label>Notes</Label>
@@ -358,8 +355,7 @@ export default function Step12SocialMedia({
                 ...data,
                 facebookEvent: { ...data.facebookEvent, notes: e.target.value }
               })}
-              onBlur={onBlur}
-            />
+                          />
           </div>
         </CardContent>
       </Card>

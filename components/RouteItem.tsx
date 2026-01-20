@@ -7,6 +7,7 @@ interface RouteItemProps {
   route: Route;
   baseUrl: string;
   onDelete: () => void;
+  onUpdateRoute: (routeId: string, routeName: string) => void;
   onAdjustClick: (adjustment: number) => void;
   onGenerateQR: () => void;
 }
@@ -15,10 +16,13 @@ export default function RouteItem({
   route,
   baseUrl,
   onDelete,
+  onUpdateRoute,
   onAdjustClick,
   onGenerateQR,
 }: RouteItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(route.routeName);
 
   const trackingUrl = `${baseUrl}/api/track/${route._id}`;
 
@@ -34,11 +38,48 @@ export default function RouteItem({
     alert('Copied to clipboard!');
   };
 
+  const handleSaveName = async () => {
+    if (!editedName.trim() || editedName === route.routeName) {
+      setEditedName(route.routeName);
+      setIsEditingName(false);
+      return;
+    }
+    await onUpdateRoute(route._id, editedName);
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveName();
+    } else if (e.key === 'Escape') {
+      setEditedName(route.routeName);
+      setIsEditingName(false);
+    }
+  };
+
   return (
     <div className="border border-gray-300 rounded p-3 bg-white">
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
-          <h4 className="font-medium text-gray-900">{route.routeName}</h4>
+          {isEditingName ? (
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={handleSaveName}
+              onKeyDown={handleNameKeyDown}
+              className="font-medium text-gray-900 border-b-2 border-blue-500 outline-none bg-transparent"
+              autoFocus
+            />
+          ) : (
+            <h4
+              className="font-medium text-gray-900 cursor-pointer hover:text-blue-600"
+              onClick={() => setIsEditingName(true)}
+              title="Click to edit"
+            >
+              {route.routeName}
+            </h4>
+          )}
           <div className="text-xs text-gray-500 mt-1 space-y-1">
             <div>
               <span className="font-semibold">Tracking URL:</span>{' '}

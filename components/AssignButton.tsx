@@ -47,6 +47,11 @@ export default function AssignButton({
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Fetch users on mount to show assigned user name, and when dialog opens
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   useEffect(() => {
     if (open) {
       fetchUsers();
@@ -130,12 +135,15 @@ export default function AssignButton({
             ) : (
               <div className="space-y-2">
                 <Label>{t('assignTo')}</Label>
-                <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                  <SelectTrigger>
+                <Select
+                  value={selectedUserId || '__unassigned__'}
+                  onValueChange={(val) => setSelectedUserId(val === '__unassigned__' ? '' : val)}
+                >
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('selectUser')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">{t('unassigned')}</SelectItem>
+                  <SelectContent position="popper" className="z-[9999]">
+                    <SelectItem value="__unassigned__">{t('unassigned')}</SelectItem>
                     {users.map((user) => (
                       <SelectItem key={user._id} value={user._id}>
                         {user.displayName || user.username}

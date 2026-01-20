@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -45,6 +46,10 @@ export default function Step1Contract({
           <p className="text-gray-600">Contract Signing</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
           {onKnowledgeChange && (
             <>
               <KnowledgeLinkButton
@@ -85,7 +90,6 @@ export default function Step1Contract({
             placeholder="https://..."
             value={data.link}
             onChange={(e) => onChange({ ...data, link: e.target.value })}
-            onBlur={onBlur}
           />
         </div>
 
@@ -97,7 +101,6 @@ export default function Step1Contract({
             rows={4}
             value={data.notes}
             onChange={(e) => onChange({ ...data, notes: e.target.value })}
-            onBlur={onBlur}
           />
         </div>
       </div>

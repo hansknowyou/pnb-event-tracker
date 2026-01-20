@@ -66,11 +66,11 @@ export async function DELETE(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, adjustment } = body;
+    const { id, adjustment, routeName } = body;
 
-    if (!id || typeof adjustment !== 'number') {
+    if (!id) {
       return jsonResponse(
-        { error: 'Route ID and adjustment value are required' },
+        { error: 'Route ID is required' },
         { status: 400 }
       );
     }
@@ -82,7 +82,16 @@ export async function PATCH(request: Request) {
       return jsonResponse({ error: 'Route not found' }, { status: 404 });
     }
 
-    route.clickCount = Math.max(0, route.clickCount + adjustment);
+    // Update click count if adjustment is provided
+    if (typeof adjustment === 'number') {
+      route.clickCount = Math.max(0, route.clickCount + adjustment);
+    }
+
+    // Update route name if provided
+    if (routeName !== undefined) {
+      route.routeName = routeName;
+    }
+
     await route.save();
 
     return jsonResponse({ route });

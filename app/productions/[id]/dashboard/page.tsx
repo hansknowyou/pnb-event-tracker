@@ -17,6 +17,7 @@ import {
   AlertCircle,
   Circle,
 } from 'lucide-react';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import type { Production } from '@/types/production';
 import { STEPS } from '@/types/production';
 
@@ -25,6 +26,7 @@ export default function ProductionDashboard() {
   const params = useParams();
   const t = useTranslations('production');
   const tCommon = useTranslations('common');
+  const tStep = useTranslations('stepConfig');
   const productionId = params?.id as string;
   const [production, setProduction] = useState<Production | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,15 @@ export default function ProductionDashboard() {
 
   useEffect(() => {
     fetchProduction();
+  }, [productionId]);
+
+  // Refetch data when window gains focus (user returns from edit page)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchProduction();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [productionId]);
 
   const fetchProduction = async () => {
@@ -173,20 +184,8 @@ export default function ProductionDashboard() {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">{tCommon('loading')}</div>
-      </div>
-    );
-  }
-
-  if (!production) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">{t('notFound')}</div>
-      </div>
-    );
+  if (loading || !production) {
+    return <LoadingOverlay isLoading={true} message={tCommon('loading')} />;
   }
 
   const formatDate = (dateString: string) => {
@@ -194,7 +193,9 @@ export default function ProductionDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <LoadingOverlay isLoading={isSavingTitle} message="Saving..." />
+      <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <Card className="mb-8">
@@ -240,12 +241,12 @@ export default function ProductionDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <StatusIcon status={getStepStatus(production.step1_contract)} />
-                <CardTitle>Step 1: 演出合同签订 (Contract Signing)</CardTitle>
+                <CardTitle>{tStep('step1')}</CardTitle>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push(`/productions/${productionId}?step=1`)}
+                onClick={() => router.push(`/productions/${productionId}?step=step1`)}
               >
                 <Edit className="w-4 h-4 mr-2" />
                 {t('edit')}
@@ -270,14 +271,12 @@ export default function ProductionDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <StatusIcon status={getStepStatus(production.step2_cities)} />
-                <CardTitle>
-                  Step 2: 确定演出城市与时间 (Cities & Dates)
-                </CardTitle>
+                <CardTitle>{tStep('step2')}</CardTitle>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push(`/productions/${productionId}?step=2`)}
+                onClick={() => router.push(`/productions/${productionId}?step=step2`)}
               >
                 <Edit className="w-4 h-4 mr-2" />
                 {t('edit')}
@@ -312,35 +311,344 @@ export default function ProductionDashboard() {
           </CardContent>
         </Card>
 
-        {/* Placeholder for remaining steps */}
-        {STEPS.slice(2).map((step) => (
-          <Card key={step.number} className="mb-6">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Circle className="w-5 h-5 text-gray-400" />
-                  <CardTitle>
-                    Step {step.number}: {step.name} ({step.description})
-                  </CardTitle>
+        {/* Step 3: Venue Contracts */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step3_venueContracts)} />
+                <CardTitle>{tStep('step3')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step3`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {production.step3_venueContracts.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No venue contracts added</div>
+            ) : (
+              <div className="space-y-3">
+                {production.step3_venueContracts.map((venue, i) => (
+                  <div key={venue.id} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-semibold">{i + 1}. {venue.venueName || 'Unnamed Venue'}</div>
+                    {venue.contractLink && <div className="mt-2"><LinkButton url={venue.contractLink} /></div>}
+                    {venue.notes && <div className="text-sm text-gray-600 mt-1">Notes: {venue.notes}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Step 4: Itinerary */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step4_itinerary)} />
+                <CardTitle>{tStep('step4')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step4`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Itinerary" link={production.step4_itinerary.link} />
+            <FieldDisplay label="Notes" value={production.step4_itinerary.notes} />
+          </CardContent>
+        </Card>
+
+        {/* Step 5: Materials */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step5_materials)} />
+                <CardTitle>{tStep('step5')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step5`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div><span className={production.step5_materials.videos.length >= 3 ? "text-green-600" : "text-yellow-600"}>
+              {production.step5_materials.videos.length >= 3 ? "✓" : "⚠"}</span> Videos: {production.step5_materials.videos.length}/3 minimum</div>
+            <FieldDisplay label="Performance Photos" link={production.step5_materials.photos.link} />
+            <FieldDisplay label="Actor Photos" link={production.step5_materials.actorPhotos.link} />
+            <FieldDisplay label="Other Photos" link={production.step5_materials.otherPhotos.link} />
+            <div><span className={production.step5_materials.logos.length > 0 ? "text-green-600" : "text-red-500"}>
+              {production.step5_materials.logos.length > 0 ? "✓" : "✗"}</span> Logos: {production.step5_materials.logos.length} added</div>
+            <FieldDisplay label="Title" value={production.step5_materials.texts.title} />
+          </CardContent>
+        </Card>
+
+        {/* Step 6: Venue Info */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step6_venueInfo)} />
+                <CardTitle>{tStep('step6')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step6`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {production.step6_venueInfo.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No venue info added</div>
+            ) : (
+              <div className="space-y-3">
+                {production.step6_venueInfo.map((venue, i) => (
+                  <div key={venue.id} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-semibold">{i + 1}. {venue.venueName || 'Unnamed Venue'}</div>
+                    <div className="text-sm text-gray-600">{venue.address || 'No address'}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Step 7: Designs */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step7_designs)} />
+                <CardTitle>{tStep('step7')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step7`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Backdrop Source" link={production.step7_designs.backdrop.sourceFile} />
+            <FieldDisplay label="Rollup Banner Source" link={production.step7_designs.rollupBanner.sourceFile} />
+          </CardContent>
+        </Card>
+
+        {/* Step 8: Promotional Images */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step8_promotionalImages)} />
+                <CardTitle>{tStep('step8')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step8`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div><span className={production.step8_promotionalImages.poster16_9.length > 0 ? "text-green-600" : "text-red-500"}>
+              {production.step8_promotionalImages.poster16_9.length > 0 ? "✓" : "✗"}</span> 16:9 Posters: {production.step8_promotionalImages.poster16_9.length}</div>
+            <div><span className={production.step8_promotionalImages.poster1_1.length > 0 ? "text-green-600" : "text-red-500"}>
+              {production.step8_promotionalImages.poster1_1.length > 0 ? "✓" : "✗"}</span> 1:1 Posters: {production.step8_promotionalImages.poster1_1.length}</div>
+            <div><span className={production.step8_promotionalImages.poster9_16.length > 0 ? "text-green-600" : "text-red-500"}>
+              {production.step8_promotionalImages.poster9_16.length > 0 ? "✓" : "✗"}</span> 9:16 Posters: {production.step8_promotionalImages.poster9_16.length}</div>
+          </CardContent>
+        </Card>
+
+        {/* Step 9: Videos */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step9_videos)} />
+                <CardTitle>{tStep('step9')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step9`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Conference Loop" link={production.step9_videos.conferenceLoop.link} />
+            <FieldDisplay label="Main Promo" link={production.step9_videos.mainPromo.link} />
+            <FieldDisplay label="Actor Intro" link={production.step9_videos.actorIntro.link} />
+          </CardContent>
+        </Card>
+
+        {/* Step 10: Press Conference */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step10_pressConference)} />
+                <CardTitle>{tStep('step10')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step10`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Date/Time" value={production.step10_pressConference.venue.datetime} />
+            <FieldDisplay label="Location" value={production.step10_pressConference.venue.location} />
+            <FieldDisplay label="Invitation" link={production.step10_pressConference.invitation.link} />
+          </CardContent>
+        </Card>
+
+        {/* Step 11: Performance Shooting */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step11_performanceShooting)} />
+                <CardTitle>{tStep('step11')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step11`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Google Drive" link={production.step11_performanceShooting.googleDriveLink} />
+            <FieldDisplay label="Notes" value={production.step11_performanceShooting.notes} />
+          </CardContent>
+        </Card>
+
+        {/* Step 12: Social Media */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step12_socialMedia)} />
+                <CardTitle>{tStep('step12')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step12`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div><span className={production.step12_socialMedia.websiteUpdated.isAdded ? "text-green-600" : "text-red-500"}>
+              {production.step12_socialMedia.websiteUpdated.isAdded ? "✓" : "✗"}</span> Website Updated</div>
+            <div><span className={production.step12_socialMedia.platforms.length > 0 ? "text-green-600" : "text-red-500"}>
+              {production.step12_socialMedia.platforms.length > 0 ? "✓" : "✗"}</span> Platforms: {production.step12_socialMedia.platforms.length}</div>
+            <FieldDisplay label="Facebook Event" link={production.step12_socialMedia.facebookEvent.link} />
+          </CardContent>
+        </Card>
+
+        {/* Step 13: Advertising */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step13_advertising)} />
+                <CardTitle>{tStep('step13')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step13`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="font-medium mb-2">
+                  <span className={production.step13_advertising.online.length > 0 ? "text-green-600" : "text-red-500"}>
+                    {production.step13_advertising.online.length > 0 ? "✓" : "✗"}
+                  </span> Online Advertising ({production.step13_advertising.online.length})
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push(`/productions/${productionId}?step=${step.number}`)}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
+                {production.step13_advertising.online.map((item, i) => (
+                  <div key={item.id} className="ml-6 p-2 bg-gray-50 rounded mb-2">
+                    <div className="font-medium">{item.platformName || 'Unnamed Platform'}</div>
+                    <div className="text-sm text-gray-600">
+                      Target: {item.targetAudience.join(', ') || 'Not set'}
+                    </div>
+                    {item.resourceLink && <div className="mt-1"><LinkButton url={item.resourceLink} /></div>}
+                  </div>
+                ))}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-gray-500">
-                Dashboard view for this step will be implemented
+              <div>
+                <div className="font-medium mb-2">
+                  <span className={production.step13_advertising.offline.length > 0 ? "text-green-600" : "text-red-500"}>
+                    {production.step13_advertising.offline.length > 0 ? "✓" : "✗"}
+                  </span> Offline Collaboration ({production.step13_advertising.offline.length})
+                </div>
+                {production.step13_advertising.offline.map((item, i) => (
+                  <div key={item.id} className="ml-6 p-2 bg-gray-50 rounded mb-2">
+                    <div className="font-medium">{item.organizationName || 'Unnamed Organization'}</div>
+                    <div className="text-sm text-gray-600">
+                      Target: {item.targetAudience.join(', ') || 'Not set'}
+                    </div>
+                    {item.googleResourceLink && <div className="mt-1"><LinkButton url={item.googleResourceLink} /></div>}
+                  </div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Step 14: Sponsorship Packages */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step14_sponsorshipPackages)} />
+                <CardTitle>{tStep('step14')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step14`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {(!production.step14_sponsorshipPackages || production.step14_sponsorshipPackages.length === 0) ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No sponsorship packages added</div>
+            ) : (
+              <div className="space-y-3">
+                {production.step14_sponsorshipPackages.map((pkg, i) => (
+                  <div key={pkg.id} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-semibold">{i + 1}. {pkg.name || 'Unnamed Package'}</div>
+                    {pkg.planDetail && <div className="text-sm text-gray-600 mt-1">{pkg.planDetail}</div>}
+                    {pkg.fileLink && <div className="mt-2"><LinkButton url={pkg.fileLink} /></div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Step 15: Community Alliances */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step15_communityAlliances)} />
+                <CardTitle>{tStep('step15')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step15`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {(!production.step15_communityAlliances || production.step15_communityAlliances.length === 0) ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No community alliances added</div>
+            ) : (
+              <div className="space-y-3">
+                {production.step15_communityAlliances.map((alliance, i) => (
+                  <div key={alliance.id} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-semibold">{i + 1}. {alliance.communityName || 'Unnamed Community'}</div>
+                    {alliance.allianceDetail && <div className="text-sm text-gray-600 mt-1">{alliance.allianceDetail}</div>}
+                    {alliance.files && <div className="mt-2"><LinkButton url={alliance.files} /></div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

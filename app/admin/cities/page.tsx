@@ -19,6 +19,7 @@ import {
 import { Plus, Trash2, Edit, MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import AdminNav from '@/components/AdminNav';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import type { City } from '@/types/city';
 
 export default function CityManagementPage() {
@@ -166,14 +167,6 @@ export default function CityManagementPage() {
     return null;
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-gray-500">{tCommon('loading')}</div>
-      </div>
-    );
-  }
-
   // Group cities by country
   const citiesByCountry = cities.reduce((acc, city) => {
     const country = city.country || t('noCountry');
@@ -185,7 +178,9 @@ export default function CityManagementPage() {
   }, {} as Record<string, City[]>);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      <LoadingOverlay isLoading={loading} message={tCommon('loading')} />
+      <div className="container mx-auto px-4 py-8">
       <AdminNav />
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -376,6 +371,7 @@ export default function CityManagementPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 }

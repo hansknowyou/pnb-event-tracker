@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
 import QRCodeModal from "@/components/QRCodeModal";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import { EventWithStats } from "@/types";
 import type { Production } from "@/types/production";
 
@@ -219,9 +220,53 @@ export default function Home() {
     }
   };
 
+  const updateEvent = async (eventId: string, name: string) => {
+    try {
+      await fetch("/api/events", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: eventId, name }),
+      });
+      fetchStats();
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      alert("Failed to update event");
+    }
+  };
+
+  const updateMedia = async (mediaId: string, name: string) => {
+    try {
+      await fetch("/api/media", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: mediaId, name }),
+      });
+      fetchStats();
+    } catch (error) {
+      console.error("Failed to update media:", error);
+      alert("Failed to update media");
+    }
+  };
+
+  const updateRoute = async (routeId: string, routeName: string) => {
+    try {
+      await fetch("/api/routes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: routeId, routeName }),
+      });
+      fetchStats();
+    } catch (error) {
+      console.error("Failed to update route:", error);
+      alert("Failed to update route");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <LoadingOverlay isLoading={loading} message="Loading..." />
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+        <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Event Tracking Dashboard
@@ -293,35 +338,36 @@ export default function Home() {
         </div>
 
         {/* Events List */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-xl text-gray-600">Loading events...</p>
-          </div>
-        ) : events.length > 0 ? (
-          <div className="space-y-6">
-            {events.map((event) => (
-              <EventCard
-                key={event._id}
-                event={event}
-                baseUrl={baseUrl}
-                linkedProduction={linkedProductions[event._id] || null}
-                onDelete={() => deleteEvent(event._id)}
-                onAddMedia={addMedia}
-                onDeleteMedia={deleteMedia}
-                onAddRoute={addRoute}
-                onDeleteRoute={deleteRoute}
-                onAdjustRouteClick={adjustRouteClick}
-                onGenerateQR={generateQRCode}
-                onUpdate={fetchStats}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
-            <p className="text-xl text-gray-600">
-              No events yet. Create one above!
-            </p>
-          </div>
+        {!loading && (
+          events.length > 0 ? (
+            <div className="space-y-6">
+              {events.map((event) => (
+                <EventCard
+                  key={event._id}
+                  event={event}
+                  baseUrl={baseUrl}
+                  linkedProduction={linkedProductions[event._id] || null}
+                  onDelete={() => deleteEvent(event._id)}
+                  onAddMedia={addMedia}
+                  onDeleteMedia={deleteMedia}
+                  onUpdateMedia={updateMedia}
+                  onAddRoute={addRoute}
+                  onDeleteRoute={deleteRoute}
+                  onUpdateRoute={updateRoute}
+                  onAdjustRouteClick={adjustRouteClick}
+                  onGenerateQR={generateQRCode}
+                  onUpdateEvent={updateEvent}
+                  onUpdate={fetchStats}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white rounded-lg shadow-md">
+              <p className="text-xl text-gray-600">
+                No events yet. Create one above!
+              </p>
+            </div>
+          )
         )}
 
         {/* QR Code Modal */}
@@ -332,7 +378,8 @@ export default function Home() {
             onClose={() => setQrModal(null)}
           />
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
