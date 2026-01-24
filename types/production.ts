@@ -28,40 +28,23 @@ export interface Itinerary {
   notes: string;
 }
 
-// Step 5: Materials
-export interface Video {
-  id: string;
-  link: string;
-  notes: string;
-}
-
 export interface Photos {
   link: string;
   notes: string;
 }
 
-export interface Logo {
-  id: string;
-  organizationType: 'sponsor' | 'organizer' | 'executor';
-  organizationName: string;
-  colorHorizontal: string;
-  colorVertical: string;
-  whiteHorizontal: string;
-  whiteVertical: string;
-}
-
 export interface Texts {
-  title: string;
-  longDescription: string;
+  link: string;
   shortDescription: string;
+  longDescription: string;
 }
 
 export interface Materials {
-  videos: Video[];
+  videos: Photos;
   photos: Photos;
   actorPhotos: Photos;
   otherPhotos: Photos;
-  logos: Logo[];
+  logos: Photos;
   texts: Texts;
 }
 

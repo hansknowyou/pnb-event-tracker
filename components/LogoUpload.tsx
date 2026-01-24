@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
-const MAX_DIMENSION = 500;
-const MAX_FILE_SIZE = 1024 * 1024;
+const DEFAULT_MAX_DIMENSION = 500;
+const DEFAULT_MAX_FILE_SIZE = 1024 * 1024;
 
 interface LogoUploadMessages {
   invalidType: string;
@@ -25,6 +25,15 @@ interface LogoUploadProps {
   helpText: string;
   messages: LogoUploadMessages;
   disabled?: boolean;
+  maxDimension?: number;
+  maxFileSize?: number;
+  minDimension?: number;
+  allowedMimeTypes?: string[];
+  accept?: string;
+  minWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 const readAsDataUrl = (file: File) =>
@@ -58,10 +67,21 @@ export default function LogoUpload({
   helpText,
   messages,
   disabled = false,
+  maxDimension = DEFAULT_MAX_DIMENSION,
+  maxFileSize = DEFAULT_MAX_FILE_SIZE,
+  minDimension = 0,
+  allowedMimeTypes,
+  accept,
+  minWidth,
+  maxWidth,
+  minHeight,
+  maxHeight,
 }: LogoUploadProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
+  const allowedTypes = allowedMimeTypes ?? ALLOWED_TYPES;
+  const acceptValue = accept ?? allowedTypes.join(',');
 
   const resetInput = () => {
     if (inputRef.current) {
@@ -81,13 +101,13 @@ export default function LogoUpload({
 
     setError('');
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    if (!allowedTypes.includes(file.type)) {
       setError(messages.invalidType);
       resetInput();
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
+    if (maxFileSize > 0 && file.size > maxFileSize) {
       setError(messages.fileTooLarge);
       resetInput();
       return;
@@ -95,7 +115,12 @@ export default function LogoUpload({
 
     try {
       const { width, height } = await getImageDimensions(file);
-      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+      const widthTooSmall = minWidth !== undefined ? width < minWidth : minDimension > 0 && width < minDimension;
+      const heightTooSmall = minHeight !== undefined ? height < minHeight : minDimension > 0 && height < minDimension;
+      const widthTooLarge = maxWidth !== undefined ? width > maxWidth : width > maxDimension;
+      const heightTooLarge = maxHeight !== undefined ? height > maxHeight : height > maxDimension;
+
+      if (widthTooSmall || heightTooSmall || widthTooLarge || heightTooLarge) {
         setError(messages.dimensionTooLarge);
         resetInput();
         return;
@@ -131,7 +156,7 @@ export default function LogoUpload({
               id={inputId}
               ref={inputRef}
               type="file"
-              accept="image/png,image/jpeg"
+              accept={acceptValue}
               onChange={handleFileChange}
             />
           )}

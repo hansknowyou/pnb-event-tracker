@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
       step3_venueContracts: [],
       step4_itinerary: { link: '', notes: '' },
       step5_materials: {
-        videos: [],
+        videos: { link: '', notes: '' },
         photos: { link: '', notes: '' },
         actorPhotos: { link: '', notes: '' },
         otherPhotos: { link: '', notes: '' },
-        logos: [],
-        texts: { title: '', longDescription: '', shortDescription: '' },
+        logos: { link: '', notes: '' },
+        texts: { link: '', longDescription: '', shortDescription: '' },
       },
       step6_venueInfo: [],
       step7_designs: {

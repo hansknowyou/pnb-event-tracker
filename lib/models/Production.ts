@@ -31,39 +31,23 @@ interface IItinerary {
 }
 
 // Step 5: Materials
-interface IVideo {
-  id: string;
-  link: string;
-  notes: string;
-}
-
 interface IPhotos {
   link: string;
   notes: string;
 }
 
-interface ILogo {
-  id: string;
-  organizationType: 'sponsor' | 'organizer' | 'executor';
-  organizationName: string;
-  colorHorizontal: string;
-  colorVertical: string;
-  whiteHorizontal: string;
-  whiteVertical: string;
-}
-
 interface ITexts {
-  title: string;
+  link: string;
   longDescription: string;
   shortDescription: string;
 }
 
 interface IMaterials {
-  videos: IVideo[];
+  videos: IPhotos;
   photos: IPhotos;
   actorPhotos: IPhotos;
   otherPhotos: IPhotos;
-  logos: ILogo[];
+  logos: IPhotos;
   texts: ITexts;
 }
 
@@ -356,11 +340,10 @@ const ProductionSchema = new Schema<IProduction>(
 
     // Step 5: Materials
     step5_materials: {
-      videos: [{
-        id: { type: String, required: true },
+      videos: {
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
-      }],
+      },
       photos: {
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
@@ -373,17 +356,12 @@ const ProductionSchema = new Schema<IProduction>(
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
       },
-      logos: [{
-        id: { type: String, required: true },
-        organizationType: { type: String, enum: ['sponsor', 'organizer', 'executor'], default: 'sponsor' },
-        organizationName: { type: String, default: '' },
-        colorHorizontal: { type: String, default: '' },
-        colorVertical: { type: String, default: '' },
-        whiteHorizontal: { type: String, default: '' },
-        whiteVertical: { type: String, default: '' },
-      }],
+      logos: {
+        link: { type: String, default: '' },
+        notes: { type: String, default: '' },
+      },
       texts: {
-        title: { type: String, default: '' },
+        link: { type: String, default: '' },
         longDescription: { type: String, default: '' },
         shortDescription: { type: String, default: '' },
       },
@@ -642,6 +620,15 @@ const ProductionSchema = new Schema<IProduction>(
     timestamps: true,
   }
 );
+
+const existingProduction = mongoose.models.Production;
+if (existingProduction) {
+  const videosPath = existingProduction.schema.path('step5_materials.videos');
+  const logosPath = existingProduction.schema.path('step5_materials.logos');
+  if (videosPath?.instance === 'Array' || logosPath?.instance === 'Array') {
+    delete mongoose.models.Production;
+  }
+}
 
 // Create or retrieve the model
 const Production = mongoose.models.Production || mongoose.model<IProduction>('Production', ProductionSchema);

@@ -1,36 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Venue from '@/lib/models/Venue';
+import AdminLogo from '@/lib/models/AdminLogo';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch all non-deleted venues (with optional city filtering)
-export async function GET(req: NextRequest) {
+// GET - Fetch all non-deleted logos
+export async function GET() {
   try {
     await dbConnect();
-
-    const { searchParams } = new URL(req.url);
-    const cityParam = searchParams.get('city');
-
-    const query: Record<string, unknown> = { isDeleted: false };
-
-    if (cityParam) {
-      query.city = cityParam;
-    }
-
-    const items = await Venue.find(query).sort({ updatedAt: -1 });
-
+    const items = await AdminLogo.find({ isDeleted: false }).sort({ updatedAt: -1 });
     return NextResponse.json(items, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching venues:', error);
+    console.error('Error fetching logos:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch venues' },
+      { error: 'Failed to fetch logos' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// POST - Create a new venue (admin only)
+// POST - Create a new logo (admin only)
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -51,35 +40,34 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
 
-    if (!body.name || body.name.trim() === '') {
+    if (!body.title?.trim()) {
       return NextResponse.json(
-        { error: 'Name is required' },
+        { error: 'Title is required' },
+        { status: 400, headers: corsHeaders() }
+      );
+    }
+    if (!body.googleFolderLink?.trim()) {
+      return NextResponse.json(
+        { error: 'Google Drive folder link is required' },
         { status: 400, headers: corsHeaders() }
       );
     }
 
-    const item = await Venue.create({
-      name: body.name.trim(),
-      location: body.location || '',
-      city: body.city || '',
-      intro: body.intro || '',
-      staff: Array.isArray(body.staff) ? body.staff : [],
-      logo: body.logo || '',
-      image: body.image || '',
-      otherImages: body.otherImages || '',
-      files: body.files || '',
-      ticketingPlatformId: body.ticketingPlatformId || '',
-      mediaRequirements: body.mediaRequirements || '',
-      notes: body.notes || '',
-      createdBy: user.userId,
+    const item = await AdminLogo.create({
+      title: body.title.trim(),
+      googleFolderLink: body.googleFolderLink.trim(),
+      colorLogoVertical: body.colorLogoVertical || '',
+      whiteLogoVertical: body.whiteLogoVertical || '',
+      colorLogoHorizontal: body.colorLogoHorizontal || '',
+      whiteLogoHorizontal: body.whiteLogoHorizontal || '',
       isDeleted: false,
     });
 
     return NextResponse.json(item, { status: 201, headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error creating venue:', error);
+    console.error('Error creating logo:', error);
     return NextResponse.json(
-      { error: 'Failed to create venue' },
+      { error: 'Failed to create logo' },
       { status: 500, headers: corsHeaders() }
     );
   }

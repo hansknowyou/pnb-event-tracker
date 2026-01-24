@@ -7,12 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
-import type { Materials, Video, Logo } from '@/types/production';
+import type { Materials } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
 interface Step5Props {
@@ -39,6 +38,12 @@ export default function Step5Materials({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
+  const videosData = Array.isArray(data.videos)
+    ? { link: '', notes: '' }
+    : data.videos || { link: '', notes: '' };
+  const logosData = Array.isArray(data.logos)
+    ? { link: '', notes: '' }
+    : data.logos || { link: '', notes: '' };
 
   // Get linked items for each section
   const linkedStep5 = getLinkedItems?.('step5') || [];
@@ -48,52 +53,6 @@ export default function Step5Materials({
   const linkedOtherPhotos = getLinkedItems?.('step5_otherPhotos') || [];
   const linkedLogos = getLinkedItems?.('step5_logos') || [];
   const linkedTexts = getLinkedItems?.('step5_texts') || [];
-
-  // Video management
-  const addVideo = () => {
-    const newVideo: Video = {
-      id: Date.now().toString(),
-      link: '',
-      notes: '',
-    };
-    onChange({ ...data, videos: [...data.videos, newVideo] });
-  };
-
-  const removeVideo = (id: string) => {
-    onChange({ ...data, videos: data.videos.filter((v) => v.id !== id) });
-  };
-
-  const updateVideo = (id: string, field: keyof Video, value: string) => {
-    onChange({
-      ...data,
-      videos: data.videos.map((v) => (v.id === id ? { ...v, [field]: value } : v)),
-    });
-  };
-
-  // Logo management
-  const addLogo = () => {
-    const newLogo: Logo = {
-      id: Date.now().toString(),
-      organizationType: 'sponsor',
-      organizationName: '',
-      colorHorizontal: '',
-      colorVertical: '',
-      whiteHorizontal: '',
-      whiteVertical: '',
-    };
-    onChange({ ...data, logos: [...data.logos, newLogo] });
-  };
-
-  const removeLogo = (id: string) => {
-    onChange({ ...data, logos: data.logos.filter((l) => l.id !== id) });
-  };
-
-  const updateLogo = (id: string, field: keyof Logo, value: string) => {
-    onChange({
-      ...data,
-      logos: data.logos.map((l) => (l.id === id ? { ...l, [field]: value } : l)),
-    });
-  };
 
   const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
@@ -142,52 +101,33 @@ export default function Step5Materials({
         {renderSectionButtons('step5', linkedStep5, true)}
       </div>
 
-      {/* 5.1 Videos (minimum 3) */}
+      {/* 5.1 Videos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.1 Past Performance Videos (Minimum 3)</CardTitle>
+            <CardTitle>5.1 Past Performance Videos</CardTitle>
             {renderSectionButtons('step5_videos', linkedVideos)}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.videos.length < 3 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
-              At least 3 videos are required. Currently: {data.videos.length}
-            </div>
-          )}
-
-          {data.videos.map((video, index) => (
-            <div key={video.id} className="border rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <Label className="font-semibold">Video {index + 1}</Label>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => removeVideo(video.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+          <div>
+            <Label>Google Drive Folder Link</Label>
               <Input
                 type="url"
-                placeholder="Video link (https://...)"
-                value={video.link}
-                onChange={(e) => updateVideo(video.id, 'link', e.target.value)}
-                              />
+                placeholder="https://..."
+                value={videosData.link}
+                onChange={(e) => onChange({ ...data, videos: { ...videosData, link: e.target.value } })}
+              />
+            </div>
+            <div>
+              <Label>Notes</Label>
               <Textarea
                 placeholder="Notes..."
                 rows={2}
-                value={video.notes}
-                onChange={(e) => updateVideo(video.id, 'notes', e.target.value)}
-                              />
+                value={videosData.notes}
+                onChange={(e) => onChange({ ...data, videos: { ...videosData, notes: e.target.value } })}
+              />
             </div>
-          ))}
-
-          <Button onClick={addVideo} variant="outline" className="w-full">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Video
-          </Button>
         </CardContent>
       </Card>
 
@@ -201,13 +141,13 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Photo Link / Folder Link</Label>
+            <Label>Google Drive Folder Link</Label>
             <Input
               type="url"
               placeholder="https://..."
               value={data.photos.link}
               onChange={(e) => onChange({ ...data, photos: { ...data.photos, link: e.target.value } })}
-                          />
+            />
           </div>
           <div>
             <Label>Notes</Label>
@@ -231,13 +171,13 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Photo Link / Folder Link</Label>
+            <Label>Google Drive Folder Link</Label>
             <Input
               type="url"
               placeholder="https://..."
               value={data.actorPhotos.link}
               onChange={(e) => onChange({ ...data, actorPhotos: { ...data.actorPhotos, link: e.target.value } })}
-                          />
+            />
           </div>
           <div>
             <Label>Notes</Label>
@@ -261,13 +201,13 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Photo Link / Folder Link</Label>
+            <Label>Google Drive Folder Link</Label>
             <Input
               type="url"
               placeholder="https://..."
               value={data.otherPhotos.link}
               onChange={(e) => onChange({ ...data, otherPhotos: { ...data.otherPhotos, link: e.target.value } })}
-                          />
+            />
           </div>
           <div>
             <Label>Notes</Label>
@@ -290,93 +230,24 @@ export default function Step5Materials({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.logos.map((logo, index) => (
-            <div key={logo.id} className="border rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <Label className="font-semibold">Logo {index + 1}</Label>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => removeLogo(logo.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Organization Type</Label>
-                  <Select
-                    value={logo.organizationType}
-                    onValueChange={(value) => updateLogo(logo.id, 'organizationType', value)}
-                  >
-                    <SelectTrigger onBlur={onBlur}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sponsor">Sponsor (主办方)</SelectItem>
-                      <SelectItem value="organizer">Organizer (承办方)</SelectItem>
-                      <SelectItem value="executor">Executor (执行方)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label>Organization Name</Label>
-                  <Input
-                    placeholder="Organization name"
-                    value={logo.organizationName}
-                    onChange={(e) => updateLogo(logo.id, 'organizationName', e.target.value)}
-                                      />
-                </div>
-
-                <div>
-                  <Label>Color Horizontal Logo URL</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={logo.colorHorizontal}
-                    onChange={(e) => updateLogo(logo.id, 'colorHorizontal', e.target.value)}
-                                      />
-                </div>
-
-                <div>
-                  <Label>Color Vertical Logo URL</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={logo.colorVertical}
-                    onChange={(e) => updateLogo(logo.id, 'colorVertical', e.target.value)}
-                                      />
-                </div>
-
-                <div>
-                  <Label>White Horizontal Logo URL</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={logo.whiteHorizontal}
-                    onChange={(e) => updateLogo(logo.id, 'whiteHorizontal', e.target.value)}
-                                      />
-                </div>
-
-                <div>
-                  <Label>White Vertical Logo URL</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={logo.whiteVertical}
-                    onChange={(e) => updateLogo(logo.id, 'whiteVertical', e.target.value)}
-                                      />
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <Button onClick={addLogo} variant="outline" className="w-full">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Logo
-          </Button>
+          <div>
+            <Label>Google Drive Folder Link</Label>
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={logosData.link}
+              onChange={(e) => onChange({ ...data, logos: { ...logosData, link: e.target.value } })}
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              placeholder="Notes..."
+              rows={2}
+              value={logosData.notes}
+              onChange={(e) => onChange({ ...data, logos: { ...logosData, notes: e.target.value } })}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -390,21 +261,13 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Performance Title</Label>
+            <Label>Google Drive Folder Link (Original Copies)</Label>
             <Input
-              placeholder="Title"
-              value={data.texts.title}
-              onChange={(e) => onChange({ ...data, texts: { ...data.texts, title: e.target.value } })}
-                          />
-          </div>
-          <div>
-            <Label>Long Description</Label>
-            <Textarea
-              placeholder="Detailed description..."
-              rows={4}
-              value={data.texts.longDescription}
-              onChange={(e) => onChange({ ...data, texts: { ...data.texts, longDescription: e.target.value } })}
-                          />
+              type="url"
+              placeholder="https://..."
+              value={data.texts.link}
+              onChange={(e) => onChange({ ...data, texts: { ...data.texts, link: e.target.value } })}
+            />
           </div>
           <div>
             <Label>Short Description</Label>
@@ -413,7 +276,16 @@ export default function Step5Materials({
               rows={2}
               value={data.texts.shortDescription}
               onChange={(e) => onChange({ ...data, texts: { ...data.texts, shortDescription: e.target.value } })}
-                          />
+            />
+          </div>
+          <div>
+            <Label>Long Description</Label>
+            <Textarea
+              placeholder="Detailed description..."
+              rows={4}
+              value={data.texts.longDescription}
+              onChange={(e) => onChange({ ...data, texts: { ...data.texts, longDescription: e.target.value } })}
+            />
           </div>
         </CardContent>
       </Card>

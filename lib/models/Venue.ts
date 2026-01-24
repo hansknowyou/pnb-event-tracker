@@ -19,7 +19,7 @@ export interface IVenue extends Document {
   staff: IVenueStaff[];
   logo: string;
   image: string;
-  otherImages: string[];
+  otherImages: string;
   files: string;
   ticketingPlatformId: string;
   mediaRequirements: string;
@@ -78,8 +78,8 @@ const VenueSchema = new Schema<IVenue>(
       default: '',
     },
     otherImages: {
-      type: [String],
-      default: [],
+      type: String,
+      default: '',
     },
     files: {
       type: String,

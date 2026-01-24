@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Venue from '@/lib/models/Venue';
+import AdminLogo from '@/lib/models/AdminLogo';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch single venue
+// GET - Fetch single logo
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,26 +13,26 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const item = await Venue.findById(id);
+    const item = await AdminLogo.findById(id);
 
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Logo not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching venue:', error);
+    console.error('Error fetching logo:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch venue' },
+      { error: 'Failed to fetch logo' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// PATCH - Update venue (admin only)
+// PATCH - Update logo (admin only)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -57,71 +57,63 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const item = await Venue.findById(id);
+    const item = await AdminLogo.findById(id);
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Logo not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
 
-    if (body.name !== undefined) {
-      if (body.name.trim() === '') {
+    if (body.title !== undefined) {
+      if (body.title.trim() === '') {
         return NextResponse.json(
-          { error: 'Name cannot be empty' },
+          { error: 'Title cannot be empty' },
           { status: 400, headers: corsHeaders() }
         );
       }
-      item.name = body.name.trim();
+      item.title = body.title.trim();
     }
-    if (body.location !== undefined) {
-      item.location = body.location;
+
+    if (body.googleFolderLink !== undefined) {
+      if (body.googleFolderLink.trim() === '') {
+        return NextResponse.json(
+          { error: 'Google Drive folder link cannot be empty' },
+          { status: 400, headers: corsHeaders() }
+        );
+      }
+      item.googleFolderLink = body.googleFolderLink.trim();
     }
-    if (body.city !== undefined) {
-      item.city = body.city;
+
+    if (body.colorLogoVertical !== undefined) {
+      item.colorLogoVertical = body.colorLogoVertical || '';
     }
-    if (body.intro !== undefined) {
-      item.intro = body.intro;
+
+    if (body.whiteLogoVertical !== undefined) {
+      item.whiteLogoVertical = body.whiteLogoVertical || '';
     }
-    if (body.staff !== undefined && Array.isArray(body.staff)) {
-      item.staff = body.staff;
-      item.markModified('staff');
+
+    if (body.colorLogoHorizontal !== undefined) {
+      item.colorLogoHorizontal = body.colorLogoHorizontal || '';
     }
-    if (body.logo !== undefined) {
-      item.logo = body.logo;
-    }
-    if (body.image !== undefined) {
-      item.image = body.image;
-    }
-    if (body.otherImages !== undefined) {
-      item.otherImages = body.otherImages || '';
-    }
-    if (body.files !== undefined) {
-      item.files = body.files;
-    }
-    if (body.ticketingPlatformId !== undefined) {
-      item.ticketingPlatformId = body.ticketingPlatformId;
-    }
-    if (body.mediaRequirements !== undefined) {
-      item.mediaRequirements = body.mediaRequirements;
-    }
-    if (body.notes !== undefined) {
-      item.notes = body.notes;
+
+    if (body.whiteLogoHorizontal !== undefined) {
+      item.whiteLogoHorizontal = body.whiteLogoHorizontal || '';
     }
 
     await item.save();
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error updating venue:', error);
+    console.error('Error updating logo:', error);
     return NextResponse.json(
-      { error: 'Failed to update venue' },
+      { error: 'Failed to update logo' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// DELETE - Soft delete venue (admin only)
+// DELETE - Soft delete logo (admin only)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -145,10 +137,10 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const item = await Venue.findById(id);
+    const item = await AdminLogo.findById(id);
     if (!item) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Logo not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
@@ -157,13 +149,13 @@ export async function DELETE(
     await item.save();
 
     return NextResponse.json(
-      { message: 'Venue deleted successfully' },
+      { message: 'Logo deleted successfully' },
       { headers: corsHeaders() }
     );
   } catch (error: unknown) {
-    console.error('Error deleting venue:', error);
+    console.error('Error deleting logo:', error);
     return NextResponse.json(
-      { error: 'Failed to delete venue' },
+      { error: 'Failed to delete logo' },
       { status: 500, headers: corsHeaders() }
     );
   }

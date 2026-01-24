@@ -36,13 +36,14 @@ export default function NewVenuePage() {
   const [staff, setStaff] = useState<VenueStaff[]>([]);
   const [logo, setLogo] = useState('');
   const [image, setImage] = useState('');
-  const [otherImages, setOtherImages] = useState<string[]>([]);
+  const [otherImages, setOtherImages] = useState('');
   const [files, setFiles] = useState('');
   const [ticketingPlatformId, setTicketingPlatformId] = useState('');
   const [mediaRequirements, setMediaRequirements] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [openStaffIndex, setOpenStaffIndex] = useState<number | null>(null);
 
   // Available options from database
   const [availableCities, setAvailableCities] = useState<City[]>([]);
@@ -110,10 +111,16 @@ export default function NewVenuePage() {
         note: '',
       },
     ]);
+    setOpenStaffIndex(staff.length);
   };
 
   const handleRemoveStaff = (index: number) => {
     setStaff(staff.filter((_, i) => i !== index));
+    setOpenStaffIndex((current) => {
+      if (current === null) return null;
+      if (current === index) return null;
+      return current > index ? current - 1 : current;
+    });
   };
 
   const handleStaffChange = (
@@ -168,20 +175,6 @@ export default function NewVenuePage() {
     setStaff(newStaff);
   };
 
-  const handleAddOtherImage = () => {
-    setOtherImages([...otherImages, '']);
-  };
-
-  const handleRemoveOtherImage = (index: number) => {
-    setOtherImages(otherImages.filter((_, i) => i !== index));
-  };
-
-  const handleOtherImageChange = (index: number, value: string) => {
-    const newImages = [...otherImages];
-    newImages[index] = value;
-    setOtherImages(newImages);
-  };
-
   const handleSave = async () => {
     if (!name.trim()) {
       setError(t('nameRequired'));
@@ -205,7 +198,7 @@ export default function NewVenuePage() {
           staff: staff.filter(s => s.name || s.email || s.phone),
           logo,
           image,
-          otherImages: otherImages.filter(Boolean),
+          otherImages,
           files,
           ticketingPlatformId,
           mediaRequirements,
@@ -333,42 +326,33 @@ export default function NewVenuePage() {
           </div>
 
           {/* Main Image */}
-          <div>
-            <Label htmlFor="image">{t('mainImage')}</Label>
-            <Input
-              id="image"
-              placeholder={t('imagePlaceholder')}
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-            />
-          </div>
+          <LogoUpload
+            label={t('mainImage')}
+            helpText={t('mainImageHelp')}
+            value={image}
+            onChange={setImage}
+            maxDimension={1000}
+            maxFileSize={0}
+            messages={{
+              invalidType: t('mainImageInvalidType'),
+              fileTooLarge: t('mainImageFileTooLarge'),
+              dimensionTooLarge: t('mainImageDimensionTooLarge'),
+              loadFailed: t('mainImageLoadFailed'),
+              remove: t('mainImageRemove'),
+              empty: t('mainImageEmpty'),
+            }}
+          />
 
-          {/* Other Images */}
+          {/* Other Images (Google Drive) */}
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <Label>{t('otherImages')}</Label>
-              <Button type="button" variant="outline" size="sm" onClick={handleAddOtherImage}>
-                <Plus className="w-4 h-4 mr-1" />
-                {t('addImage')}
-              </Button>
-            </div>
-            {otherImages.map((img, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <Input
-                  placeholder={t('imagePlaceholder')}
-                  value={img}
-                  onChange={(e) => handleOtherImageChange(index, e.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveOtherImage(index)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </Button>
-              </div>
-            ))}
+            <Label htmlFor="otherImages">{t('otherImages')}</Label>
+            <Input
+              id="otherImages"
+              placeholder={t('otherImagesPlaceholder')}
+              value={otherImages}
+              onChange={(e) => setOtherImages(e.target.value)}
+            />
+            <p className="text-xs text-gray-500 mt-1">{t('otherImagesHelp')}</p>
           </div>
 
           {/* Files (Google Drive) */}
@@ -441,18 +425,29 @@ export default function NewVenuePage() {
             {availableRoles.length === 0 && staff.length > 0 && (
               <p className="text-xs text-gray-500 mb-2">{t('noRolesConfigured')}</p>
             )}
-            {staff.map((member, index) => (
-              <div key={index} className="mb-3 p-3 border rounded-md bg-gray-50 space-y-3">
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveStaff(index)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </Button>
-                </div>
+            {staff.map((member, index) => {
+              const isOpen = openStaffIndex === index;
+              return (
+                <div key={index} className="mb-3 border rounded-md bg-gray-50">
+                  <div className="flex items-center justify-between p-3 border-b border-gray-200">
+                    <button
+                      type="button"
+                      className="text-left font-medium text-sm text-gray-800"
+                      onClick={() => setOpenStaffIndex(isOpen ? null : index)}
+                    >
+                      {member.name || t('staffName')} #{index + 1}
+                    </button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveStaff(index)}
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </div>
+                  {isOpen && (
+                    <div className="p-3 space-y-3">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label className="text-xs text-gray-500">{t('selectCompany')}</Label>
@@ -557,8 +552,11 @@ export default function NewVenuePage() {
                   value={member.note || ''}
                   onChange={(e) => handleStaffChange(index, 'note', e.target.value)}
                 />
-              </div>
-            ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Media Requirements */}

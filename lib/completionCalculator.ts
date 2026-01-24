@@ -81,13 +81,10 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
   if (production.step5_materials) {
     const materials = production.step5_materials;
 
-    // 5.1 Videos (at least 3 required)
-    totalFields += 1;
-    if (materials.videos && materials.videos.length >= 3) {
-      filledFields += 1;
-    } else if (materials.videos && materials.videos.length > 0) {
-      filledFields += materials.videos.length / 3;
-    }
+    // 5.1 Videos
+    const videosCount = isLinkNotesObjectFilled(materials.videos);
+    totalFields += videosCount.total;
+    filledFields += videosCount.filled;
 
     // 5.2 Photos
     const photosCount = isLinkNotesObjectFilled(materials.photos);
@@ -104,30 +101,15 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
     totalFields += otherPhotosCount.total;
     filledFields += otherPhotosCount.filled;
 
-    // 5.5 Logos (array)
-    totalFields += 1;
-    if (materials.logos && materials.logos.length > 0) {
-      filledFields += 0.5;
-      const firstLogo = materials.logos[0];
-      let logoFields = 0;
-      let logoFilled = 0;
-
-      logoFields += 6; // organizationName, colorHorizontal, colorVertical, whiteHorizontal, whiteVertical, organizationType
-      if (isStringFilled(firstLogo.organizationName)) logoFilled++;
-      if (isStringFilled(firstLogo.colorHorizontal)) logoFilled++;
-      if (isStringFilled(firstLogo.colorVertical)) logoFilled++;
-      if (isStringFilled(firstLogo.whiteHorizontal)) logoFilled++;
-      if (isStringFilled(firstLogo.whiteVertical)) logoFilled++;
-      if (firstLogo.organizationType) logoFilled++;
-
-      totalFields += logoFields;
-      filledFields += logoFilled;
-    }
+    // 5.5 Logos
+    const logosCount = isLinkNotesObjectFilled(materials.logos);
+    totalFields += logosCount.total;
+    filledFields += logosCount.filled;
 
     // 5.6 Texts
     if (materials.texts) {
       totalFields += 3;
-      if (isStringFilled(materials.texts.title)) filledFields++;
+      if (isStringFilled(materials.texts.link)) filledFields++;
       if (isStringFilled(materials.texts.longDescription)) filledFields++;
       if (isStringFilled(materials.texts.shortDescription)) filledFields++;
     }

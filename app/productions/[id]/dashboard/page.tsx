@@ -374,14 +374,12 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div><span className={production.step5_materials.videos.length >= 3 ? "text-green-600" : "text-yellow-600"}>
-              {production.step5_materials.videos.length >= 3 ? "✓" : "⚠"}</span> Videos: {production.step5_materials.videos.length}/3 minimum</div>
+            <FieldDisplay label="Videos" link={production.step5_materials.videos.link} />
             <FieldDisplay label="Performance Photos" link={production.step5_materials.photos.link} />
             <FieldDisplay label="Actor Photos" link={production.step5_materials.actorPhotos.link} />
             <FieldDisplay label="Other Photos" link={production.step5_materials.otherPhotos.link} />
-            <div><span className={production.step5_materials.logos.length > 0 ? "text-green-600" : "text-red-500"}>
-              {production.step5_materials.logos.length > 0 ? "✓" : "✗"}</span> Logos: {production.step5_materials.logos.length} added</div>
-            <FieldDisplay label="Title" value={production.step5_materials.texts.title} />
+            <FieldDisplay label="Logos" link={production.step5_materials.logos.link} />
+            <FieldDisplay label="Text Folder" link={production.step5_materials.texts.link} />
           </CardContent>
         </Card>
 

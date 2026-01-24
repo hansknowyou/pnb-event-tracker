@@ -137,14 +137,6 @@ export default function ProductionEditPage() {
       ),
       step5_materials: {
         ...prod.step5_materials,
-        videos: prod.step5_materials.videos.filter(video => !isEmpty(video.link)),
-        logos: prod.step5_materials.logos.filter(logo =>
-          !isEmpty(logo.organizationName) ||
-          !isEmpty(logo.colorHorizontal) ||
-          !isEmpty(logo.colorVertical) ||
-          !isEmpty(logo.whiteHorizontal) ||
-          !isEmpty(logo.whiteVertical)
-        ),
       },
       step6_venueInfo: prod.step6_venueInfo.filter(venue =>
         !isEmpty(venue.venueName) || !isEmpty(venue.address)

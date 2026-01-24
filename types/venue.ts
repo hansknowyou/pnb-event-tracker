@@ -18,7 +18,7 @@ export interface Venue {
   staff: VenueStaff[];
   logo?: string; // Base64-encoded logo
   image: string;
-  otherImages: string[];
+  otherImages: string;
   files: string;
   ticketingPlatformId?: string;
   mediaRequirements: string;
