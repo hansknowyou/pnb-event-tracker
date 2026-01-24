@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import LogoUpload from '@/components/LogoUpload';
+import StaffRoleSelect from '@/components/StaffRoleSelect';
 import {
   Select,
   SelectContent,
@@ -31,6 +33,7 @@ export default function NewCompanyPage() {
   const [description, setDescription] = useState('');
   const [files, setFiles] = useState('');
   const [images, setImages] = useState('');
+  const [logo, setLogo] = useState('');
   const [staff, setStaff] = useState<CompanyStaff[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -73,14 +76,18 @@ export default function NewCompanyPage() {
   }
 
   const handleAddStaff = () => {
-    setStaff([...staff, { name: '', role: '', email: '', phone: '' }]);
+    setStaff([...staff, { name: '', role: [], email: '', phone: '' }]);
   };
 
   const handleRemoveStaff = (index: number) => {
     setStaff(staff.filter((_, i) => i !== index));
   };
 
-  const handleStaffChange = (index: number, field: keyof CompanyStaff, value: string) => {
+  const handleStaffChange = (
+    index: number,
+    field: keyof CompanyStaff,
+    value: string | string[]
+  ) => {
     const newStaff = [...staff];
     newStaff[index] = { ...newStaff[index], [field]: value };
     setStaff(newStaff);
@@ -108,6 +115,7 @@ export default function NewCompanyPage() {
           description,
           files,
           images,
+          logo,
           staff: staff.filter(s => s.name || s.email || s.phone),
         }),
       });
@@ -160,6 +168,20 @@ export default function NewCompanyPage() {
           <CardTitle>{t('companyDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          <LogoUpload
+            label={t('logo')}
+            helpText={t('logoHelp')}
+            value={logo}
+            onChange={setLogo}
+            messages={{
+              invalidType: t('logoInvalidType'),
+              fileTooLarge: t('logoFileTooLarge'),
+              dimensionTooLarge: t('logoDimensionTooLarge'),
+              loadFailed: t('logoLoadFailed'),
+              remove: t('logoRemove'),
+              empty: t('logoEmpty'),
+            }}
+          />
           {/* Name */}
           <div>
             <Label htmlFor="name">
@@ -261,21 +283,16 @@ export default function NewCompanyPage() {
                   onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
                   className="flex-1"
                 />
-                <Select
-                  value={member.role}
-                  onValueChange={(value) => handleStaffChange(index, 'role', value)}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder={t('selectRole')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableRoles.map((role) => (
-                      <SelectItem key={role._id} value={role.name}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex-1">
+                  <StaffRoleSelect
+                    value={Array.isArray(member.role) ? member.role : []}
+                    onChange={(value) => handleStaffChange(index, 'role', value)}
+                    availableRoles={availableRoles.map((role) => role.name)}
+                    placeholder={t('selectRole')}
+                    selectLabel={t('selectRole')}
+                    emptyLabel={t('noRolesConfigured')}
+                  />
+                </div>
                 <Input
                   placeholder={t('staffEmail')}
                   value={member.email}

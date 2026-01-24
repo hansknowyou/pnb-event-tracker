@@ -1,6 +1,7 @@
 export interface CompanyStaff {
+  _id?: string;
   name: string;
-  role: string;
+  role: string[];
   email: string;
   phone: string;
 }
@@ -13,6 +14,7 @@ export interface Company {
   description: string;
   files: string; // Google Drive link
   images: string; // Google Drive link
+  logo?: string; // Base64-encoded logo
   staff: CompanyStaff[];
   createdBy: string;
   createdAt: string;

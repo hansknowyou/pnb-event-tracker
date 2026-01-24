@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import StaffRoleSelect from '@/components/StaffRoleSelect';
+import LogoUpload from '@/components/LogoUpload';
 import {
   Select,
   SelectContent,
@@ -60,7 +62,15 @@ export default function CompanyDetailPage() {
       const response = await fetch(`/api/companies/${companyId}`);
       if (response.ok) {
         const data = await response.json();
-        setCompany(data);
+        const normalizedStaff = (data.staff || []).map((member: CompanyStaff) => ({
+          ...member,
+          role: Array.isArray(member.role)
+            ? member.role
+            : member.role
+              ? [member.role]
+              : [],
+        }));
+        setCompany({ ...data, staff: normalizedStaff });
       } else {
         router.push('/companies');
       }
@@ -141,7 +151,7 @@ export default function CompanyDetailPage() {
 
   const handleAddStaff = () => {
     if (company) {
-      const newStaff: CompanyStaff = { name: '', role: '', email: '', phone: '' };
+      const newStaff: CompanyStaff = { name: '', role: [], email: '', phone: '' };
       updateCompany({ staff: [...(company.staff || []), newStaff] });
     }
   };
@@ -152,7 +162,11 @@ export default function CompanyDetailPage() {
     }
   };
 
-  const handleStaffChange = (index: number, field: keyof CompanyStaff, value: string) => {
+  const handleStaffChange = (
+    index: number,
+    field: keyof CompanyStaff,
+    value: string | string[]
+  ) => {
     if (company) {
       const newStaff = [...company.staff];
       newStaff[index] = { ...newStaff[index], [field]: value };
@@ -263,6 +277,21 @@ export default function CompanyDetailPage() {
           <CardTitle>{t('companyDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          <LogoUpload
+            label={t('logo')}
+            helpText={t('logoHelp')}
+            value={company.logo || ''}
+            onChange={(value) => updateCompany({ logo: value })}
+            disabled={!isAdmin}
+            messages={{
+              invalidType: t('logoInvalidType'),
+              fileTooLarge: t('logoFileTooLarge'),
+              dimensionTooLarge: t('logoDimensionTooLarge'),
+              loadFailed: t('logoLoadFailed'),
+              remove: t('logoRemove'),
+              empty: t('logoEmpty'),
+            }}
+          />
           {/* Name */}
           <div>
             <Label htmlFor="name">
@@ -405,23 +434,16 @@ export default function CompanyDetailPage() {
                   className="flex-1"
                 />
                 {isAdmin ? (
-                  <Select
-                    value={member.role}
-                    onValueChange={(value) => handleStaffChange(index, 'role', value)}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder={t('selectRole')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role._id} value={role.name}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <StaffRoleSelect
+                    value={Array.isArray(member.role) ? member.role : []}
+                    onChange={(value) => handleStaffChange(index, 'role', value)}
+                    availableRoles={availableRoles.map((role) => role.name)}
+                    placeholder={t('selectRole')}
+                    selectLabel={t('selectRole')}
+                    emptyLabel={t('noRolesConfigured')}
+                  />
                 ) : (
-                  <Input value={member.role} disabled className="flex-1" />
+                  <Input value={(member.role || []).join(', ')} disabled className="flex-1" />
                 )}
                 <Input
                   placeholder={t('staffEmail')}

@@ -2,8 +2,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IVenueStaff {
   name: string;
-  role: string;
+  role: string[];
   company: string;
+  linkedCompanyId: string;
+  linkedCompanyStaffId: string;
   email: string;
   phone: string;
   note: string;
@@ -15,6 +17,7 @@ export interface IVenue extends Document {
   city: string;
   intro: string;
   staff: IVenueStaff[];
+  logo: string;
   image: string;
   otherImages: string[];
   files: string;
@@ -29,8 +32,10 @@ export interface IVenue extends Document {
 const VenueStaffSchema = new Schema<IVenueStaff>(
   {
     name: { type: String, default: '' },
-    role: { type: String, default: '' },
+    role: { type: [String], default: [] },
     company: { type: String, default: '' },
+    linkedCompanyId: { type: String, default: '' },
+    linkedCompanyStaffId: { type: String, default: '' },
     email: { type: String, default: '' },
     phone: { type: String, default: '' },
     note: { type: String, default: '' },
@@ -62,6 +67,10 @@ const VenueSchema = new Schema<IVenue>(
     staff: {
       type: [VenueStaffSchema],
       default: [],
+    },
+    logo: {
+      type: String,
+      default: '',
     },
     image: {
       type: String,
@@ -102,6 +111,18 @@ const VenueSchema = new Schema<IVenue>(
 VenueSchema.index({ isDeleted: 1 });
 VenueSchema.index({ city: 1 });
 VenueSchema.index({ createdBy: 1 });
+
+const existingVenue = mongoose.models.Venue;
+if (existingVenue) {
+  const staffPath = existingVenue.schema.path('staff') as {
+    schema?: mongoose.Schema;
+  } | undefined;
+  const rolePath = staffPath?.schema?.path('role');
+  const linkedCompanyPath = staffPath?.schema?.path('linkedCompanyId');
+  if (rolePath?.instance !== 'Array' || !linkedCompanyPath) {
+    delete mongoose.models.Venue;
+  }
+}
 
 const Venue =
   mongoose.models.Venue ||

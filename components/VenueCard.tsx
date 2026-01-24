@@ -23,7 +23,16 @@ export default function VenueCard({ item, onEdit }: VenueCardProps) {
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-lg">{item.name}</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-3">
+            {item.logo && (
+              <img
+                src={item.logo}
+                alt={item.name}
+                className="h-10 w-10 rounded border border-gray-200 object-contain bg-white"
+              />
+            )}
+            <span>{item.name}</span>
+          </CardTitle>
           <Button variant="outline" size="sm" onClick={onEdit} className="no-print">
             <Edit className="w-4 h-4 mr-1" />
             Edit

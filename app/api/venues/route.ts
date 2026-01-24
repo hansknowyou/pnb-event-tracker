@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
       city: body.city || '',
       intro: body.intro || '',
       staff: Array.isArray(body.staff) ? body.staff : [],
+      logo: body.logo || '',
       image: body.image || '',
       otherImages: Array.isArray(body.otherImages) ? body.otherImages : [],
       files: body.files || '',

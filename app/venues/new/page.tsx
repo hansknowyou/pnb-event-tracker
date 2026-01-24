@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import LogoUpload from '@/components/LogoUpload';
+import StaffRoleSelect from '@/components/StaffRoleSelect';
 import {
   Select,
   SelectContent,
@@ -18,6 +20,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import type { VenueStaff } from '@/types/venue';
+import type { Company } from '@/types/company';
 import type { City } from '@/types/city';
 import type { StaffRole } from '@/types/staffRole';
 
@@ -30,6 +33,7 @@ export default function NewVenuePage() {
   const [city, setCity] = useState('');
   const [intro, setIntro] = useState('');
   const [staff, setStaff] = useState<VenueStaff[]>([]);
+  const [logo, setLogo] = useState('');
   const [image, setImage] = useState('');
   const [otherImages, setOtherImages] = useState<string[]>([]);
   const [files, setFiles] = useState('');
@@ -41,6 +45,9 @@ export default function NewVenuePage() {
   // Available options from database
   const [availableCities, setAvailableCities] = useState<City[]>([]);
   const [availableRoles, setAvailableRoles] = useState<StaffRole[]>([]);
+  const [availableCompanies, setAvailableCompanies] = useState<Company[]>([]);
+  const getCompanyById = (companyId?: string) =>
+    availableCompanies.find((company) => company._id === companyId);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -52,9 +59,10 @@ export default function NewVenuePage() {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [citiesRes, rolesRes] = await Promise.all([
+        const [citiesRes, rolesRes, companiesRes] = await Promise.all([
           fetch('/api/cities'),
           fetch('/api/staff-roles'),
+          fetch('/api/companies'),
         ]);
         if (citiesRes.ok) {
           const citiesData = await citiesRes.json();
@@ -63,6 +71,10 @@ export default function NewVenuePage() {
         if (rolesRes.ok) {
           const rolesData = await rolesRes.json();
           setAvailableRoles(rolesData);
+        }
+        if (companiesRes.ok) {
+          const companiesData = await companiesRes.json();
+          setAvailableCompanies(companiesData);
         }
       } catch (error) {
         console.error('Error fetching options:', error);
@@ -76,16 +88,74 @@ export default function NewVenuePage() {
   }
 
   const handleAddStaff = () => {
-    setStaff([...staff, { name: '', role: '', company: '', email: '', phone: '', note: '' }]);
+    setStaff([
+      ...staff,
+      {
+        name: '',
+        role: [],
+        company: '',
+        linkedCompanyId: '',
+        linkedCompanyStaffId: '',
+        email: '',
+        phone: '',
+        note: '',
+      },
+    ]);
   };
 
   const handleRemoveStaff = (index: number) => {
     setStaff(staff.filter((_, i) => i !== index));
   };
 
-  const handleStaffChange = (index: number, field: keyof VenueStaff, value: string) => {
+  const handleStaffChange = (
+    index: number,
+    field: keyof VenueStaff,
+    value: string | string[]
+  ) => {
     const newStaff = [...staff];
     newStaff[index] = { ...newStaff[index], [field]: value };
+    setStaff(newStaff);
+  };
+
+  const handleCompanySelect = (index: number, companyId: string) => {
+    const company = availableCompanies.find((item) => item._id === companyId);
+    const newStaff = [...staff];
+    newStaff[index] = {
+      ...newStaff[index],
+      company: company?.name || '',
+      linkedCompanyId: companyId,
+      linkedCompanyStaffId: '',
+    };
+    setStaff(newStaff);
+  };
+
+  const handleCompanyStaffSelect = (index: number, staffId: string) => {
+    const companyId = staff[index]?.linkedCompanyId;
+    const company = availableCompanies.find((item) => item._id === companyId);
+    const companyStaff = company?.staff?.find((member) => member._id === staffId);
+    if (!companyStaff) return;
+
+    const newStaff = [...staff];
+    newStaff[index] = {
+      ...newStaff[index],
+      name: companyStaff.name || '',
+      email: companyStaff.email || '',
+      phone: companyStaff.phone || '',
+      role: Array.isArray(companyStaff.role) ? companyStaff.role : [],
+      company: company?.name || newStaff[index].company || '',
+      linkedCompanyStaffId: staffId,
+    };
+    setStaff(newStaff);
+  };
+
+  const handleCompanyNameChange = (index: number, value: string) => {
+    const newStaff = [...staff];
+    newStaff[index] = {
+      ...newStaff[index],
+      company: value,
+      linkedCompanyId: '',
+      linkedCompanyStaffId: '',
+    };
     setStaff(newStaff);
   };
 
@@ -124,6 +194,7 @@ export default function NewVenuePage() {
           city,
           intro,
           staff: staff.filter(s => s.name || s.email || s.phone),
+          logo,
           image,
           otherImages: otherImages.filter(Boolean),
           files,
@@ -180,6 +251,20 @@ export default function NewVenuePage() {
           <CardTitle>{t('venueDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          <LogoUpload
+            label={t('logo')}
+            helpText={t('logoHelp')}
+            value={logo}
+            onChange={setLogo}
+            messages={{
+              invalidType: t('logoInvalidType'),
+              fileTooLarge: t('logoFileTooLarge'),
+              dimensionTooLarge: t('logoDimensionTooLarge'),
+              loadFailed: t('logoLoadFailed'),
+              remove: t('logoRemove'),
+              empty: t('logoEmpty'),
+            }}
+          />
           {/* Name */}
           <div>
             <Label htmlFor="name">
@@ -301,8 +386,8 @@ export default function NewVenuePage() {
               <p className="text-xs text-gray-500 mb-2">{t('noRolesConfigured')}</p>
             )}
             {staff.map((member, index) => (
-              <div key={index} className="mb-3 p-3 border rounded-md bg-gray-50">
-                <div className="flex justify-end mb-2">
+              <div key={index} className="mb-3 p-3 border rounded-md bg-gray-50 space-y-3">
+                <div className="flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -312,43 +397,103 @@ export default function NewVenuePage() {
                     <Trash2 className="w-4 h-4 text-red-500" />
                   </Button>
                 </div>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  <Input
-                    placeholder={t('staffName')}
-                    value={member.name}
-                    onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
-                  />
-                  <Select
-                    value={member.role}
-                    onValueChange={(value) => handleStaffChange(index, 'role', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('selectRole')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role._id} value={role.name}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder={t('staffCompany')}
-                    value={member.company || ''}
-                    onChange={(e) => handleStaffChange(index, 'company', e.target.value)}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs text-gray-500">{t('selectCompany')}</Label>
+                    <Select
+                      value={member.linkedCompanyId || ''}
+                      onValueChange={(value) => handleCompanySelect(index, value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('selectCompany')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableCompanies.map((company) => (
+                          <SelectItem key={company._id} value={company._id}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {getCompanyById(member.linkedCompanyId)?.logo && (
+                      <div className="mt-2">
+                        <img
+                          src={getCompanyById(member.linkedCompanyId)?.logo as string}
+                          alt={t('logo')}
+                          className="h-8 w-8 rounded border border-gray-200 object-contain bg-white"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">{t('staffCompany')}</Label>
+                    <Input
+                      placeholder={t('staffCompany')}
+                      value={member.company || ''}
+                      onChange={(e) => handleCompanyNameChange(index, e.target.value)}
+                      disabled={Boolean(member.linkedCompanyStaffId)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs text-gray-500">{t('selectCompanyStaff')}</Label>
+                    <Select
+                      value={member.linkedCompanyStaffId || ''}
+                      onValueChange={(value) => handleCompanyStaffSelect(index, value)}
+                      disabled={!member.linkedCompanyId}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('selectCompanyStaff')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(availableCompanies.find((c) => c._id === member.linkedCompanyId)?.staff || []).map(
+                          (staffMember, staffIndex) => (
+                            <SelectItem
+                              key={staffMember._id || `staff-${staffIndex}`}
+                              value={staffMember._id || `staff-${staffIndex}`}
+                            >
+                              {staffMember.name || staffMember.email || staffMember.phone || t('staffName')}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">{t('staffName')}</Label>
+                    <Input
+                      placeholder={t('staffName')}
+                      value={member.name}
+                      onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
+                      disabled={Boolean(member.linkedCompanyStaffId)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">{t('selectRole')}</Label>
+                  <StaffRoleSelect
+                    value={Array.isArray(member.role) ? member.role : []}
+                    onChange={(value) => handleStaffChange(index, 'role', value)}
+                    availableRoles={availableRoles.map((role) => role.name)}
+                    placeholder={t('selectRole')}
+                    selectLabel={t('selectRole')}
+                    emptyLabel={t('noRolesConfigured')}
+                    disabled={Boolean(member.linkedCompanyStaffId)}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2 mb-2">
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder={t('staffEmail')}
                     value={member.email}
                     onChange={(e) => handleStaffChange(index, 'email', e.target.value)}
+                    disabled={Boolean(member.linkedCompanyStaffId)}
                   />
                   <Input
                     placeholder={t('staffPhone')}
                     value={member.phone}
                     onChange={(e) => handleStaffChange(index, 'phone', e.target.value)}
+                    disabled={Boolean(member.linkedCompanyStaffId)}
                   />
                 </div>
                 <Input

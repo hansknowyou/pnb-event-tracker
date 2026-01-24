@@ -87,6 +87,9 @@ export async function PATCH(
       item.staff = body.staff;
       item.markModified('staff');
     }
+    if (body.logo !== undefined) {
+      item.logo = body.logo;
+    }
     if (body.image !== undefined) {
       item.image = body.image;
     }

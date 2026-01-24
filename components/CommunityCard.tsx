@@ -19,8 +19,17 @@ export default function CommunityCard({ community, onDelete }: CommunityCardProp
   return (
     <Card className="hover:shadow-lg transition-shadow cursor-pointer">
       <CardHeader onClick={() => router.push(`/communities/${community._id}`)}>
-        <CardTitle className="flex items-start justify-between">
-          <span className="text-xl">{community.name}</span>
+        <CardTitle className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {community.logo && (
+              <img
+                src={community.logo}
+                alt={community.name}
+                className="h-10 w-10 rounded border border-gray-200 object-contain bg-white"
+              />
+            )}
+            <span className="text-xl">{community.name}</span>
+          </div>
         </CardTitle>
         {community.city && (
           <div className="flex items-center text-sm text-gray-500">

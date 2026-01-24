@@ -1,7 +1,9 @@
 export interface VenueStaff {
   name: string;
-  role: string;
+  role: string[];
   company: string;
+  linkedCompanyId?: string;
+  linkedCompanyStaffId?: string;
   email: string;
   phone: string;
   note: string;
@@ -14,6 +16,7 @@ export interface Venue {
   city: string;
   intro: string;
   staff: VenueStaff[];
+  logo?: string; // Base64-encoded logo
   image: string;
   otherImages: string[];
   files: string;

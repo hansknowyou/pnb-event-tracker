@@ -19,8 +19,17 @@ export default function CompanyCard({ company, onDelete }: CompanyCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow cursor-pointer">
       <CardHeader onClick={() => router.push(`/companies/${company._id}`)}>
-        <CardTitle className="flex items-start justify-between">
-          <span className="text-xl">{company.name}</span>
+        <CardTitle className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {company.logo && (
+              <img
+                src={company.logo}
+                alt={company.name}
+                className="h-10 w-10 rounded border border-gray-200 object-contain bg-white"
+              />
+            )}
+            <span className="text-xl">{company.name}</span>
+          </div>
         </CardTitle>
         {company.city && (
           <div className="flex items-center text-sm text-gray-500">

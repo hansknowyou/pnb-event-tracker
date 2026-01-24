@@ -1,6 +1,9 @@
 export interface CommunityStaff {
   name: string;
-  role: string;
+  role: string[];
+  company?: string;
+  linkedCompanyId?: string;
+  linkedCompanyStaffId?: string;
   email: string;
   phone: string;
 }
@@ -13,6 +16,7 @@ export interface Community {
   description: string;
   files: string; // Google Drive link
   images: string; // Google Drive link
+  logo?: string; // Base64-encoded logo
   staff: CommunityStaff[];
   createdBy: string;
   createdAt: string;
