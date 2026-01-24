@@ -19,6 +19,7 @@ export default function TopNavigation() {
   const isKnowledgeBase = pathname.startsWith('/knowledge-base');
   const isVenues = pathname.startsWith('/venues');
   const isCommunities = pathname.startsWith('/communities');
+  const isCompanies = pathname.startsWith('/companies');
   const isLogin = pathname === '/login';
 
   // Don't show navigation on login page
@@ -104,6 +105,18 @@ export default function TopNavigation() {
                 )}
               >
                 {t('communities')}
+              </Link>
+
+              <Link
+                href="/companies"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  isCompanies
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                )}
+              >
+                {t('companies')}
               </Link>
             </div>
           </div>

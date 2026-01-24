@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IStaffRole extends Document {
   name: string;
+  note?: string;
   createdAt: Date;
   updatedAt: Date;
   isDeleted: boolean;
@@ -14,6 +15,11 @@ const StaffRoleSchema = new Schema<IStaffRole>(
       required: true,
       trim: true,
       maxlength: 100,
+    },
+    note: {
+      type: String,
+      trim: true,
+      maxlength: 500,
     },
     isDeleted: {
       type: Boolean,

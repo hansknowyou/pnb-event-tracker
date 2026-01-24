@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
 
     const item = await StaffRole.create({
       name: body.name.trim(),
+      note: body.note?.trim() || undefined,
       isDeleted: false,
     });
 

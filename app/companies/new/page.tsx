@@ -17,24 +17,21 @@ import {
 } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
-import type { VenueStaff } from '@/types/venue';
+import type { CompanyStaff } from '@/types/company';
 import type { City } from '@/types/city';
 import type { StaffRole } from '@/types/staffRole';
 
-export default function NewVenuePage() {
+export default function NewCompanyPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const t = useTranslations('venues');
+  const t = useTranslations('companies');
   const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
+  const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
-  const [intro, setIntro] = useState('');
-  const [staff, setStaff] = useState<VenueStaff[]>([]);
-  const [image, setImage] = useState('');
-  const [otherImages, setOtherImages] = useState<string[]>([]);
+  const [description, setDescription] = useState('');
   const [files, setFiles] = useState('');
-  const [mediaRequirements, setMediaRequirements] = useState('');
-  const [notes, setNotes] = useState('');
+  const [images, setImages] = useState('');
+  const [staff, setStaff] = useState<CompanyStaff[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -44,7 +41,7 @@ export default function NewVenuePage() {
 
   useEffect(() => {
     if (user && !user.isAdmin) {
-      router.push('/venues');
+      router.push('/companies');
     }
   }, [user, router]);
 
@@ -76,31 +73,17 @@ export default function NewVenuePage() {
   }
 
   const handleAddStaff = () => {
-    setStaff([...staff, { name: '', role: '', company: '', email: '', phone: '', note: '' }]);
+    setStaff([...staff, { name: '', role: '', email: '', phone: '' }]);
   };
 
   const handleRemoveStaff = (index: number) => {
     setStaff(staff.filter((_, i) => i !== index));
   };
 
-  const handleStaffChange = (index: number, field: keyof VenueStaff, value: string) => {
+  const handleStaffChange = (index: number, field: keyof CompanyStaff, value: string) => {
     const newStaff = [...staff];
     newStaff[index] = { ...newStaff[index], [field]: value };
     setStaff(newStaff);
-  };
-
-  const handleAddOtherImage = () => {
-    setOtherImages([...otherImages, '']);
-  };
-
-  const handleRemoveOtherImage = (index: number) => {
-    setOtherImages(otherImages.filter((_, i) => i !== index));
-  };
-
-  const handleOtherImageChange = (index: number, value: string) => {
-    const newImages = [...otherImages];
-    newImages[index] = value;
-    setOtherImages(newImages);
   };
 
   const handleSave = async () => {
@@ -113,22 +96,19 @@ export default function NewVenuePage() {
     setError('');
 
     try {
-      const response = await fetch('/api/venues', {
+      const response = await fetch('/api/companies', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: name.trim(),
-          location,
+          address,
           city,
-          intro,
-          staff: staff.filter(s => s.name || s.email || s.phone),
-          image,
-          otherImages: otherImages.filter(Boolean),
+          description,
           files,
-          mediaRequirements,
-          notes,
+          images,
+          staff: staff.filter(s => s.name || s.email || s.phone),
         }),
       });
 
@@ -138,9 +118,9 @@ export default function NewVenuePage() {
       }
 
       const data = await response.json();
-      router.push(`/venues/${data._id}`);
+      router.push(`/companies/${data._id}`);
     } catch (err) {
-      console.error('Error creating venue:', err);
+      console.error('Error creating company:', err);
       setError(err instanceof Error ? err.message : t('createFailed'));
     } finally {
       setSaving(false);
@@ -161,12 +141,12 @@ export default function NewVenuePage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push('/venues')}
+          onClick={() => router.push('/companies')}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('back')}
         </Button>
-        <h1 className="text-3xl font-bold">{t('createVenue')}</h1>
+        <h1 className="text-3xl font-bold">{t('createCompany')}</h1>
       </div>
 
       {error && (
@@ -177,7 +157,7 @@ export default function NewVenuePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('venueDetails')}</CardTitle>
+          <CardTitle>{t('companyDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Name */}
@@ -194,7 +174,7 @@ export default function NewVenuePage() {
             />
           </div>
 
-          {/* City & Location */}
+          {/* City & Address */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="city">{t('city')}</Label>
@@ -215,65 +195,26 @@ export default function NewVenuePage() {
               )}
             </div>
             <div>
-              <Label htmlFor="location">{t('location')}</Label>
+              <Label htmlFor="address">{t('address')}</Label>
               <Input
-                id="location"
-                placeholder={t('locationPlaceholder')}
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                id="address"
+                placeholder={t('addressPlaceholder')}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
           </div>
 
-          {/* Intro */}
+          {/* Description */}
           <div>
-            <Label htmlFor="intro">{t('intro')}</Label>
+            <Label htmlFor="description">{t('description')}</Label>
             <Textarea
-              id="intro"
-              placeholder={t('introPlaceholder')}
-              value={intro}
-              onChange={(e) => setIntro(e.target.value)}
+              id="description"
+              placeholder={t('descriptionPlaceholder')}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={4}
             />
-          </div>
-
-          {/* Main Image */}
-          <div>
-            <Label htmlFor="image">{t('mainImage')}</Label>
-            <Input
-              id="image"
-              placeholder={t('imagePlaceholder')}
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-            />
-          </div>
-
-          {/* Other Images */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <Label>{t('otherImages')}</Label>
-              <Button type="button" variant="outline" size="sm" onClick={handleAddOtherImage}>
-                <Plus className="w-4 h-4 mr-1" />
-                {t('addImage')}
-              </Button>
-            </div>
-            {otherImages.map((img, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <Input
-                  placeholder={t('imagePlaceholder')}
-                  value={img}
-                  onChange={(e) => handleOtherImageChange(index, e.target.value)}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveOtherImage(index)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </Button>
-              </div>
-            ))}
           </div>
 
           {/* Files (Google Drive) */}
@@ -286,6 +227,18 @@ export default function NewVenuePage() {
               onChange={(e) => setFiles(e.target.value)}
             />
             <p className="text-xs text-gray-500 mt-1">{t('filesHelp')}</p>
+          </div>
+
+          {/* Images (Google Drive) */}
+          <div>
+            <Label htmlFor="images">{t('images')}</Label>
+            <Input
+              id="images"
+              placeholder={t('imagesPlaceholder')}
+              value={images}
+              onChange={(e) => setImages(e.target.value)}
+            />
+            <p className="text-xs text-gray-500 mt-1">{t('imagesHelp')}</p>
           </div>
 
           {/* Staff */}
@@ -301,94 +254,57 @@ export default function NewVenuePage() {
               <p className="text-xs text-gray-500 mb-2">{t('noRolesConfigured')}</p>
             )}
             {staff.map((member, index) => (
-              <div key={index} className="mb-3 p-3 border rounded-md bg-gray-50">
-                <div className="flex justify-end mb-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveStaff(index)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  <Input
-                    placeholder={t('staffName')}
-                    value={member.name}
-                    onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
-                  />
-                  <Select
-                    value={member.role}
-                    onValueChange={(value) => handleStaffChange(index, 'role', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('selectRole')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableRoles.map((role) => (
-                        <SelectItem key={role._id} value={role.name}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    placeholder={t('staffCompany')}
-                    value={member.company || ''}
-                    onChange={(e) => handleStaffChange(index, 'company', e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <Input
-                    placeholder={t('staffEmail')}
-                    value={member.email}
-                    onChange={(e) => handleStaffChange(index, 'email', e.target.value)}
-                  />
-                  <Input
-                    placeholder={t('staffPhone')}
-                    value={member.phone}
-                    onChange={(e) => handleStaffChange(index, 'phone', e.target.value)}
-                  />
-                </div>
+              <div key={index} className="flex gap-2 mb-2 p-3 border rounded-md bg-gray-50">
                 <Input
-                  placeholder={t('staffNote')}
-                  value={member.note || ''}
-                  onChange={(e) => handleStaffChange(index, 'note', e.target.value)}
+                  placeholder={t('staffName')}
+                  value={member.name}
+                  onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
+                  className="flex-1"
                 />
+                <Select
+                  value={member.role}
+                  onValueChange={(value) => handleStaffChange(index, 'role', value)}
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder={t('selectRole')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableRoles.map((role) => (
+                      <SelectItem key={role._id} value={role.name}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder={t('staffEmail')}
+                  value={member.email}
+                  onChange={(e) => handleStaffChange(index, 'email', e.target.value)}
+                  className="flex-1"
+                />
+                <Input
+                  placeholder={t('staffPhone')}
+                  value={member.phone}
+                  onChange={(e) => handleStaffChange(index, 'phone', e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemoveStaff(index)}
+                >
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                </Button>
               </div>
             ))}
-          </div>
-
-          {/* Media Requirements */}
-          <div>
-            <Label htmlFor="mediaRequirements">{t('mediaRequirements')}</Label>
-            <Textarea
-              id="mediaRequirements"
-              placeholder={t('mediaRequirementsPlaceholder')}
-              value={mediaRequirements}
-              onChange={(e) => setMediaRequirements(e.target.value)}
-              rows={4}
-            />
-          </div>
-
-          {/* Notes */}
-          <div>
-            <Label htmlFor="notes">{t('notes')}</Label>
-            <Textarea
-              id="notes"
-              placeholder={t('notesPlaceholder')}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-            />
           </div>
 
           {/* Actions */}
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
-              onClick={() => router.push('/venues')}
+              onClick={() => router.push('/companies')}
             >
               {t('cancel')}
             </Button>
@@ -398,7 +314,7 @@ export default function NewVenuePage() {
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  {t('createVenue')}
+                  {t('createCompany')}
                 </>
               )}
             </Button>

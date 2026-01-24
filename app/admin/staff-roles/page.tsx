@@ -33,6 +33,7 @@ export default function StaffRoleManagementPage() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingRole, setEditingRole] = useState<StaffRole | null>(null);
   const [newRoleName, setNewRoleName] = useState('');
+  const [newRoleNote, setNewRoleNote] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -71,7 +72,7 @@ export default function StaffRoleManagementPage() {
       const response = await fetch('/api/staff-roles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newRoleName }),
+        body: JSON.stringify({ name: newRoleName, note: newRoleNote }),
       });
 
       if (!response.ok) {
@@ -81,6 +82,7 @@ export default function StaffRoleManagementPage() {
 
       setMessage(t('roleCreated'));
       setNewRoleName('');
+      setNewRoleNote('');
       setShowCreateDialog(false);
       fetchRoles();
 
@@ -105,7 +107,7 @@ export default function StaffRoleManagementPage() {
       const response = await fetch(`/api/staff-roles/${editingRole._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editingRole.name }),
+        body: JSON.stringify({ name: editingRole.name, note: editingRole.note }),
       });
 
       if (!response.ok) {
@@ -201,6 +203,16 @@ export default function StaffRoleManagementPage() {
                   placeholder={t('roleNamePlaceholder')}
                 />
               </div>
+
+              <div>
+                <Label htmlFor="new-roleNote">{t('note')}</Label>
+                <Input
+                  id="new-roleNote"
+                  value={newRoleNote}
+                  onChange={(e) => setNewRoleNote(e.target.value)}
+                  placeholder={t('notePlaceholder')}
+                />
+              </div>
             </div>
 
             <DialogFooter>
@@ -236,8 +248,13 @@ export default function StaffRoleManagementPage() {
                   key={role._id}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                 >
-                  <div className="font-medium">{role.name}</div>
-                  <div className="flex gap-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium">{role.name}</div>
+                    {role.note && (
+                      <div className="text-sm text-gray-500 truncate">{role.note}</div>
+                    )}
+                  </div>
+                  <div className="flex gap-1 ml-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -287,6 +304,18 @@ export default function StaffRoleManagementPage() {
                     setEditingRole({ ...editingRole, name: e.target.value })
                   }
                   placeholder={t('roleNamePlaceholder')}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="edit-roleNote">{t('note')}</Label>
+                <Input
+                  id="edit-roleNote"
+                  value={editingRole.note || ''}
+                  onChange={(e) =>
+                    setEditingRole({ ...editingRole, note: e.target.value })
+                  }
+                  placeholder={t('notePlaceholder')}
                 />
               </div>
             </div>

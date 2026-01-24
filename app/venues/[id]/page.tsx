@@ -224,7 +224,7 @@ export default function EditVenuePage({
   };
 
   const handleAddStaff = () => {
-    setStaff([...staff, { name: '', role: '', email: '', phone: '' }]);
+    setStaff([...staff, { name: '', role: '', company: '', email: '', phone: '', note: '' }]);
   };
 
   const handleRemoveStaff = (index: number) => {
@@ -440,48 +440,61 @@ export default function EditVenuePage({
               <p className="text-xs text-gray-500 mb-2">{t('noRolesConfigured')}</p>
             )}
             {staff.map((member, index) => (
-              <div key={index} className="flex gap-2 mb-2 p-3 border rounded-md bg-gray-50">
+              <div key={index} className="mb-3 p-3 border rounded-md bg-gray-50">
+                <div className="flex justify-end mb-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveStaff(index)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <Input
+                    placeholder={t('staffName')}
+                    value={member.name}
+                    onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
+                  />
+                  <Select
+                    value={member.role}
+                    onValueChange={(value) => handleStaffChange(index, 'role', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('selectRole')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableRoles.map((role) => (
+                        <SelectItem key={role._id} value={role.name}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder={t('staffCompany')}
+                    value={member.company || ''}
+                    onChange={(e) => handleStaffChange(index, 'company', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <Input
+                    placeholder={t('staffEmail')}
+                    value={member.email}
+                    onChange={(e) => handleStaffChange(index, 'email', e.target.value)}
+                  />
+                  <Input
+                    placeholder={t('staffPhone')}
+                    value={member.phone}
+                    onChange={(e) => handleStaffChange(index, 'phone', e.target.value)}
+                  />
+                </div>
                 <Input
-                  placeholder={t('staffName')}
-                  value={member.name}
-                  onChange={(e) => handleStaffChange(index, 'name', e.target.value)}
-                  className="flex-1"
+                  placeholder={t('staffNote')}
+                  value={member.note || ''}
+                  onChange={(e) => handleStaffChange(index, 'note', e.target.value)}
                 />
-                <Select
-                  value={member.role}
-                  onValueChange={(value) => handleStaffChange(index, 'role', value)}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder={t('selectRole')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableRoles.map((role) => (
-                      <SelectItem key={role._id} value={role.name}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  placeholder={t('staffEmail')}
-                  value={member.email}
-                  onChange={(e) => handleStaffChange(index, 'email', e.target.value)}
-                  className="flex-1"
-                />
-                <Input
-                  placeholder={t('staffPhone')}
-                  value={member.phone}
-                  onChange={(e) => handleStaffChange(index, 'phone', e.target.value)}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveStaff(index)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </Button>
               </div>
             ))}
           </div>

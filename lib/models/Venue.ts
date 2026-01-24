@@ -3,8 +3,10 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IVenueStaff {
   name: string;
   role: string;
+  company: string;
   email: string;
   phone: string;
+  note: string;
 }
 
 export interface IVenue extends Document {
@@ -28,8 +30,10 @@ const VenueStaffSchema = new Schema<IVenueStaff>(
   {
     name: { type: String, default: '' },
     role: { type: String, default: '' },
+    company: { type: String, default: '' },
     email: { type: String, default: '' },
     phone: { type: String, default: '' },
+    note: { type: String, default: '' },
   },
   { _id: false }
 );

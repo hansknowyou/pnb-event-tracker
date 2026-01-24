@@ -75,6 +75,10 @@ export async function PATCH(
       item.name = body.name.trim();
     }
 
+    if (body.note !== undefined) {
+      item.note = body.note?.trim() || undefined;
+    }
+
     await item.save();
 
     return NextResponse.json(item, { headers: corsHeaders() });

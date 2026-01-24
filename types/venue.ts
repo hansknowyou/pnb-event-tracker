@@ -1,8 +1,10 @@
 export interface VenueStaff {
   name: string;
   role: string;
+  company: string;
   email: string;
   phone: string;
+  note: string;
 }
 
 export interface Venue {
