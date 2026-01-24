@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { Users, MapPin, UserCog, ListOrdered } from 'lucide-react';
+import { Users, MapPin, UserCog, ListOrdered, Ticket } from 'lucide-react';
 
 export default function AdminNav() {
   const pathname = usePathname();
@@ -14,6 +14,7 @@ export default function AdminNav() {
     { href: '/admin/users', label: t('users'), icon: Users },
     { href: '/admin/cities', label: t('cities'), icon: MapPin },
     { href: '/admin/staff-roles', label: t('staffRoles'), icon: UserCog },
+    { href: '/admin/ticketing-platforms', label: t('ticketingPlatforms'), icon: Ticket },
     { href: '/admin/step-config', label: t('stepConfig'), icon: ListOrdered },
   ];
 

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Venue from '@/lib/models/Venue';
+import TicketingPlatform from '@/lib/models/TicketingPlatform';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch single venue
+// GET - Fetch single ticketing platform
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,26 +13,26 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const item = await Venue.findById(id);
+    const item = await TicketingPlatform.findById(id);
 
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Ticketing platform not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching venue:', error);
+    console.error('Error fetching ticketing platform:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch venue' },
+      { error: 'Failed to fetch ticketing platform' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// PATCH - Update venue (admin only)
+// PATCH - Update ticketing platform (admin only)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -57,10 +57,10 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const item = await Venue.findById(id);
+    const item = await TicketingPlatform.findById(id);
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Ticketing platform not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
@@ -68,61 +68,38 @@ export async function PATCH(
     if (body.name !== undefined) {
       if (body.name.trim() === '') {
         return NextResponse.json(
-          { error: 'Name cannot be empty' },
+          { error: 'Platform name cannot be empty' },
           { status: 400, headers: corsHeaders() }
         );
       }
       item.name = body.name.trim();
     }
-    if (body.location !== undefined) {
-      item.location = body.location;
-    }
-    if (body.city !== undefined) {
-      item.city = body.city;
-    }
-    if (body.intro !== undefined) {
-      item.intro = body.intro;
-    }
-    if (body.staff !== undefined && Array.isArray(body.staff)) {
-      item.staff = body.staff;
-      item.markModified('staff');
-    }
+
     if (body.logo !== undefined) {
-      item.logo = body.logo;
+      item.logo = body.logo || '';
     }
-    if (body.image !== undefined) {
-      item.image = body.image;
+
+    if (body.link !== undefined) {
+      item.link = body.link?.trim() || '';
     }
-    if (body.otherImages !== undefined && Array.isArray(body.otherImages)) {
-      item.otherImages = body.otherImages;
-      item.markModified('otherImages');
-    }
-    if (body.files !== undefined) {
-      item.files = body.files;
-    }
-    if (body.ticketingPlatformId !== undefined) {
-      item.ticketingPlatformId = body.ticketingPlatformId;
-    }
-    if (body.mediaRequirements !== undefined) {
-      item.mediaRequirements = body.mediaRequirements;
-    }
-    if (body.notes !== undefined) {
-      item.notes = body.notes;
+
+    if (body.description !== undefined) {
+      item.description = body.description?.trim() || '';
     }
 
     await item.save();
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error updating venue:', error);
+    console.error('Error updating ticketing platform:', error);
     return NextResponse.json(
-      { error: 'Failed to update venue' },
+      { error: 'Failed to update ticketing platform' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// DELETE - Soft delete venue (admin only)
+// DELETE - Soft delete ticketing platform (admin only)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -146,10 +123,10 @@ export async function DELETE(
     await dbConnect();
     const { id } = await params;
 
-    const item = await Venue.findById(id);
+    const item = await TicketingPlatform.findById(id);
     if (!item) {
       return NextResponse.json(
-        { error: 'Venue not found' },
+        { error: 'Ticketing platform not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
@@ -158,13 +135,13 @@ export async function DELETE(
     await item.save();
 
     return NextResponse.json(
-      { message: 'Venue deleted successfully' },
+      { message: 'Ticketing platform deleted successfully' },
       { headers: corsHeaders() }
     );
   } catch (error: unknown) {
-    console.error('Error deleting venue:', error);
+    console.error('Error deleting ticketing platform:', error);
     return NextResponse.json(
-      { error: 'Failed to delete venue' },
+      { error: 'Failed to delete ticketing platform' },
       { status: 500, headers: corsHeaders() }
     );
   }

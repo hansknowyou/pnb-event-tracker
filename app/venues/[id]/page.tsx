@@ -30,6 +30,7 @@ import type { Venue, VenueStaff } from '@/types/venue';
 import type { Company } from '@/types/company';
 import type { City } from '@/types/city';
 import type { StaffRole } from '@/types/staffRole';
+import type { TicketingPlatform } from '@/types/ticketingPlatform';
 import { useTranslations } from 'next-intl';
 
 export default function EditVenuePage({
@@ -51,6 +52,7 @@ export default function EditVenuePage({
   const [image, setImage] = useState('');
   const [otherImages, setOtherImages] = useState<string[]>([]);
   const [files, setFiles] = useState('');
+  const [ticketingPlatformId, setTicketingPlatformId] = useState('');
   const [mediaRequirements, setMediaRequirements] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(true);
@@ -66,17 +68,20 @@ export default function EditVenuePage({
   const [availableCities, setAvailableCities] = useState<City[]>([]);
   const [availableRoles, setAvailableRoles] = useState<StaffRole[]>([]);
   const [availableCompanies, setAvailableCompanies] = useState<Company[]>([]);
+  const [availablePlatforms, setAvailablePlatforms] = useState<TicketingPlatform[]>([]);
   const getCompanyById = (companyId?: string) =>
     availableCompanies.find((company) => company._id === companyId);
+  const selectedPlatform = availablePlatforms.find((platform) => platform._id === ticketingPlatformId);
 
   // Fetch cities and staff roles on mount
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [citiesRes, rolesRes, companiesRes] = await Promise.all([
+        const [citiesRes, rolesRes, companiesRes, platformsRes] = await Promise.all([
           fetch('/api/cities'),
           fetch('/api/staff-roles'),
           fetch('/api/companies'),
+          fetch('/api/ticketing-platforms'),
         ]);
         if (citiesRes.ok) {
           const citiesData = await citiesRes.json();
@@ -89,6 +94,10 @@ export default function EditVenuePage({
         if (companiesRes.ok) {
           const companiesData = await companiesRes.json();
           setAvailableCompanies(companiesData);
+        }
+        if (platformsRes.ok) {
+          const platformsData = await platformsRes.json();
+          setAvailablePlatforms(platformsData);
         }
       } catch (error) {
         console.error('Error fetching options:', error);
@@ -130,6 +139,7 @@ export default function EditVenuePage({
           image,
           otherImages: otherImages.filter(Boolean),
           files,
+          ticketingPlatformId,
           mediaRequirements,
           notes,
         }),
@@ -149,7 +159,7 @@ export default function EditVenuePage({
     } finally {
       setSaving(false);
     }
-  }, [resolvedParams.id, name, location, city, intro, staff, logo, image, otherImages, files, mediaRequirements, notes]);
+  }, [resolvedParams.id, name, location, city, intro, staff, logo, image, otherImages, files, ticketingPlatformId, mediaRequirements, notes]);
 
   const fetchItem = useCallback(async () => {
     try {
@@ -177,6 +187,7 @@ export default function EditVenuePage({
         setImage(data.image || '');
         setOtherImages(data.otherImages || []);
         setFiles(data.files || '');
+        setTicketingPlatformId(data.ticketingPlatformId || '');
         setMediaRequirements(data.mediaRequirements || '');
         setNotes(data.notes || '');
       } else {
@@ -206,6 +217,7 @@ export default function EditVenuePage({
         logo !== (item.logo || '') ||
         image !== (item.image || '') ||
         files !== (item.files || '') ||
+        ticketingPlatformId !== (item.ticketingPlatformId || '') ||
         mediaRequirements !== (item.mediaRequirements || '') ||
         notes !== (item.notes || '') ||
         staffChanged ||
@@ -215,7 +227,7 @@ export default function EditVenuePage({
         setSaveStatus('unsaved');
       }
     }
-  }, [name, location, city, intro, staff, logo, image, otherImages, files, mediaRequirements, notes, item, saveStatus]);
+  }, [name, location, city, intro, staff, logo, image, otherImages, files, ticketingPlatformId, mediaRequirements, notes, item, saveStatus]);
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -523,6 +535,52 @@ export default function EditVenuePage({
               onChange={(e) => setFiles(e.target.value)}
             />
             <p className="text-xs text-gray-500 mt-1">{t('filesHelp')}</p>
+          </div>
+
+          {/* Ticketing Platform */}
+          <div>
+            <Label htmlFor="ticketingPlatform">{t('ticketingPlatform')}</Label>
+            <Select value={ticketingPlatformId} onValueChange={setTicketingPlatformId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t('selectTicketingPlatform')} />
+              </SelectTrigger>
+              <SelectContent>
+                {availablePlatforms.map((platform) => (
+                  <SelectItem key={platform._id} value={platform._id}>
+                    {platform.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedPlatform && (
+              <div className="mt-3 flex items-start gap-3 rounded-md border border-gray-200 bg-gray-50 p-3">
+                {selectedPlatform.logo && (
+                  <img
+                    src={selectedPlatform.logo}
+                    alt={selectedPlatform.name}
+                    className="h-10 w-10 rounded border border-gray-200 object-contain bg-white"
+                  />
+                )}
+                <div className="text-sm text-gray-600">
+                  <div className="font-medium text-gray-900">{selectedPlatform.name}</div>
+                  {selectedPlatform.link && (
+                    <a
+                      href={selectedPlatform.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      {selectedPlatform.link}
+                    </a>
+                  )}
+                  {selectedPlatform.description && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {selectedPlatform.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Staff */}

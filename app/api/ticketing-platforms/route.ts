@@ -1,36 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Venue from '@/lib/models/Venue';
+import TicketingPlatform from '@/lib/models/TicketingPlatform';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch all non-deleted venues (with optional city filtering)
-export async function GET(req: NextRequest) {
+// GET - Fetch all non-deleted ticketing platforms
+export async function GET() {
   try {
     await dbConnect();
 
-    const { searchParams } = new URL(req.url);
-    const cityParam = searchParams.get('city');
-
-    const query: Record<string, unknown> = { isDeleted: false };
-
-    if (cityParam) {
-      query.city = cityParam;
-    }
-
-    const items = await Venue.find(query).sort({ updatedAt: -1 });
+    const items = await TicketingPlatform.find({ isDeleted: false }).sort({ name: 1 });
 
     return NextResponse.json(items, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching venues:', error);
+    console.error('Error fetching ticketing platforms:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch venues' },
+      { error: 'Failed to fetch ticketing platforms' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// POST - Create a new venue (admin only)
+// POST - Create a new ticketing platform (admin only)
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -53,33 +44,24 @@ export async function POST(req: NextRequest) {
 
     if (!body.name || body.name.trim() === '') {
       return NextResponse.json(
-        { error: 'Name is required' },
+        { error: 'Platform name is required' },
         { status: 400, headers: corsHeaders() }
       );
     }
 
-    const item = await Venue.create({
+    const item = await TicketingPlatform.create({
       name: body.name.trim(),
-      location: body.location || '',
-      city: body.city || '',
-      intro: body.intro || '',
-      staff: Array.isArray(body.staff) ? body.staff : [],
       logo: body.logo || '',
-      image: body.image || '',
-      otherImages: Array.isArray(body.otherImages) ? body.otherImages : [],
-      files: body.files || '',
-      ticketingPlatformId: body.ticketingPlatformId || '',
-      mediaRequirements: body.mediaRequirements || '',
-      notes: body.notes || '',
-      createdBy: user.userId,
+      link: body.link?.trim() || '',
+      description: body.description?.trim() || '',
       isDeleted: false,
     });
 
     return NextResponse.json(item, { status: 201, headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error creating venue:', error);
+    console.error('Error creating ticketing platform:', error);
     return NextResponse.json(
-      { error: 'Failed to create venue' },
+      { error: 'Failed to create ticketing platform' },
       { status: 500, headers: corsHeaders() }
     );
   }

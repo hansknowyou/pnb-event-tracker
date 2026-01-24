@@ -20,6 +20,7 @@ export interface Venue {
   image: string;
   otherImages: string[];
   files: string;
+  ticketingPlatformId?: string;
   mediaRequirements: string;
   notes: string;
   createdBy: string;

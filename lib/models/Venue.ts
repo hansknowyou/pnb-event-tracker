@@ -21,6 +21,7 @@ export interface IVenue extends Document {
   image: string;
   otherImages: string[];
   files: string;
+  ticketingPlatformId: string;
   mediaRequirements: string;
   notes: string;
   createdBy: string;
@@ -84,6 +85,10 @@ const VenueSchema = new Schema<IVenue>(
       type: String,
       default: '',
     },
+    ticketingPlatformId: {
+      type: String,
+      default: '',
+    },
     mediaRequirements: {
       type: String,
       default: '',
@@ -119,7 +124,8 @@ if (existingVenue) {
   } | undefined;
   const rolePath = staffPath?.schema?.path('role');
   const linkedCompanyPath = staffPath?.schema?.path('linkedCompanyId');
-  if (rolePath?.instance !== 'Array' || !linkedCompanyPath) {
+  const ticketingPlatformPath = existingVenue.schema.path('ticketingPlatformId');
+  if (rolePath?.instance !== 'Array' || !linkedCompanyPath || !ticketingPlatformPath) {
     delete mongoose.models.Venue;
   }
 }

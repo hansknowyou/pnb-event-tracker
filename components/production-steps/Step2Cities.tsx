@@ -1,22 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
-import type { City } from '@/types/production';
+import type { City as ProductionCity } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
+import type { City as CityOption } from '@/types/city';
 
 interface Step2Props {
-  data: City[];
-  onChange: (data: City[]) => void;
+  data: ProductionCity[];
+  onChange: (data: ProductionCity[]) => void;
   onBlur: () => void;
   productionId?: string;
   linkedKnowledge?: KnowledgeBaseItem[];
@@ -38,9 +46,25 @@ export default function Step2Cities({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
+  const [availableCities, setAvailableCities] = useState<CityOption[]>([]);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch('/api/cities');
+        if (response.ok) {
+          const citiesData = await response.json();
+          setAvailableCities(citiesData);
+        }
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    };
+    fetchCities();
+  }, []);
 
   const addCity = () => {
-    const newCity: City = {
+    const newCity: ProductionCity = {
       id: Date.now().toString(),
       city: '',
       date: '',
@@ -54,10 +78,17 @@ export default function Step2Cities({
     onChange(data.filter((city) => city.id !== id));
   };
 
-  const updateCity = (id: string, field: keyof City, value: string) => {
+  const updateCity = (id: string, field: keyof ProductionCity, value: string) => {
     onChange(
       data.map((city) => (city.id === id ? { ...city, [field]: value } : city))
     );
+  };
+
+  const formatCityName = (c: CityOption) => {
+    const parts = [c.cityName];
+    if (c.province) parts.push(c.province);
+    if (c.country) parts.push(c.country);
+    return parts.join(', ');
   };
 
   return (
@@ -123,11 +154,24 @@ export default function Step2Cities({
                   <Label>
                     City Name <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    placeholder="e.g., New York"
+                  <Select
                     value={city.city}
-                    onChange={(e) => updateCity(city.id, 'city', e.target.value)}
-                                      />
+                    onValueChange={(value) => updateCity(city.id, 'city', value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableCities.map((option) => (
+                        <SelectItem key={option._id} value={formatCityName(option)}>
+                          {formatCityName(option)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {availableCities.length === 0 && (
+                    <p className="text-xs text-gray-500 mt-1">No cities configured.</p>
+                  )}
                 </div>
 
                 <div>
