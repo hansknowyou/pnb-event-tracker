@@ -376,6 +376,7 @@ export default function ProductionDashboard() {
           <CardContent className="space-y-4">
             <FieldDisplay label="Past Performance Videos" link={production.step5_materials.videos?.link || ''} />
             <FieldDisplay label="Performer Videos" link={production.step5_materials.performerVideos?.link || ''} />
+            <FieldDisplay label="Music Collection" link={production.step5_materials.musicCollection?.link || ''} />
             <FieldDisplay label="Performance Scene Photos" link={production.step5_materials.photos?.link || ''} />
             <FieldDisplay label="Performer Photos" link={production.step5_materials.actorPhotos?.link || ''} />
             <FieldDisplay label="Other Photos" link={production.step5_materials.otherPhotos?.link || ''} />

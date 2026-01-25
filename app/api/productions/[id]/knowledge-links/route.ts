@@ -13,6 +13,7 @@ const VALID_SECTIONS: KnowledgeSection[] = [
   'step4',
   'step5_videos',
   'step5_performerVideos',
+  'step5_musicCollection',
   'step5_photos',
   'step5_actorPhotos',
   'step5_otherPhotos',

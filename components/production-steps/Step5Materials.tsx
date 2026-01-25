@@ -42,6 +42,7 @@ export default function Step5Materials({
     ? { link: '', notes: '' }
     : data.videos || { link: '', notes: '' };
   const performerVideosData = data.performerVideos || { link: '', notes: '' };
+  const musicCollectionData = data.musicCollection || { link: '', notes: '' };
   const logosData = Array.isArray(data.logos)
     ? { link: '', notes: '' }
     : data.logos || { link: '', notes: '' };
@@ -50,6 +51,7 @@ export default function Step5Materials({
   const linkedStep5 = getLinkedItems?.('step5') || [];
   const linkedVideos = getLinkedItems?.('step5_videos') || [];
   const linkedPerformerVideos = getLinkedItems?.('step5_performerVideos') || [];
+  const linkedMusicCollection = getLinkedItems?.('step5_musicCollection') || [];
   const linkedPhotos = getLinkedItems?.('step5_photos') || [];
   const linkedActorPhotos = getLinkedItems?.('step5_actorPhotos') || [];
   const linkedOtherPhotos = getLinkedItems?.('step5_otherPhotos') || [];
@@ -163,7 +165,43 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.3 Performance Scene Photos */}
+      {/* 5.3 Music Collection */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>Music Collection</CardTitle>
+            {renderSectionButtons('step5_musicCollection', linkedMusicCollection)}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Google Drive Folder Link</Label>
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={musicCollectionData.link}
+              onChange={(e) => onChange({
+                ...data,
+                musicCollection: { ...musicCollectionData, link: e.target.value }
+              })}
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              placeholder="Notes..."
+              rows={2}
+              value={musicCollectionData.notes}
+              onChange={(e) => onChange({
+                ...data,
+                musicCollection: { ...musicCollectionData, notes: e.target.value }
+              })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 5.4 Performance Scene Photos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
@@ -193,7 +231,7 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.4 Performer Photos */}
+      {/* 5.5 Performer Photos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
@@ -223,7 +261,7 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.5 Other Photos */}
+      {/* 5.6 Other Photos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
@@ -253,7 +291,7 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.6 Logos */}
+      {/* 5.7 Logos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
@@ -283,7 +321,7 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.7 Texts */}
+      {/* 5.8 Texts */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
@@ -336,6 +374,11 @@ export default function Step5Materials({
       <KnowledgeViewDialog
         knowledgeItems={linkedPerformerVideos}
         open={showKnowledge === 'step5_performerVideos'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedMusicCollection}
+        open={showKnowledge === 'step5_musicCollection'}
         onClose={() => setShowKnowledge(null)}
       />
       <KnowledgeViewDialog

@@ -19,6 +19,7 @@ export interface ProductionKnowledgeLinks {
   step5?: string[];
   step5_videos?: string[];
   step5_performerVideos?: string[];
+  step5_musicCollection?: string[];
   step5_photos?: string[];
   step5_actorPhotos?: string[];
   step5_otherPhotos?: string[];
@@ -54,6 +55,7 @@ export const KNOWLEDGE_SECTIONS: Record<KnowledgeSection, string> = {
   step5: 'Material Collection',
   step5_videos: 'Past Performance Videos',
   step5_performerVideos: 'Performer Videos',
+  step5_musicCollection: 'Music Collection',
   step5_photos: 'Performance Scene Photos',
   step5_actorPhotos: 'Performer Photos',
   step5_otherPhotos: 'Other Photos',

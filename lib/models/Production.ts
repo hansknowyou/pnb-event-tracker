@@ -45,6 +45,7 @@ interface ITexts {
 interface IMaterials {
   videos: IPhotos;
   performerVideos: IPhotos;
+  musicCollection: IPhotos;
   photos: IPhotos;
   actorPhotos: IPhotos;
   otherPhotos: IPhotos;
@@ -288,6 +289,7 @@ export interface IProduction extends Document {
   knowledgeLinks_step4?: string[];
   knowledgeLinks_step5_videos?: string[];
   knowledgeLinks_step5_performerVideos?: string[];
+  knowledgeLinks_step5_musicCollection?: string[];
   knowledgeLinks_step5_photos?: string[];
   knowledgeLinks_step5_actorPhotos?: string[];
   knowledgeLinks_step5_otherPhotos?: string[];
@@ -347,6 +349,10 @@ const ProductionSchema = new Schema<IProduction>(
         notes: { type: String, default: '' },
       },
       performerVideos: {
+        link: { type: String, default: '' },
+        notes: { type: String, default: '' },
+      },
+      musicCollection: {
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
       },
@@ -607,6 +613,7 @@ const ProductionSchema = new Schema<IProduction>(
     knowledgeLinks_step4: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step5_videos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step5_performerVideos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step5_musicCollection: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step5_photos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step5_actorPhotos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step5_otherPhotos: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],

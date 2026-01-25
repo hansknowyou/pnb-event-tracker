@@ -91,27 +91,32 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
     totalFields += performerVideosCount.total;
     filledFields += performerVideosCount.filled;
 
-    // 5.3 Performance Scene Photos
+    // 5.3 Music Collection
+    const musicCollectionCount = isLinkNotesObjectFilled(materials.musicCollection);
+    totalFields += musicCollectionCount.total;
+    filledFields += musicCollectionCount.filled;
+
+    // 5.4 Performance Scene Photos
     const photosCount = isLinkNotesObjectFilled(materials.photos);
     totalFields += photosCount.total;
     filledFields += photosCount.filled;
 
-    // 5.4 Performer Photos
+    // 5.5 Performer Photos
     const actorPhotosCount = isLinkNotesObjectFilled(materials.actorPhotos);
     totalFields += actorPhotosCount.total;
     filledFields += actorPhotosCount.filled;
 
-    // 5.5 Other Photos
+    // 5.6 Other Photos
     const otherPhotosCount = isLinkNotesObjectFilled(materials.otherPhotos);
     totalFields += otherPhotosCount.total;
     filledFields += otherPhotosCount.filled;
 
-    // 5.6 Logos
+    // 5.7 Logos
     const logosCount = isLinkNotesObjectFilled(materials.logos);
     totalFields += logosCount.total;
     filledFields += logosCount.filled;
 
-    // 5.7 Texts
+    // 5.8 Texts
     if (materials.texts) {
       totalFields += 3;
       if (isStringFilled(materials.texts.link)) filledFields++;

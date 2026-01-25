@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       step5_materials: {
         videos: { link: '', notes: '' },
         performerVideos: { link: '', notes: '' },
+        musicCollection: { link: '', notes: '' },
         photos: { link: '', notes: '' },
         actorPhotos: { link: '', notes: '' },
         otherPhotos: { link: '', notes: '' },
