@@ -44,35 +44,13 @@ export async function POST(req: NextRequest) {
       },
       step6_venueInfo: [],
       step7_designs: {
-        backdrop: {
-          sourceFile: '',
-          pdfFile: '',
-          pngFile: '',
-          qrCodes: '',
-          trackingQrCodes: '',
-          notes: '',
-        },
-        rollupBanner: {
-          sourceFile: '',
-          pdfFile: '',
-          pngFile: '',
-          qrCodes: '',
-          trackingQrCodes: '',
-          notes: '',
-        },
+        media: [],
       },
       step8_promotionalImages: {
-        poster16_9: [],
-        thumbnail1_1: [],
-        poster1_1: [],
-        poster9_16: [],
-        poster4_3: [],
-        cover5_2: [],
+        media: [],
       },
       step9_videos: {
-        conferenceLoop: { link: '', notes: '' },
-        mainPromo: { link: '', notes: '' },
-        actorIntro: { link: '', notes: '' },
+        media: [],
       },
       step10_pressConference: {
         venue: { datetime: '', location: '', notes: '' },

@@ -86,18 +86,16 @@ export interface VenueInfo {
 }
 
 // Step 7: Designs
-export interface DesignFile {
-  sourceFile: string;
-  pdfFile: string;
-  pngFile: string;
-  qrCodes: string;
-  trackingQrCodes: string;
-  notes: string;
+export interface MediaDesignItem {
+  id: string;
+  title: string;
+  description: string;
+  mediaPackageIds: string[];
+  mediaLink: string;
 }
 
 export interface Designs {
-  backdrop: DesignFile;
-  rollupBanner: DesignFile;
+  media: MediaDesignItem[];
 }
 
 // Step 8: Promotional Images
@@ -119,12 +117,7 @@ export interface Poster4x3 {
 }
 
 export interface PromotionalImages {
-  poster16_9: ImageVersion[];
-  thumbnail1_1: ImageVersion[];
-  poster1_1: ImageVersion[];
-  poster9_16: ImageVersion[];
-  poster4_3: Poster4x3[];
-  cover5_2: ImageVersion[];
+  media: MediaDesignItem[];
 }
 
 // Step 9: Videos
@@ -134,9 +127,7 @@ export interface VideoLink {
 }
 
 export interface Videos {
-  conferenceLoop: VideoLink;
-  mainPromo: VideoLink;
-  actorIntro: VideoLink;
+  media: MediaDesignItem[];
 }
 
 // Step 10: Press Conference

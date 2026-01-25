@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,8 +11,10 @@ import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
-import type { Designs } from '@/types/production';
+import PreviewLink from '@/components/PreviewLink';
+import type { Designs, MediaDesignItem } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
+import type { MediaPackage } from '@/types/mediaPackage';
 
 interface Step7Props {
   data: Designs;
@@ -38,11 +40,68 @@ export default function Step7Designs({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
+  const [mediaPackages, setMediaPackages] = useState<MediaPackage[]>([]);
+  const mediaItems = data.media || [];
 
   // Get linked items for each section
   const linkedStep7 = getLinkedItems?.('step7') || [];
-  const linkedBackdrop = getLinkedItems?.('step7_backdrop') || [];
-  const linkedBanner = getLinkedItems?.('step7_banner') || [];
+
+  useEffect(() => {
+    const fetchMediaPackages = async () => {
+      try {
+        const response = await fetch('/api/media-packages');
+        if (response.ok) {
+          const items = await response.json();
+          setMediaPackages(items || []);
+        }
+      } catch (error) {
+        console.error('Error fetching media packages:', error);
+      }
+    };
+    fetchMediaPackages();
+  }, []);
+
+  const addMediaItem = () => {
+    const nextItem = {
+      id: Date.now().toString(),
+      title: '',
+      description: '',
+      mediaPackageIds: [],
+      mediaLink: '',
+    };
+    onChange({ ...data, media: [...mediaItems, nextItem] });
+  };
+
+  const updateMediaItem = (id: string, updates: Partial<MediaDesignItem>) => {
+    onChange({
+      ...data,
+      media: mediaItems.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+    });
+  };
+
+  const removeMediaItem = (id: string) => {
+    onChange({ ...data, media: mediaItems.filter((item) => item.id !== id) });
+  };
+
+  const togglePackage = (item: MediaDesignItem, packageId: string) => {
+    const hasPackage = item.mediaPackageIds.includes(packageId);
+    return hasPackage
+      ? item.mediaPackageIds.filter((pkgId) => pkgId !== packageId)
+      : [...item.mediaPackageIds, packageId];
+  };
+
+  const renderPackageSummary = (pkg: MediaPackage) => {
+    const mediaTypeTitles = pkg.mediaTypes
+      .map((mediaType) => mediaType.title || 'Untitled')
+      .slice(0, 3);
+    const moreCount = pkg.mediaTypes.length - mediaTypeTitles.length;
+    const summary = mediaTypeTitles.join(', ');
+    return (
+      <div className="text-xs text-gray-500">
+        {pkg.mediaTypes.length === 0 ? 'No media types' : `${summary}${moreCount > 0 ? ` +${moreCount}` : ''}`}
+      </div>
+    );
+  };
 
   const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
@@ -91,217 +150,118 @@ export default function Step7Designs({
         {renderSectionButtons('step7', linkedStep7, true)}
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2 text-sm">
-        <h4 className="font-semibold text-blue-900">Design Requirements:</h4>
-        <div className="text-blue-800 space-y-1">
-          <p><strong>Purpose:</strong></p>
-          <ul className="list-disc ml-5">
-            <li>Backdrop: For venue photo ops, media press conference backdrop</li>
-            <li>Rollup Banner: For media press conference</li>
-          </ul>
-          <p className="mt-2"><strong>Must Include:</strong></p>
-          <ul className="list-disc ml-5">
-            <li>All sponsor/organizer/executor logos and text</li>
-            <li>All acknowledgment units</li>
-            <li>Performance date, time, location, venue</li>
-            <li>Performance title</li>
-            <li>Performance visual design</li>
-          </ul>
-        </div>
+      <div className="space-y-4">
+        {mediaItems.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No media added yet. Click "Add Media" below.
+          </div>
+        )}
+
+        {mediaItems.map((item, index) => (
+            <Card key={item.id}>
+              <CardHeader className="flex flex-row items-start justify-between">
+                <CardTitle>Media {index + 1}</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeMediaItem(item.id)}
+                >
+                  <span className="text-red-500">×</span>
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Title</Label>
+                  <Input
+                    value={item.title}
+                    onChange={(e) => updateMediaItem(item.id, { title: e.target.value })}
+                    placeholder="e.g., Backdrop Design"
+                  />
+                </div>
+
+                <div>
+                  <Label>Description</Label>
+                  <Textarea
+                    rows={2}
+                    value={item.description}
+                    onChange={(e) => updateMediaItem(item.id, { description: e.target.value })}
+                    placeholder="Short description..."
+                  />
+                </div>
+
+                <div>
+                  <Label>Media Packages</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                    {mediaPackages.map((pkg) => (
+                      <label
+                        key={pkg._id}
+                        className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:border-gray-400"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mt-1"
+                          checked={item.mediaPackageIds.includes(pkg._id || '')}
+                          onChange={() => updateMediaItem(item.id, {
+                            mediaPackageIds: togglePackage(item, pkg._id || ''),
+                          })}
+                        />
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-gray-900 truncate">{pkg.name}</div>
+                          {pkg.description && (
+                            <div className="text-xs text-gray-500 line-clamp-2">{pkg.description}</div>
+                          )}
+                          {renderPackageSummary(pkg)}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {item.mediaPackageIds.length > 0 && (
+                  <div className="rounded-md border bg-gray-50 p-3 space-y-2">
+                    {item.mediaPackageIds.map((pkgId) => {
+                      const pkg = mediaPackages.find((entry) => entry._id === pkgId);
+                      if (!pkg) return null;
+                      return (
+                        <div key={pkgId} className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-semibold">{pkg.name}</div>
+                            {pkg.description && (
+                              <p className="text-xs text-gray-500">{pkg.description}</p>
+                            )}
+                            {renderPackageSummary(pkg)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Label className="mb-0">Media files link</Label>
+                    <PreviewLink href={item.mediaLink} />
+                  </div>
+                  <Input
+                    type="url"
+                    placeholder="https://..."
+                    value={item.mediaLink}
+                    onChange={(e) => updateMediaItem(item.id, { mediaLink: e.target.value })}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+        ))}
+
+        <Button type="button" variant="outline" onClick={addMediaItem}>
+          Add Media
+        </Button>
       </div>
-
-      {/* Backdrop Design */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start gap-4">
-            <CardTitle>Backdrop Design (3.5m x 2.5m)</CardTitle>
-            {renderSectionButtons('step7_backdrop', linkedBackdrop)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Source File Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.backdrop.sourceFile}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, sourceFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>PDF Print File Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.backdrop.pdfFile}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, pdfFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>PNG File (3000px) Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.backdrop.pngFile}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, pngFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Ticketing QR Codes Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.backdrop.qrCodes}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, qrCodes: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Platform Tracking QR Codes Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.backdrop.trackingQrCodes}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, trackingQrCodes: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Notes</Label>
-            <Textarea
-              placeholder="Notes..."
-              rows={2}
-              value={data.backdrop.notes}
-              onChange={(e) => onChange({
-                ...data,
-                backdrop: { ...data.backdrop, notes: e.target.value }
-              })}
-                          />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Rollup Banner Design */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start gap-4">
-            <CardTitle>Rollup Banner Design (33.5&quot; x 80&quot;)</CardTitle>
-            {renderSectionButtons('step7_banner', linkedBanner)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Source File Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.rollupBanner.sourceFile}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, sourceFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>PDF Print File Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.rollupBanner.pdfFile}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, pdfFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>PNG File (3000px) Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.rollupBanner.pngFile}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, pngFile: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Ticketing QR Codes Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.rollupBanner.qrCodes}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, qrCodes: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Platform Tracking QR Codes Link</Label>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.rollupBanner.trackingQrCodes}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, trackingQrCodes: e.target.value }
-              })}
-                          />
-          </div>
-
-          <div>
-            <Label>Notes</Label>
-            <Textarea
-              placeholder="Notes..."
-              rows={2}
-              value={data.rollupBanner.notes}
-              onChange={(e) => onChange({
-                ...data,
-                rollupBanner: { ...data.rollupBanner, notes: e.target.value }
-              })}
-                          />
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Knowledge View Dialogs */}
       <KnowledgeViewDialog
         knowledgeItems={linkedStep7}
         open={showKnowledge === 'step7'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linkedBackdrop}
-        open={showKnowledge === 'step7_backdrop'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linkedBanner}
-        open={showKnowledge === 'step7_banner'}
         onClose={() => setShowKnowledge(null)}
       />
     </div>

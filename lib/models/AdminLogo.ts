@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAdminLogo extends Document {
   title: string;
+  description?: string;
   googleFolderLink: string;
   colorLogoVertical: string;
   whiteLogoVertical: string;
@@ -19,6 +20,12 @@ const AdminLogoSchema = new Schema<IAdminLogo>(
       default: '',
       trim: true,
       maxlength: 200,
+    },
+    description: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 1000,
     },
     googleFolderLink: {
       type: String,
@@ -58,11 +65,12 @@ AdminLogoSchema.index({ googleFolderLink: 1 });
 const existingAdminLogo = mongoose.models.AdminLogo;
 if (existingAdminLogo) {
   const titlePath = existingAdminLogo.schema.path('title');
+  const descriptionPath = existingAdminLogo.schema.path('description');
   const colorVerticalPath = existingAdminLogo.schema.path('colorLogoVertical');
   const whiteVerticalPath = existingAdminLogo.schema.path('whiteLogoVertical');
   const colorHorizontalPath = existingAdminLogo.schema.path('colorLogoHorizontal');
   const whiteHorizontalPath = existingAdminLogo.schema.path('whiteLogoHorizontal');
-  if (!titlePath || !colorVerticalPath || !whiteVerticalPath || !colorHorizontalPath || !whiteHorizontalPath) {
+  if (!titlePath || !descriptionPath || !colorVerticalPath || !whiteVerticalPath || !colorHorizontalPath || !whiteHorizontalPath) {
     delete mongoose.models.AdminLogo;
   }
 }

@@ -142,24 +142,7 @@ export default function ProductionEditPage() {
         !isEmpty(venue.venueName) || !isEmpty(venue.address)
       ),
       step8_promotionalImages: {
-        poster16_9: prod.step8_promotionalImages.poster16_9.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
-        thumbnail1_1: prod.step8_promotionalImages.thumbnail1_1.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
-        poster1_1: prod.step8_promotionalImages.poster1_1.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
-        poster9_16: prod.step8_promotionalImages.poster9_16.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
-        poster4_3: prod.step8_promotionalImages.poster4_3.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
-        cover5_2: prod.step8_promotionalImages.cover5_2.filter(img =>
-          !isEmpty(img.chineseLink) || !isEmpty(img.englishLink)
-        ),
+        ...prod.step8_promotionalImages,
       },
       step12_socialMedia: {
         ...prod.step12_socialMedia,

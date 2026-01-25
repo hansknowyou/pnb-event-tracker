@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -41,6 +42,7 @@ export default function AdminLogosPage() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingLogo, setEditingLogo] = useState<AdminLogo | null>(null);
   const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
   const [newGoogleLink, setNewGoogleLink] = useState('');
   const [newColorLogoVertical, setNewColorLogoVertical] = useState('');
   const [newWhiteLogoVertical, setNewWhiteLogoVertical] = useState('');
@@ -90,6 +92,7 @@ export default function AdminLogosPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newTitle,
+          description: newDescription,
           googleFolderLink: newGoogleLink,
           colorLogoVertical: newColorLogoVertical,
           whiteLogoVertical: newWhiteLogoVertical,
@@ -105,6 +108,7 @@ export default function AdminLogosPage() {
 
       setMessage(t('created'));
       setNewTitle('');
+      setNewDescription('');
       setNewGoogleLink('');
       setNewColorLogoVertical('');
       setNewWhiteLogoVertical('');
@@ -139,6 +143,7 @@ export default function AdminLogosPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: editingLogo.title,
+          description: editingLogo.description,
           googleFolderLink: editingLogo.googleFolderLink,
           colorLogoVertical: editingLogo.colorLogoVertical,
           whiteLogoVertical: editingLogo.whiteLogoVertical,
@@ -204,8 +209,8 @@ export default function AdminLogosPage() {
         <AdminNav />
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">{t('title')}</h1>
-            <p className="text-gray-600 mt-2">{t('description')}</p>
+            <h1 className="text-3xl font-bold">{t('pageTitle')}</h1>
+            <p className="text-gray-600 mt-2">{t('pageDescription')}</p>
           </div>
 
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -215,7 +220,7 @@ export default function AdminLogosPage() {
                 {t('addLogo')}
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{t('createLogo')}</DialogTitle>
                 <DialogDescription>{t('createLogoDesc')}</DialogDescription>
@@ -237,6 +242,17 @@ export default function AdminLogosPage() {
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder={t('titlePlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="new-description">{t('descriptionLabel')}</Label>
+                  <Textarea
+                    id="new-description"
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    placeholder={t('descriptionPlaceholder')}
+                    rows={2}
                   />
                 </div>
 
@@ -454,7 +470,10 @@ export default function AdminLogosPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-gray-900 truncate">
-                        {logo.title || t('untitled')}
+                        {t('title')}: {logo.title || t('untitled')}
+                      </div>
+                      <div className="text-xs text-gray-500 line-clamp-2">
+                        {t('descriptionLabel')}: {logo.description || '-'}
                       </div>
                       <div className="text-xs text-blue-600 truncate">
                         {logo.googleFolderLink}
@@ -530,7 +549,7 @@ export default function AdminLogosPage() {
         )}
 
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent>
+          <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('editLogo')}</DialogTitle>
               <DialogDescription>{t('editLogoDesc')}</DialogDescription>
@@ -555,6 +574,19 @@ export default function AdminLogosPage() {
                       setEditingLogo({ ...editingLogo, title: e.target.value })
                     }
                     placeholder={t('titlePlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-description">{t('descriptionLabel')}</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={editingLogo.description || ''}
+                    onChange={(e) =>
+                      setEditingLogo({ ...editingLogo, description: e.target.value })
+                    }
+                    placeholder={t('descriptionPlaceholder')}
+                    rows={2}
                   />
                 </div>
 

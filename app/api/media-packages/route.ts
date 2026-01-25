@@ -1,25 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import AdminLogo from '@/lib/models/AdminLogo';
+import MediaPackage from '@/lib/models/MediaPackage';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch all non-deleted logos
+// GET - Fetch all non-deleted media packages
 export async function GET() {
   try {
     await dbConnect();
-    const items = await AdminLogo.find({ isDeleted: false }).sort({ updatedAt: -1 });
+    const items = await MediaPackage.find({ isDeleted: false }).sort({ updatedAt: -1 });
     return NextResponse.json(items, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching logos:', error);
+    console.error('Error fetching media packages:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch logos' },
+      { error: 'Failed to fetch media packages' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// POST - Create a new logo (admin only)
+// POST - Create a new media package (admin only)
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -40,35 +40,25 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const body = await req.json();
 
-    if (!body.title?.trim()) {
+    if (!body.name?.trim()) {
       return NextResponse.json(
-        { error: 'Title is required' },
-        { status: 400, headers: corsHeaders() }
-      );
-    }
-    if (!body.googleFolderLink?.trim()) {
-      return NextResponse.json(
-        { error: 'Google Drive folder link is required' },
+        { error: 'Package name is required' },
         { status: 400, headers: corsHeaders() }
       );
     }
 
-    const item = await AdminLogo.create({
-      title: body.title.trim(),
+    const item = await MediaPackage.create({
+      name: body.name.trim(),
       description: body.description?.trim() || '',
-      googleFolderLink: body.googleFolderLink.trim(),
-      colorLogoVertical: body.colorLogoVertical || '',
-      whiteLogoVertical: body.whiteLogoVertical || '',
-      colorLogoHorizontal: body.colorLogoHorizontal || '',
-      whiteLogoHorizontal: body.whiteLogoHorizontal || '',
+      mediaTypes: Array.isArray(body.mediaTypes) ? body.mediaTypes : [],
       isDeleted: false,
     });
 
     return NextResponse.json(item, { status: 201, headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error creating logo:', error);
+    console.error('Error creating media package:', error);
     return NextResponse.json(
-      { error: 'Failed to create logo' },
+      { error: 'Failed to create media package' },
       { status: 500, headers: corsHeaders() }
     );
   }

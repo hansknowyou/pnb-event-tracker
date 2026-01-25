@@ -160,55 +160,44 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
 
   // Step 7: Designs
   if (production.step7_designs) {
-    // Backdrop
-    if (production.step7_designs.backdrop) {
-      totalFields += 6;
-      if (isStringFilled(production.step7_designs.backdrop.sourceFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.backdrop.pdfFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.backdrop.pngFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.backdrop.qrCodes)) filledFields++;
-      if (isStringFilled(production.step7_designs.backdrop.trackingQrCodes)) filledFields++;
-      if (isStringFilled(production.step7_designs.backdrop.notes)) filledFields++;
-    }
-
-    // Rollup Banner
-    if (production.step7_designs.rollupBanner) {
-      totalFields += 6;
-      if (isStringFilled(production.step7_designs.rollupBanner.sourceFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.rollupBanner.pdfFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.rollupBanner.pngFile)) filledFields++;
-      if (isStringFilled(production.step7_designs.rollupBanner.qrCodes)) filledFields++;
-      if (isStringFilled(production.step7_designs.rollupBanner.trackingQrCodes)) filledFields++;
-      if (isStringFilled(production.step7_designs.rollupBanner.notes)) filledFields++;
+    totalFields += 1;
+    if (production.step7_designs.media && production.step7_designs.media.length > 0) {
+      filledFields += 0.5;
+      production.step7_designs.media.forEach((item) => {
+        totalFields += 3;
+        if (isStringFilled(item.title)) filledFields++;
+        if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
+        if (isStringFilled(item.mediaLink)) filledFields++;
+      });
     }
   }
 
-  // Step 8: Promotional Images (at least one version for each ratio)
+  // Step 8: Promotional Images
   if (production.step8_promotionalImages) {
-    const images = production.step8_promotionalImages;
-
-    totalFields += 6; // 6 ratios
-    if (images.poster16_9 && images.poster16_9.length > 0) filledFields++;
-    if (images.thumbnail1_1 && images.thumbnail1_1.length > 0) filledFields++;
-    if (images.poster1_1 && images.poster1_1.length > 0) filledFields++;
-    if (images.poster9_16 && images.poster9_16.length > 0) filledFields++;
-    if (images.poster4_3 && images.poster4_3.length > 0) filledFields++;
-    if (images.cover5_2 && images.cover5_2.length > 0) filledFields++;
+    totalFields += 1;
+    if (production.step8_promotionalImages.media && production.step8_promotionalImages.media.length > 0) {
+      filledFields += 0.5;
+      production.step8_promotionalImages.media.forEach((item) => {
+        totalFields += 3;
+        if (isStringFilled(item.title)) filledFields++;
+        if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
+        if (isStringFilled(item.mediaLink)) filledFields++;
+      });
+    }
   }
 
   // Step 9: Videos
   if (production.step9_videos) {
-    const conferenceCount = isLinkNotesObjectFilled(production.step9_videos.conferenceLoop);
-    totalFields += conferenceCount.total;
-    filledFields += conferenceCount.filled;
-
-    const promoCount = isLinkNotesObjectFilled(production.step9_videos.mainPromo);
-    totalFields += promoCount.total;
-    filledFields += promoCount.filled;
-
-    const actorCount = isLinkNotesObjectFilled(production.step9_videos.actorIntro);
-    totalFields += actorCount.total;
-    filledFields += actorCount.filled;
+    totalFields += 1;
+    if (production.step9_videos.media && production.step9_videos.media.length > 0) {
+      filledFields += 0.5;
+      production.step9_videos.media.forEach((item) => {
+        totalFields += 3;
+        if (isStringFilled(item.title)) filledFields++;
+        if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
+        if (isStringFilled(item.mediaLink)) filledFields++;
+      });
+    }
   }
 
   // Step 10: Press Conference

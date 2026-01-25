@@ -89,57 +89,25 @@ interface IVenueInfo {
 }
 
 // Step 7: Designs
-interface IDesignFile {
-  sourceFile: string;
-  pdfFile: string;
-  pngFile: string;
-  qrCodes: string;
-  trackingQrCodes: string;
-  notes: string;
+interface IMediaDesignItem {
+  id: string;
+  title: string;
+  description: string;
+  mediaPackageIds: string[];
+  mediaLink: string;
 }
 
 interface IDesigns {
-  backdrop: IDesignFile;
-  rollupBanner: IDesignFile;
+  media: IMediaDesignItem[];
 }
 
 // Step 8: Promotional Images
-interface IImageVersion {
-  id: string;
-  versionType: 'main-visual' | 'performance-scene' | 'main-actor';
-  chineseLink: string;
-  englishLink: string;
-  notes: string;
-}
-
-interface IPoster4x3 {
-  id: string;
-  versionType: 'main-visual' | 'performance-scene' | 'main-actor';
-  usage: 'print' | 'digital';
-  chineseLink: string;
-  englishLink: string;
-  notes: string;
-}
-
 interface IPromotionalImages {
-  poster16_9: IImageVersion[];
-  thumbnail1_1: IImageVersion[];
-  poster1_1: IImageVersion[];
-  poster9_16: IImageVersion[];
-  poster4_3: IPoster4x3[];
-  cover5_2: IImageVersion[];
-}
-
-// Step 9: Videos
-interface IVideoLink {
-  link: string;
-  notes: string;
+  media: IMediaDesignItem[];
 }
 
 interface IVideos {
-  conferenceLoop: IVideoLink;
-  mainPromo: IVideoLink;
-  actorIntro: IVideoLink;
+  media: IMediaDesignItem[];
 }
 
 // Step 10: Press Conference
@@ -409,84 +377,43 @@ const ProductionSchema = new Schema<IProduction>(
 
     // Step 7: Designs
     step7_designs: {
-      backdrop: {
-        sourceFile: { type: String, default: '' },
-        pdfFile: { type: String, default: '' },
-        pngFile: { type: String, default: '' },
-        qrCodes: { type: String, default: '' },
-        trackingQrCodes: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      rollupBanner: {
-        sourceFile: { type: String, default: '' },
-        pdfFile: { type: String, default: '' },
-        pngFile: { type: String, default: '' },
-        qrCodes: { type: String, default: '' },
-        trackingQrCodes: { type: String, default: '' },
-        notes: { type: String, default: '' },
+      media: {
+        type: [{
+          id: { type: String, required: true },
+          title: { type: String, default: '' },
+          description: { type: String, default: '' },
+          mediaPackageIds: { type: [String], default: [] },
+          mediaLink: { type: String, default: '' },
+        }],
+        default: [],
       },
     },
 
     // Step 8: Promotional Images
     step8_promotionalImages: {
-      poster16_9: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
-      thumbnail1_1: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
-      poster1_1: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
-      poster9_16: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
-      poster4_3: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        usage: { type: String, enum: ['print', 'digital'], default: 'digital' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
-      cover5_2: [{
-        id: { type: String, required: true },
-        versionType: { type: String, enum: ['main-visual', 'performance-scene', 'main-actor'], default: 'main-visual' },
-        chineseLink: { type: String, default: '' },
-        englishLink: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      }],
+      media: {
+        type: [{
+          id: { type: String, required: true },
+          title: { type: String, default: '' },
+          description: { type: String, default: '' },
+          mediaPackageIds: { type: [String], default: [] },
+          mediaLink: { type: String, default: '' },
+        }],
+        default: [],
+      },
     },
 
     // Step 9: Videos
     step9_videos: {
-      conferenceLoop: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      mainPromo: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      actorIntro: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
+      media: {
+        type: [{
+          id: { type: String, required: true },
+          title: { type: String, default: '' },
+          description: { type: String, default: '' },
+          mediaPackageIds: { type: [String], default: [] },
+          mediaLink: { type: String, default: '' },
+        }],
+        default: [],
       },
     },
 

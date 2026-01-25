@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import AdminLogo from '@/lib/models/AdminLogo';
+import MediaPackage from '@/lib/models/MediaPackage';
 import { corsHeaders } from '@/lib/cors';
 import { getCurrentUser } from '@/lib/auth';
 
-// GET - Fetch single logo
+// GET - Fetch single media package
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,26 +13,25 @@ export async function GET(
     await dbConnect();
     const { id } = await params;
 
-    const item = await AdminLogo.findById(id);
-
+    const item = await MediaPackage.findById(id);
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Logo not found' },
+        { error: 'Media package not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error fetching logo:', error);
+    console.error('Error fetching media package:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch logo' },
+      { error: 'Failed to fetch media package' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// PATCH - Update logo (admin only)
+// PATCH - Update media package (admin only)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -57,67 +56,45 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const item = await AdminLogo.findById(id);
+    const item = await MediaPackage.findById(id);
     if (!item || item.isDeleted) {
       return NextResponse.json(
-        { error: 'Logo not found' },
+        { error: 'Media package not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
 
-    if (body.title !== undefined) {
-      if (body.title.trim() === '') {
+    if (body.name !== undefined) {
+      if (!body.name.trim()) {
         return NextResponse.json(
-          { error: 'Title cannot be empty' },
+          { error: 'Package name cannot be empty' },
           { status: 400, headers: corsHeaders() }
         );
       }
-      item.title = body.title.trim();
+      item.name = body.name.trim();
     }
 
     if (body.description !== undefined) {
       item.description = body.description?.trim() || '';
     }
 
-    if (body.googleFolderLink !== undefined) {
-      if (body.googleFolderLink.trim() === '') {
-        return NextResponse.json(
-          { error: 'Google Drive folder link cannot be empty' },
-          { status: 400, headers: corsHeaders() }
-        );
-      }
-      item.googleFolderLink = body.googleFolderLink.trim();
-    }
-
-    if (body.colorLogoVertical !== undefined) {
-      item.colorLogoVertical = body.colorLogoVertical || '';
-    }
-
-    if (body.whiteLogoVertical !== undefined) {
-      item.whiteLogoVertical = body.whiteLogoVertical || '';
-    }
-
-    if (body.colorLogoHorizontal !== undefined) {
-      item.colorLogoHorizontal = body.colorLogoHorizontal || '';
-    }
-
-    if (body.whiteLogoHorizontal !== undefined) {
-      item.whiteLogoHorizontal = body.whiteLogoHorizontal || '';
+    if (body.mediaTypes !== undefined) {
+      item.mediaTypes = Array.isArray(body.mediaTypes) ? body.mediaTypes : [];
     }
 
     await item.save();
 
     return NextResponse.json(item, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error updating logo:', error);
+    console.error('Error updating media package:', error);
     return NextResponse.json(
-      { error: 'Failed to update logo' },
+      { error: 'Failed to update media package' },
       { status: 500, headers: corsHeaders() }
     );
   }
 }
 
-// DELETE - Soft delete logo (admin only)
+// DELETE - Soft delete media package (admin only)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -140,11 +117,10 @@ export async function DELETE(
 
     await dbConnect();
     const { id } = await params;
-
-    const item = await AdminLogo.findById(id);
+    const item = await MediaPackage.findById(id);
     if (!item) {
       return NextResponse.json(
-        { error: 'Logo not found' },
+        { error: 'Media package not found' },
         { status: 404, headers: corsHeaders() }
       );
     }
@@ -152,14 +128,11 @@ export async function DELETE(
     item.isDeleted = true;
     await item.save();
 
-    return NextResponse.json(
-      { message: 'Logo deleted successfully' },
-      { headers: corsHeaders() }
-    );
+    return NextResponse.json({ success: true }, { headers: corsHeaders() });
   } catch (error: unknown) {
-    console.error('Error deleting logo:', error);
+    console.error('Error deleting media package:', error);
     return NextResponse.json(
-      { error: 'Failed to delete logo' },
+      { error: 'Failed to delete media package' },
       { status: 500, headers: corsHeaders() }
     );
   }

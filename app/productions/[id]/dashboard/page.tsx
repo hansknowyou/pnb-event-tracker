@@ -428,8 +428,19 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <FieldDisplay label="Backdrop Source" link={production.step7_designs.backdrop.sourceFile} />
-            <FieldDisplay label="Rollup Banner Source" link={production.step7_designs.rollupBanner.sourceFile} />
+            {production.step7_designs.media?.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No media items added</div>
+            ) : (
+              <div className="space-y-2">
+                {production.step7_designs.media?.map((item) => (
+                  <FieldDisplay
+                    key={item.id}
+                    label={item.title || 'Media Item'}
+                    link={item.mediaLink}
+                  />
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -446,13 +457,20 @@ export default function ProductionDashboard() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div><span className={production.step8_promotionalImages.poster16_9.length > 0 ? "text-green-600" : "text-red-500"}>
-              {production.step8_promotionalImages.poster16_9.length > 0 ? "✓" : "✗"}</span> 16:9 Posters: {production.step8_promotionalImages.poster16_9.length}</div>
-            <div><span className={production.step8_promotionalImages.poster1_1.length > 0 ? "text-green-600" : "text-red-500"}>
-              {production.step8_promotionalImages.poster1_1.length > 0 ? "✓" : "✗"}</span> 1:1 Posters: {production.step8_promotionalImages.poster1_1.length}</div>
-            <div><span className={production.step8_promotionalImages.poster9_16.length > 0 ? "text-green-600" : "text-red-500"}>
-              {production.step8_promotionalImages.poster9_16.length > 0 ? "✓" : "✗"}</span> 9:16 Posters: {production.step8_promotionalImages.poster9_16.length}</div>
+          <CardContent className="space-y-3">
+            {production.step8_promotionalImages.media?.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No media items added</div>
+            ) : (
+              <div className="space-y-2">
+                {production.step8_promotionalImages.media?.map((item) => (
+                  <FieldDisplay
+                    key={item.id}
+                    label={item.title || 'Media Item'}
+                    link={item.mediaLink}
+                  />
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -470,9 +488,19 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <FieldDisplay label="Conference Loop" link={production.step9_videos.conferenceLoop.link} />
-            <FieldDisplay label="Main Promo" link={production.step9_videos.mainPromo.link} />
-            <FieldDisplay label="Actor Intro" link={production.step9_videos.actorIntro.link} />
+            {production.step9_videos.media?.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No media items added</div>
+            ) : (
+              <div className="space-y-2">
+                {production.step9_videos.media?.map((item) => (
+                  <FieldDisplay
+                    key={item.id}
+                    label={item.title || 'Media Item'}
+                    link={item.mediaLink}
+                  />
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 

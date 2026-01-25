@@ -1,19 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
-import type { PromotionalImages, ImageVersion, Poster4x3 } from '@/types/production';
+import PreviewLink from '@/components/PreviewLink';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { PromotionalImages, MediaDesignItem } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
+import type { MediaPackage } from '@/types/mediaPackage';
 
 interface Step8Props {
   data: PromotionalImages;
@@ -39,15 +47,68 @@ export default function Step8PromotionalImages({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
+  const [mediaPackages, setMediaPackages] = useState<MediaPackage[]>([]);
+  const mediaItems = data.media || [];
 
-  // Get linked items for each section
   const linkedStep8 = getLinkedItems?.('step8') || [];
-  const linked16x9 = getLinkedItems?.('step8_16x9') || [];
-  const linked1x1Thumbnail = getLinkedItems?.('step8_1x1_thumbnail') || [];
-  const linked1x1Poster = getLinkedItems?.('step8_1x1_poster') || [];
-  const linked9x16 = getLinkedItems?.('step8_9x16') || [];
-  const linked4x3 = getLinkedItems?.('step8_4x3') || [];
-  const linked5x2 = getLinkedItems?.('step8_5x2') || [];
+
+  useEffect(() => {
+    const fetchMediaPackages = async () => {
+      try {
+        const response = await fetch('/api/media-packages');
+        if (response.ok) {
+          const items = await response.json();
+          setMediaPackages(items || []);
+        }
+      } catch (error) {
+        console.error('Error fetching media packages:', error);
+      }
+    };
+    fetchMediaPackages();
+  }, []);
+
+  const addMediaItem = () => {
+    const nextItem: MediaDesignItem = {
+      id: Date.now().toString(),
+      title: '',
+      description: '',
+      mediaPackageIds: [],
+      mediaLink: '',
+    };
+    onChange({ ...data, media: [...mediaItems, nextItem] });
+  };
+
+  const updateMediaItem = (id: string, updates: Partial<MediaDesignItem>) => {
+    onChange({
+      ...data,
+      media: mediaItems.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+    });
+  };
+
+  const removeMediaItem = (id: string) => {
+    onChange({ ...data, media: mediaItems.filter((item) => item.id !== id) });
+  };
+
+  const togglePackage = (item: MediaDesignItem, packageId: string) => {
+    const hasPackage = item.mediaPackageIds.includes(packageId);
+    return hasPackage
+      ? item.mediaPackageIds.filter((id) => id !== packageId)
+      : [...item.mediaPackageIds, packageId];
+  };
+
+  const renderPackageSummary = (pkg: MediaPackage) => {
+    const mediaTypeTitles = pkg.mediaTypes
+      .map((mediaType) => mediaType.title || 'Untitled')
+      .slice(0, 3);
+    const moreCount = pkg.mediaTypes.length - mediaTypeTitles.length;
+    const summary = mediaTypeTitles.join(', ');
+    return (
+      <div className="text-xs text-gray-500">
+        {pkg.mediaTypes.length === 0 ? 'No media types' : `${summary}${moreCount > 0 ? ` +${moreCount}` : ''}`}
+      </div>
+    );
+  };
+
   const renderSectionButtons = (section: string, linkedItems: KnowledgeBaseItem[], showSave = false) => (
     <div className="flex gap-2">
       {showSave && (
@@ -85,151 +146,6 @@ export default function Step8PromotionalImages({
     </div>
   );
 
-  // Helper functions for managing different image types
-  const addImageVersion = (type: keyof Omit<PromotionalImages, 'poster4_3'>) => {
-    const newImage: ImageVersion = {
-      id: Date.now().toString(),
-      versionType: 'main-visual',
-      chineseLink: '',
-      englishLink: '',
-      notes: '',
-    };
-    onChange({ ...data, [type]: [...data[type], newImage] });
-  };
-
-  const removeImage = (type: keyof Omit<PromotionalImages, 'poster4_3'>, id: string) => {
-    onChange({ ...data, [type]: data[type].filter((img: ImageVersion) => img.id !== id) });
-  };
-
-  const updateImage = (
-    type: keyof Omit<PromotionalImages, 'poster4_3'>,
-    id: string,
-    field: keyof ImageVersion,
-    value: string
-  ) => {
-    onChange({
-      ...data,
-      [type]: data[type].map((img: ImageVersion) =>
-        img.id === id ? { ...img, [field]: value } : img
-      ),
-    });
-  };
-
-  // 4x3 poster management
-  const add4x3Poster = () => {
-    const newPoster: Poster4x3 = {
-      id: Date.now().toString(),
-      versionType: 'main-visual',
-      usage: 'digital',
-      chineseLink: '',
-      englishLink: '',
-      notes: '',
-    };
-    onChange({ ...data, poster4_3: [...data.poster4_3, newPoster] });
-  };
-
-  const remove4x3Poster = (id: string) => {
-    onChange({ ...data, poster4_3: data.poster4_3.filter((p) => p.id !== id) });
-  };
-
-  const update4x3Poster = (id: string, field: keyof Poster4x3, value: string) => {
-    onChange({
-      ...data,
-      poster4_3: data.poster4_3.map((p) =>
-        p.id === id ? { ...p, [field]: value } : p
-      ),
-    });
-  };
-
-  const renderImageSection = (
-    title: string,
-    description: string,
-    type: keyof Omit<PromotionalImages, 'poster4_3'>,
-    images: ImageVersion[],
-    section: string,
-    linkedItems: KnowledgeBaseItem[]
-  ) => (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start gap-4">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-gray-600">{description}</p>
-          </div>
-          {renderSectionButtons(section, linkedItems)}
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {images.map((img, index) => (
-          <div key={img.id} className="border rounded-lg p-4 space-y-3">
-            <div className="flex justify-between items-center">
-              <Label className="font-semibold">Version {index + 1}</Label>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => removeImage(type, img.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div>
-              <Label>Version Type</Label>
-              <Select
-                value={img.versionType}
-                onValueChange={(value) => updateImage(type, img.id, 'versionType', value)}
-              >
-                <SelectTrigger onBlur={onBlur}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="main-visual">Main Visual (主视觉)</SelectItem>
-                  <SelectItem value="performance-scene">Performance Scene (演出现场)</SelectItem>
-                  <SelectItem value="main-actor">Main Actor (主要演员)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Chinese Version Link</Label>
-              <Input
-                type="url"
-                placeholder="https://..."
-                value={img.chineseLink}
-                onChange={(e) => updateImage(type, img.id, 'chineseLink', e.target.value)}
-                              />
-            </div>
-
-            <div>
-              <Label>English Version Link</Label>
-              <Input
-                type="url"
-                placeholder="https://..."
-                value={img.englishLink}
-                onChange={(e) => updateImage(type, img.id, 'englishLink', e.target.value)}
-                              />
-            </div>
-
-            <div>
-              <Label>Notes</Label>
-              <Textarea
-                placeholder="Notes..."
-                rows={2}
-                value={img.notes}
-                onChange={(e) => updateImage(type, img.id, 'notes', e.target.value)}
-                              />
-            </div>
-          </div>
-        ))}
-
-        <Button onClick={() => addImageVersion(type)} variant="outline" className="w-full">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Version
-        </Button>
-      </CardContent>
-    </Card>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
@@ -240,186 +156,117 @@ export default function Step8PromotionalImages({
         {renderSectionButtons('step8', linkedStep8, true)}
       </div>
 
-      {renderImageSection(
-        '16:9 Poster',
-        'Name and date only',
-        'poster16_9',
-        data.poster16_9,
-        'step8_16x9',
-        linked16x9
-      )}
-
-      {renderImageSection(
-        '1:1 Thumbnail',
-        'No text - for ticket cover',
-        'thumbnail1_1',
-        data.thumbnail1_1,
-        'step8_1x1_thumbnail',
-        linked1x1Thumbnail
-      )}
-
-      {renderImageSection(
-        '1:1 Poster',
-        'With name, date, and logos',
-        'poster1_1',
-        data.poster1_1,
-        'step8_1x1_poster',
-        linked1x1Poster
-      )}
-
-      {renderImageSection(
-        '9:16 Poster',
-        'With name, date, and logos',
-        'poster9_16',
-        data.poster9_16,
-        'step8_9x16',
-        linked9x16
-      )}
-
-      {/* 8.5 4:3 Poster (special with usage field) */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start gap-4">
-            <div>
-              <CardTitle>4:3 Poster</CardTitle>
-              <p className="text-sm text-gray-600">
-                With name, date, logos, ticketing info, QR code - for print & digital
-              </p>
-            </div>
-            {renderSectionButtons('step8_4x3', linked4x3)}
+      <div className="space-y-4">
+        {mediaItems.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No media added yet. Click "Add Media" below.
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.poster4_3.map((poster, index) => (
-            <div key={poster.id} className="border rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <Label className="font-semibold">Version {index + 1}</Label>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => remove4x3Poster(poster.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+        )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Version Type</Label>
-                  <Select
-                    value={poster.versionType}
-                    onValueChange={(value) => update4x3Poster(poster.id, 'versionType', value)}
-                  >
-                    <SelectTrigger onBlur={onBlur}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="main-visual">Main Visual</SelectItem>
-                      <SelectItem value="performance-scene">Performance Scene</SelectItem>
-                      <SelectItem value="main-actor">Main Actor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label>Usage</Label>
-                  <Select
-                    value={poster.usage}
-                    onValueChange={(value) => update4x3Poster(poster.id, 'usage', value)}
-                  >
-                    <SelectTrigger onBlur={onBlur}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="print">Print</SelectItem>
-                      <SelectItem value="digital">Digital</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
+        {mediaItems.map((item, index) => (
+          <Card key={item.id}>
+            <CardHeader className="flex flex-row items-start justify-between">
+              <CardTitle>Media {index + 1}</CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => removeMediaItem(item.id)}
+              >
+                <span className="text-red-500">×</span>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
-                <Label>Chinese Version Link</Label>
+                <Label>Title</Label>
                 <Input
-                  type="url"
-                  placeholder="https://..."
-                  value={poster.chineseLink}
-                  onChange={(e) => update4x3Poster(poster.id, 'chineseLink', e.target.value)}
-                                  />
+                  value={item.title}
+                  onChange={(e) => updateMediaItem(item.id, { title: e.target.value })}
+                  placeholder="e.g., Poster Set"
+                />
               </div>
 
               <div>
-                <Label>English Version Link</Label>
-                <Input
-                  type="url"
-                  placeholder="https://..."
-                  value={poster.englishLink}
-                  onChange={(e) => update4x3Poster(poster.id, 'englishLink', e.target.value)}
-                                  />
-              </div>
-
-              <div>
-                <Label>Notes</Label>
+                <Label>Description</Label>
                 <Textarea
-                  placeholder="Notes..."
                   rows={2}
-                  value={poster.notes}
-                  onChange={(e) => update4x3Poster(poster.id, 'notes', e.target.value)}
-                                  />
+                  value={item.description}
+                  onChange={(e) => updateMediaItem(item.id, { description: e.target.value })}
+                  placeholder="Short description..."
+                />
               </div>
-            </div>
-          ))}
 
-          <Button onClick={add4x3Poster} variant="outline" className="w-full">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Version
-          </Button>
-        </CardContent>
-      </Card>
+              <div>
+                <Label>Media Packages</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                  {mediaPackages.map((pkg) => (
+                    <label
+                      key={pkg._id}
+                      className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:border-gray-400"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mt-1"
+                        checked={item.mediaPackageIds.includes(pkg._id || '')}
+                        onChange={() => updateMediaItem(item.id, {
+                          mediaPackageIds: togglePackage(item, pkg._id || ''),
+                        })}
+                      />
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">{pkg.name}</div>
+                        {pkg.description && (
+                          <div className="text-xs text-gray-500 line-clamp-2">{pkg.description}</div>
+                        )}
+                        {renderPackageSummary(pkg)}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-      {renderImageSection(
-        '5:2 Pure Image',
-        'No text - for Facebook cover',
-        'cover5_2',
-        data.cover5_2,
-        'step8_5x2',
-        linked5x2
-      )}
+              {item.mediaPackageIds.length > 0 && (
+                <div className="rounded-md border bg-gray-50 p-3 space-y-2">
+                  {item.mediaPackageIds.map((pkgId) => {
+                    const pkg = mediaPackages.find((entry) => entry._id === pkgId);
+                    if (!pkg) return null;
+                    return (
+                      <div key={pkgId} className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold">{pkg.name}</div>
+                          {pkg.description && (
+                            <p className="text-xs text-gray-500">{pkg.description}</p>
+                          )}
+                          {renderPackageSummary(pkg)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
-      {/* Knowledge View Dialogs */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <Label className="mb-0">Media files link</Label>
+                  <PreviewLink href={item.mediaLink} />
+                </div>
+                <Input
+                  type="url"
+                  placeholder="https://..."
+                  value={item.mediaLink}
+                  onChange={(e) => updateMediaItem(item.id, { mediaLink: e.target.value })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        <Button type="button" variant="outline" onClick={addMediaItem}>
+          Add Media
+        </Button>
+      </div>
+
       <KnowledgeViewDialog
         knowledgeItems={linkedStep8}
         open={showKnowledge === 'step8'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked16x9}
-        open={showKnowledge === 'step8_16x9'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked1x1Thumbnail}
-        open={showKnowledge === 'step8_1x1_thumbnail'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked1x1Poster}
-        open={showKnowledge === 'step8_1x1_poster'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked9x16}
-        open={showKnowledge === 'step8_9x16'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked4x3}
-        open={showKnowledge === 'step8_4x3'}
-        onClose={() => setShowKnowledge(null)}
-      />
-      <KnowledgeViewDialog
-        knowledgeItems={linked5x2}
-        open={showKnowledge === 'step8_5x2'}
         onClose={() => setShowKnowledge(null)}
       />
     </div>
