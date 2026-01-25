@@ -95,6 +95,20 @@ export default function Step5Materials({
     </div>
   );
 
+  const renderPreviewLink = (link?: string) => {
+    if (!link) return null;
+    return (
+      <a
+        href={link}
+        target="_blank"
+        rel="noreferrer"
+        className="text-sm text-blue-600 hover:underline"
+      >
+        Preview
+      </a>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
@@ -109,7 +123,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Past Performance Videos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Past Performance Videos</CardTitle>
+              {renderPreviewLink(videosData.link)}
+            </div>
             {renderSectionButtons('step5_videos', linkedVideos)}
           </div>
         </CardHeader>
@@ -139,7 +156,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Performer Videos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Performer Videos</CardTitle>
+              {renderPreviewLink(performerVideosData.link)}
+            </div>
             {renderSectionButtons('step5_performerVideos', linkedPerformerVideos)}
           </div>
         </CardHeader>
@@ -169,7 +189,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Music Collection</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Music Collection</CardTitle>
+              {renderPreviewLink(musicCollectionData.link)}
+            </div>
             {renderSectionButtons('step5_musicCollection', linkedMusicCollection)}
           </div>
         </CardHeader>
@@ -205,7 +228,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Performance Scene Photos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Performance Scene Photos</CardTitle>
+              {renderPreviewLink(data.photos.link)}
+            </div>
             {renderSectionButtons('step5_photos', linkedPhotos)}
           </div>
         </CardHeader>
@@ -235,7 +261,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Performer Photos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Performer Photos</CardTitle>
+              {renderPreviewLink(data.actorPhotos.link)}
+            </div>
             {renderSectionButtons('step5_actorPhotos', linkedActorPhotos)}
           </div>
         </CardHeader>
@@ -265,7 +294,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Other Photos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Other Photos</CardTitle>
+              {renderPreviewLink(data.otherPhotos.link)}
+            </div>
             {renderSectionButtons('step5_otherPhotos', linkedOtherPhotos)}
           </div>
         </CardHeader>
@@ -295,7 +327,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Organization Logos</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Organization Logos</CardTitle>
+              {renderPreviewLink(logosData.link)}
+            </div>
             {renderSectionButtons('step5_logos', linkedLogos)}
           </div>
         </CardHeader>
@@ -325,7 +360,10 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>Performance Copy/Text</CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle>Performance Copy/Text</CardTitle>
+              {renderPreviewLink(data.texts.link)}
+            </div>
             {renderSectionButtons('step5_texts', linkedTexts)}
           </div>
         </CardHeader>
