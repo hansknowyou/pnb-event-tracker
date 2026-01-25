@@ -80,10 +80,10 @@ export default function Step9Videos({
         </div>
       </div>
 
-      {/* 9.1 Conference Loop Video */}
+      {/* Conference Loop Video */}
       <Card>
         <CardHeader>
-          <CardTitle>9.1 Press Conference Loop Video (16:9)</CardTitle>
+          <CardTitle>Press Conference Loop Video (16:9)</CardTitle>
           <p className="text-sm text-gray-600">
             6-10 slides including: title, cast, program, date/time/location, organizers, logo page
           </p>
@@ -116,10 +116,10 @@ export default function Step9Videos({
         </CardContent>
       </Card>
 
-      {/* 9.2 Main Promo Video */}
+      {/* Main Promo Video */}
       <Card>
         <CardHeader>
-          <CardTitle>9.2 Main Promotional Video (16:9 - Trailer Style)</CardTitle>
+          <CardTitle>Main Promotional Video (16:9 - Trailer Style)</CardTitle>
           <p className="text-sm text-gray-600">
             Performance clips montage + organizer logos + date/time/location
           </p>
@@ -152,10 +152,10 @@ export default function Step9Videos({
         </CardContent>
       </Card>
 
-      {/* 9.3 Actor Intro Video */}
+      {/* Actor Intro Video */}
       <Card>
         <CardHeader>
-          <CardTitle>9.3 Actor Introduction Video (16:9)</CardTitle>
+          <CardTitle>Actor Introduction Video (16:9)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

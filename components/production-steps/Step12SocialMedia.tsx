@@ -156,10 +156,10 @@ export default function Step12SocialMedia({
         </div>
       </div>
 
-      {/* 12.1 Website Update */}
+      {/* Website Update */}
       <Card>
         <CardHeader>
-          <CardTitle>12.1 Website Update</CardTitle>
+          <CardTitle>Website Update</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-2">
@@ -202,10 +202,10 @@ export default function Step12SocialMedia({
         </CardContent>
       </Card>
 
-      {/* 12.2 Platform Posts */}
+      {/* Platform Posts */}
       <Card>
         <CardHeader>
-          <CardTitle>12.2 Social Media Platforms</CardTitle>
+          <CardTitle>Social Media Platforms</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {data.platforms.map((platform, pIndex) => (
@@ -327,10 +327,10 @@ export default function Step12SocialMedia({
         </CardContent>
       </Card>
 
-      {/* 12.3 Facebook Event */}
+      {/* Facebook Event */}
       <Card>
         <CardHeader>
-          <CardTitle>12.3 Facebook Event Page</CardTitle>
+          <CardTitle>Facebook Event Page</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

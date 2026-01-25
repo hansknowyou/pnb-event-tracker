@@ -241,7 +241,7 @@ export default function Step8PromotionalImages({
       </div>
 
       {renderImageSection(
-        '8.1 16:9 Poster',
+        '16:9 Poster',
         'Name and date only',
         'poster16_9',
         data.poster16_9,
@@ -250,7 +250,7 @@ export default function Step8PromotionalImages({
       )}
 
       {renderImageSection(
-        '8.2 1:1 Thumbnail',
+        '1:1 Thumbnail',
         'No text - for ticket cover',
         'thumbnail1_1',
         data.thumbnail1_1,
@@ -259,7 +259,7 @@ export default function Step8PromotionalImages({
       )}
 
       {renderImageSection(
-        '8.3 1:1 Poster',
+        '1:1 Poster',
         'With name, date, and logos',
         'poster1_1',
         data.poster1_1,
@@ -268,7 +268,7 @@ export default function Step8PromotionalImages({
       )}
 
       {renderImageSection(
-        '8.4 9:16 Poster',
+        '9:16 Poster',
         'With name, date, and logos',
         'poster9_16',
         data.poster9_16,
@@ -281,7 +281,7 @@ export default function Step8PromotionalImages({
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
             <div>
-              <CardTitle>8.5 4:3 Poster</CardTitle>
+              <CardTitle>4:3 Poster</CardTitle>
               <p className="text-sm text-gray-600">
                 With name, date, logos, ticketing info, QR code - for print & digital
               </p>
@@ -378,7 +378,7 @@ export default function Step8PromotionalImages({
       </Card>
 
       {renderImageSection(
-        '8.6 5:2 Pure Image',
+        '5:2 Pure Image',
         'No text - for Facebook cover',
         'cover5_2',
         data.cover5_2,

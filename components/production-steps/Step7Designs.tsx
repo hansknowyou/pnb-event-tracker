@@ -110,11 +110,11 @@ export default function Step7Designs({
         </div>
       </div>
 
-      {/* 7.1 Backdrop Design */}
+      {/* Backdrop Design */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>7.1 Backdrop Design (3.5m x 2.5m)</CardTitle>
+            <CardTitle>Backdrop Design (3.5m x 2.5m)</CardTitle>
             {renderSectionButtons('step7_backdrop', linkedBackdrop)}
           </div>
         </CardHeader>
@@ -199,11 +199,11 @@ export default function Step7Designs({
         </CardContent>
       </Card>
 
-      {/* 7.2 Rollup Banner Design */}
+      {/* Rollup Banner Design */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>7.2 Rollup Banner Design (33.5&quot; x 80&quot;)</CardTitle>
+            <CardTitle>Rollup Banner Design (33.5&quot; x 80&quot;)</CardTitle>
             {renderSectionButtons('step7_banner', linkedBanner)}
           </div>
         </CardHeader>

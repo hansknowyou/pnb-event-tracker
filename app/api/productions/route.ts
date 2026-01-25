@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       step4_itinerary: { link: '', notes: '' },
       step5_materials: {
         videos: { link: '', notes: '' },
+        performerVideos: { link: '', notes: '' },
         photos: { link: '', notes: '' },
         actorPhotos: { link: '', notes: '' },
         otherPhotos: { link: '', notes: '' },

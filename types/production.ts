@@ -41,6 +41,7 @@ export interface Texts {
 
 export interface Materials {
   videos: Photos;
+  performerVideos: Photos;
   photos: Photos;
   actorPhotos: Photos;
   otherPhotos: Photos;
@@ -281,6 +282,7 @@ export interface Production {
   knowledgeLinks_step3?: string[];
   knowledgeLinks_step4?: string[];
   knowledgeLinks_step5_videos?: string[];
+  knowledgeLinks_step5_performerVideos?: string[];
   knowledgeLinks_step5_photos?: string[];
   knowledgeLinks_step5_actorPhotos?: string[];
   knowledgeLinks_step5_otherPhotos?: string[];

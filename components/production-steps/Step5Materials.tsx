@@ -41,6 +41,7 @@ export default function Step5Materials({
   const videosData = Array.isArray(data.videos)
     ? { link: '', notes: '' }
     : data.videos || { link: '', notes: '' };
+  const performerVideosData = data.performerVideos || { link: '', notes: '' };
   const logosData = Array.isArray(data.logos)
     ? { link: '', notes: '' }
     : data.logos || { link: '', notes: '' };
@@ -48,6 +49,7 @@ export default function Step5Materials({
   // Get linked items for each section
   const linkedStep5 = getLinkedItems?.('step5') || [];
   const linkedVideos = getLinkedItems?.('step5_videos') || [];
+  const linkedPerformerVideos = getLinkedItems?.('step5_performerVideos') || [];
   const linkedPhotos = getLinkedItems?.('step5_photos') || [];
   const linkedActorPhotos = getLinkedItems?.('step5_actorPhotos') || [];
   const linkedOtherPhotos = getLinkedItems?.('step5_otherPhotos') || [];
@@ -105,37 +107,67 @@ export default function Step5Materials({
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.1 Past Performance Videos</CardTitle>
+            <CardTitle>Past Performance Videos</CardTitle>
             {renderSectionButtons('step5_videos', linkedVideos)}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <Label>Google Drive Folder Link</Label>
-              <Input
-                type="url"
-                placeholder="https://..."
-                value={videosData.link}
-                onChange={(e) => onChange({ ...data, videos: { ...videosData, link: e.target.value } })}
-              />
-            </div>
-            <div>
-              <Label>Notes</Label>
-              <Textarea
-                placeholder="Notes..."
-                rows={2}
-                value={videosData.notes}
-                onChange={(e) => onChange({ ...data, videos: { ...videosData, notes: e.target.value } })}
-              />
-            </div>
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={videosData.link}
+              onChange={(e) => onChange({ ...data, videos: { ...videosData, link: e.target.value } })}
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              placeholder="Notes..."
+              rows={2}
+              value={videosData.notes}
+              onChange={(e) => onChange({ ...data, videos: { ...videosData, notes: e.target.value } })}
+            />
+          </div>
         </CardContent>
       </Card>
 
-      {/* 5.2 Performance Photos */}
+      {/* 5.2 Performer Videos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.2 Performance Scene Photos (5-10 photos)</CardTitle>
+            <CardTitle>Performer Videos</CardTitle>
+            {renderSectionButtons('step5_performerVideos', linkedPerformerVideos)}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Google Drive Folder Link</Label>
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={performerVideosData.link}
+              onChange={(e) => onChange({ ...data, performerVideos: { ...performerVideosData, link: e.target.value } })}
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              placeholder="Notes..."
+              rows={2}
+              value={performerVideosData.notes}
+              onChange={(e) => onChange({ ...data, performerVideos: { ...performerVideosData, notes: e.target.value } })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 5.3 Performance Scene Photos */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start gap-4">
+            <CardTitle>Performance Scene Photos</CardTitle>
             {renderSectionButtons('step5_photos', linkedPhotos)}
           </div>
         </CardHeader>
@@ -156,16 +188,16 @@ export default function Step5Materials({
               rows={2}
               value={data.photos.notes}
               onChange={(e) => onChange({ ...data, photos: { ...data.photos, notes: e.target.value } })}
-                          />
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* 5.3 Actor Photos */}
+      {/* 5.4 Performer Photos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.3 Main Actor Headshot Photos</CardTitle>
+            <CardTitle>Performer Photos</CardTitle>
             {renderSectionButtons('step5_actorPhotos', linkedActorPhotos)}
           </div>
         </CardHeader>
@@ -186,16 +218,16 @@ export default function Step5Materials({
               rows={2}
               value={data.actorPhotos.notes}
               onChange={(e) => onChange({ ...data, actorPhotos: { ...data.actorPhotos, notes: e.target.value } })}
-                          />
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* 5.4 Other Element Photos */}
+      {/* 5.5 Other Photos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.4 Other Element Photos</CardTitle>
+            <CardTitle>Other Photos</CardTitle>
             {renderSectionButtons('step5_otherPhotos', linkedOtherPhotos)}
           </div>
         </CardHeader>
@@ -216,16 +248,16 @@ export default function Step5Materials({
               rows={2}
               value={data.otherPhotos.notes}
               onChange={(e) => onChange({ ...data, otherPhotos: { ...data.otherPhotos, notes: e.target.value } })}
-                          />
+            />
           </div>
         </CardContent>
       </Card>
 
-      {/* 5.5 Logos */}
+      {/* 5.6 Logos */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.5 Organization Logos</CardTitle>
+            <CardTitle>Organization Logos</CardTitle>
             {renderSectionButtons('step5_logos', linkedLogos)}
           </div>
         </CardHeader>
@@ -251,11 +283,11 @@ export default function Step5Materials({
         </CardContent>
       </Card>
 
-      {/* 5.6 Texts */}
+      {/* 5.7 Texts */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start gap-4">
-            <CardTitle>5.6 Performance Copy/Text</CardTitle>
+            <CardTitle>Performance Copy/Text</CardTitle>
             {renderSectionButtons('step5_texts', linkedTexts)}
           </div>
         </CardHeader>
@@ -299,6 +331,11 @@ export default function Step5Materials({
       <KnowledgeViewDialog
         knowledgeItems={linkedVideos}
         open={showKnowledge === 'step5_videos'}
+        onClose={() => setShowKnowledge(null)}
+      />
+      <KnowledgeViewDialog
+        knowledgeItems={linkedPerformerVideos}
+        open={showKnowledge === 'step5_performerVideos'}
         onClose={() => setShowKnowledge(null)}
       />
       <KnowledgeViewDialog

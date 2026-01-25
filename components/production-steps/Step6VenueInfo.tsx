@@ -158,9 +158,9 @@ export default function Step6VenueInfo({
                 </Button>
               </div>
 
-              {/* 6.1 Basic Info */}
+              {/* Basic Info */}
               <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">6.1 Basic Information</h5>
+                <h5 className="font-semibold text-sm text-gray-700">Basic Information</h5>
 
                 <div>
                   <Label>Venue Name {!venue.linkedVenueId && <span className="text-red-500">*</span>}</Label>
@@ -206,9 +206,9 @@ export default function Step6VenueInfo({
                 </div>
               </div>
 
-              {/* 6.2 Required Forms */}
+              {/* Required Forms */}
               <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">6.2 Venue Required Forms</h5>
+                <h5 className="font-semibold text-sm text-gray-700">Venue Required Forms</h5>
 
                 <div>
                   <Label>Forms Link</Label>
@@ -235,9 +235,9 @@ export default function Step6VenueInfo({
                 </div>
               </div>
 
-              {/* 6.3 Ticket Design & Pricing */}
+              {/* Ticket Design & Pricing */}
               <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">6.3 Ticket Design & Pricing</h5>
+                <h5 className="font-semibold text-sm text-gray-700">Ticket Design & Pricing</h5>
 
                 <div>
                   <Label>Ticket Design Link</Label>
@@ -264,9 +264,9 @@ export default function Step6VenueInfo({
                 </div>
               </div>
 
-              {/* 6.4 Seat Map */}
+              {/* Seat Map */}
               <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">6.4 Reserved Seat Map</h5>
+                <h5 className="font-semibold text-sm text-gray-700">Reserved Seat Map</h5>
 
                 <div>
                   <Label>Seat Map Link</Label>
@@ -293,9 +293,9 @@ export default function Step6VenueInfo({
                 </div>
               </div>
 
-              {/* 6.5 Ticket Link */}
+              {/* Ticket Link */}
               <div className="space-y-4">
-                <h5 className="font-semibold text-sm text-gray-700">6.5 Ticketing Link</h5>
+                <h5 className="font-semibold text-sm text-gray-700">Ticketing Link</h5>
 
                 <div>
                   <Label>Ticket Purchase Link</Label>

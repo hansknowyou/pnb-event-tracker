@@ -152,10 +152,10 @@ export default function Step13Advertising({
         </div>
       </div>
 
-      {/* 13.1 Online Advertising */}
+      {/* Online Advertising */}
       <Card>
         <CardHeader>
-          <CardTitle>13.1 Online Advertising</CardTitle>
+          <CardTitle>Online Advertising</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {data.online.length === 0 && (
@@ -241,10 +241,10 @@ export default function Step13Advertising({
         </CardContent>
       </Card>
 
-      {/* 13.2 Offline Collaboration */}
+      {/* Offline Collaboration */}
       <Card>
         <CardHeader>
-          <CardTitle>13.2 Offline Collaboration</CardTitle>
+          <CardTitle>Offline Collaboration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {data.offline.length === 0 && (

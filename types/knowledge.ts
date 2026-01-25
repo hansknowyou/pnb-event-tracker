@@ -18,6 +18,7 @@ export interface ProductionKnowledgeLinks {
   step4?: string[];
   step5?: string[];
   step5_videos?: string[];
+  step5_performerVideos?: string[];
   step5_photos?: string[];
   step5_actorPhotos?: string[];
   step5_otherPhotos?: string[];
@@ -51,23 +52,24 @@ export const KNOWLEDGE_SECTIONS: Record<KnowledgeSection, string> = {
   step3: 'Venue Contracts',
   step4: 'Itinerary',
   step5: 'Material Collection',
-  step5_videos: '5.1 Videos',
-  step5_photos: '5.2 Photos',
-  step5_actorPhotos: '5.3 Actor Photos',
-  step5_otherPhotos: '5.4 Other Photos',
-  step5_logos: '5.5 Logos',
-  step5_texts: '5.6 Texts',
+  step5_videos: 'Past Performance Videos',
+  step5_performerVideos: 'Performer Videos',
+  step5_photos: 'Performance Scene Photos',
+  step5_actorPhotos: 'Performer Photos',
+  step5_otherPhotos: 'Other Photos',
+  step5_logos: 'Logos',
+  step5_texts: 'Texts',
   step6: 'Venue Info',
   step7: 'Designs',
-  step7_backdrop: '7.1 Backdrop',
-  step7_banner: '7.2 Rollup Banner',
+  step7_backdrop: 'Backdrop',
+  step7_banner: 'Rollup Banner',
   step8: 'Promotional Images',
-  step8_16x9: '8.1 Poster 16:9',
-  step8_1x1_thumbnail: '8.2 Thumbnail 1:1',
-  step8_1x1_poster: '8.3 Poster 1:1',
-  step8_9x16: '8.4 Poster 9:16',
-  step8_4x3: '8.5 Poster 4:3',
-  step8_5x2: '8.6 Cover 5:2',
+  step8_16x9: 'Poster 16:9',
+  step8_1x1_thumbnail: 'Thumbnail 1:1',
+  step8_1x1_poster: 'Poster 1:1',
+  step8_9x16: 'Poster 9:16',
+  step8_4x3: 'Poster 4:3',
+  step8_5x2: 'Cover 5:2',
   step9: 'Videos',
   step10: 'Press Conference',
   step11: 'Performance Shooting',

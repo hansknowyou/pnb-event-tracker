@@ -81,10 +81,10 @@ export default function Step10PressConference({
         </div>
       </div>
 
-      {/* 10.1 Venue Info */}
+      {/* Venue Info */}
       <Card>
         <CardHeader>
-          <CardTitle>10.1 Press Conference Venue</CardTitle>
+          <CardTitle>Press Conference Venue</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -124,14 +124,14 @@ export default function Step10PressConference({
         </CardContent>
       </Card>
 
-      {/* 10.2-10.7 Simple Links */}
+      {/* Simple Links */}
       {[
-        { key: 'invitation', title: '10.2 Invitation' },
-        { key: 'guestList', title: '10.3 Guest List' },
-        { key: 'pressRelease', title: '10.4 Press Release' },
-        { key: 'backdropVideo', title: '10.5 Backdrop Video' },
-        { key: 'backgroundMusic', title: '10.6 Background Music' },
-        { key: 'screenContent', title: '10.7 Background Screen Content' },
+        { key: 'invitation', title: 'Invitation' },
+        { key: 'guestList', title: 'Guest List' },
+        { key: 'pressRelease', title: 'Press Release' },
+        { key: 'backdropVideo', title: 'Backdrop Video' },
+        { key: 'backgroundMusic', title: 'Background Music' },
+        { key: 'screenContent', title: 'Background Screen Content' },
       ].map(({ key, title }) => (
         <Card key={key}>
           <CardHeader>
@@ -166,10 +166,10 @@ export default function Step10PressConference({
         </Card>
       ))}
 
-      {/* 10.8 Rollup Banner PDF */}
+      {/* Rollup Banner PDF */}
       <Card>
         <CardHeader>
-          <CardTitle>10.8 Rollup Banner Design PDF</CardTitle>
+          <CardTitle>Rollup Banner Design PDF</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -212,10 +212,10 @@ export default function Step10PressConference({
         </CardContent>
       </Card>
 
-      {/* 10.9 Small Poster */}
+      {/* Small Poster */}
       <Card>
         <CardHeader>
-          <CardTitle>10.9 Small Poster</CardTitle>
+          <CardTitle>Small Poster</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -258,10 +258,10 @@ export default function Step10PressConference({
         </CardContent>
       </Card>
 
-      {/* 10.10 On-site Footage */}
+      {/* On-site Footage */}
       <Card>
         <CardHeader>
-          <CardTitle>10.10 On-site Shooting Footage</CardTitle>
+          <CardTitle>On-site Shooting Footage</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
