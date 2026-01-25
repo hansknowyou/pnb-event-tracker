@@ -81,6 +81,7 @@ interface IVenueInfo {
   address: string;
   contacts: string;
   otherInfo: string;
+  previewImage?: string;
   requiredForms: IVenueRequiredForms;
   ticketDesign: IVenueTicket;
   seatMap: IVenueSeatMap;
@@ -387,6 +388,7 @@ const ProductionSchema = new Schema<IProduction>(
       address: { type: String, default: '' },
       contacts: { type: String, default: '' },
       otherInfo: { type: String, default: '' },
+      previewImage: { type: String, default: '' },
       requiredForms: {
         link: { type: String, default: '' },
         notes: { type: String, default: '' },

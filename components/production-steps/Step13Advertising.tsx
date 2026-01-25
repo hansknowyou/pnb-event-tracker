@@ -12,6 +12,7 @@ import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { Advertising, TargetAudience, OfflineAdvertising } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -302,7 +303,10 @@ export default function Step13Advertising({
               </div>
 
               <div>
-                <Label>Google Resource Link</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="mb-0">Google Resource Link</Label>
+                  <PreviewLink href={item.googleResourceLink} />
+                </div>
                 <Input
                   type="url"
                   placeholder="https://..."

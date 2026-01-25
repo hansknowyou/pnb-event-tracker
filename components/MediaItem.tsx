@@ -2,7 +2,17 @@
 
 import { MediaWithStats } from '@/types';
 import { useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import RouteItem from './RouteItem';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface MediaItemProps {
   media: MediaWithStats;
@@ -72,85 +82,78 @@ export default function MediaItem({
   };
 
   return (
-    <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <button
+    <Card className="bg-slate-50">
+      <CardHeader className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-lg font-bold text-gray-600 hover:text-gray-800"
+            aria-label={isExpanded ? 'Collapse media' : 'Expand media'}
           >
-            {isExpanded ? '▼' : '▶'}
-          </button>
-          <div>
+            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          </Button>
+          <div className="space-y-1">
             {isEditingName ? (
-              <input
-                type="text"
+              <Input
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 onBlur={handleSaveName}
                 onKeyDown={handleNameKeyDown}
-                className="text-lg font-semibold text-gray-900 border-b-2 border-blue-500 outline-none bg-transparent"
+                className="text-base font-semibold"
                 autoFocus
               />
             ) : (
-              <h3
-                className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-blue-600"
+              <CardTitle
+                className="cursor-pointer hover:text-blue-600"
                 onClick={() => setIsEditingName(true)}
                 title="Click to edit"
               >
                 {media.name}
-              </h3>
+              </CardTitle>
             )}
-            <p className="text-sm text-gray-600">
-              Total Clicks: <span className="font-bold text-blue-600">{media.totalClicks || 0}</span>
-            </p>
+            <CardDescription>
+              Total Clicks: <span className="font-semibold text-foreground">{media.totalClicks || 0}</span>
+            </CardDescription>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={isAddingRoute ? 'outline' : 'default'}
             onClick={() => setIsAddingRoute(!isAddingRoute)}
-            className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded"
           >
-            {isAddingRoute ? 'Cancel' : '+ Add Route'}
-          </button>
-          <button
+            {isAddingRoute ? 'Cancel' : 'Add Route'}
+          </Button>
+          <Button
+            variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded disabled:opacity-50"
           >
             {isDeleting ? 'Deleting...' : 'Delete Media'}
-          </button>
+          </Button>
         </div>
-      </div>
+      </CardHeader>
 
       {isExpanded && (
-        <>
+        <CardContent className="space-y-3">
           {isAddingRoute && (
-            <form onSubmit={handleAddRoute} className="mb-3 p-3 bg-white rounded border border-gray-300">
-              <div className="grid grid-cols-1 gap-2">
-                <input
-                  type="text"
-                  placeholder="Route name (e.g., facebook ad 1)"
-                  value={routeName}
-                  onChange={(e) => setRouteName(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-                <input
-                  type="url"
-                  placeholder="Redirect URL (3rd party ticket link)"
-                  value={redirectUrl}
-                  onChange={(e) => setRedirectUrl(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-                >
-                  Create Route
-                </button>
-              </div>
+            <form onSubmit={handleAddRoute} className="grid grid-cols-1 gap-2 md:grid-cols-3">
+              <Input
+                type="text"
+                placeholder="Route name (e.g., facebook ad 1)"
+                value={routeName}
+                onChange={(e) => setRouteName(e.target.value)}
+                required
+              />
+              <Input
+                type="url"
+                placeholder="Redirect URL (3rd party ticket link)"
+                value={redirectUrl}
+                onChange={(e) => setRedirectUrl(e.target.value)}
+                required
+              />
+              <Button type="submit">Create Route</Button>
             </form>
           )}
 
@@ -170,11 +173,11 @@ export default function MediaItem({
                 />
               ))
             ) : (
-              <p className="text-sm text-gray-500 italic">No routes yet. Add one above!</p>
+              <p className="text-sm text-muted-foreground italic">No routes yet. Add one above!</p>
             )}
           </div>
-        </>
+        </CardContent>
       )}
-    </div>
+    </Card>
   );
 }

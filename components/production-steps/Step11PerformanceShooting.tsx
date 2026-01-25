@@ -10,6 +10,7 @@ import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { PerformanceShooting } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -106,9 +107,12 @@ export default function Step11PerformanceShooting({
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="drive-link">
-            Google Drive Link <span className="text-red-500">*</span>
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="drive-link" className="mb-0">
+              Google Drive Link <span className="text-red-500">*</span>
+            </Label>
+            <PreviewLink href={data.googleDriveLink} />
+          </div>
           <Input
             id="drive-link"
             type="url"

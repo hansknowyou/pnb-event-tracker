@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import StaffRoleSelect from '@/components/StaffRoleSelect';
 import LogoUpload from '@/components/LogoUpload';
+import PreviewLink from '@/components/PreviewLink';
 import {
   Select,
   SelectContent,
@@ -428,7 +429,10 @@ export default function CommunityDetailPage() {
 
           {/* Files (Google Drive) */}
           <div>
-            <Label htmlFor="files">{t('files')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="files" className="mb-0">{t('files')}</Label>
+              <PreviewLink href={community.files} />
+            </div>
             <div className="flex gap-2">
               <Input
                 id="files"
@@ -452,7 +456,10 @@ export default function CommunityDetailPage() {
 
           {/* Images (Google Drive) */}
           <div>
-            <Label htmlFor="images">{t('images')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="images" className="mb-0">{t('images')}</Label>
+              <PreviewLink href={community.images} />
+            </div>
             <div className="flex gap-2">
               <Input
                 id="images"

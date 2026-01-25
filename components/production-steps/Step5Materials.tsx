@@ -11,6 +11,7 @@ import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { Materials } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -132,7 +133,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={videosData.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -165,7 +169,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={performerVideosData.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -198,7 +205,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={musicCollectionData.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -237,7 +247,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={data.photos.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -270,7 +283,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={data.actorPhotos.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -303,7 +319,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={data.otherPhotos.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -336,7 +355,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link</Label>
+              <PreviewLink href={logosData.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -369,7 +391,10 @@ export default function Step5Materials({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Google Drive Folder Link (Original Copies)</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Folder Link (Original Copies)</Label>
+              <PreviewLink href={data.texts.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."

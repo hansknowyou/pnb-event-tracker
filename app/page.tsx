@@ -5,6 +5,15 @@ import EventCard from "@/components/EventCard";
 import QRCodeModal from "@/components/QRCodeModal";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { EventWithStats } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { Production } from "@/types/production";
 
 export default function Home() {
@@ -265,119 +274,116 @@ export default function Home() {
   return (
     <>
       <LoadingOverlay isLoading={loading} message="Loading..." />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-        <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Event Tracking Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Manage your events, media campaigns, and track link clicks
-          </p>
-        </header>
-
-        {/* Base URL Configuration */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Base URL Configuration
-          </h2>
-          <div className="flex gap-3">
-            <input
-              type="url"
-              placeholder="Enter your base URL (e.g., https://yourdomain.com)"
-              value={baseUrlInput}
-              onChange={(e) => setBaseUrlInput(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              onClick={saveBaseUrl}
-              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded font-medium"
-            >
-              Save Base URL
-            </button>
-          </div>
-          {baseUrl && (
-            <p className="mt-2 text-sm text-gray-600">
-              Current base URL: <span className="font-semibold">{baseUrl}</span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="space-y-2">
+            <h1 className="text-4xl font-bold text-gray-900">
+              Event Tracking Dashboard
+            </h1>
+            <p className="text-gray-600">
+              Manage your events, media campaigns, and track link clicks
             </p>
-          )}
-        </div>
+          </header>
 
-        {/* Add Event Button */}
-        <div className="mb-6">
-          <button
-            onClick={() => setIsAddingEvent(!isAddingEvent)}
-            className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-lg"
-          >
-            {isAddingEvent ? "Cancel" : "+ Create New Event"}
-          </button>
-
-          {isAddingEvent && (
-            <form
-              onSubmit={createEvent}
-              className="mt-4 bg-white rounded-lg shadow-md p-4"
-            >
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Event name (e.g., Chinese New Year Show)"
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+          <Card>
+            <CardHeader>
+              <CardTitle>Base URL Configuration</CardTitle>
+              <CardDescription>
+                Set the base URL used for QR and tracking links.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex flex-col gap-3 md:flex-row">
+                <Input
+                  type="url"
+                  placeholder="Enter your base URL (e.g., https://yourdomain.com)"
+                  value={baseUrlInput}
+                  onChange={(e) => setBaseUrlInput(e.target.value)}
                 />
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded font-medium"
-                >
-                  Create Event
-                </button>
+                <Button onClick={saveBaseUrl} className="md:self-start">
+                  Save Base URL
+                </Button>
               </div>
-            </form>
+              {baseUrl && (
+                <p className="text-sm text-muted-foreground">
+                  Current base URL: <span className="font-semibold text-gray-900">{baseUrl}</span>
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex items-start justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <CardTitle>Create Event</CardTitle>
+                <CardDescription>
+                  Add a new event and start tracking its media routes.
+                </CardDescription>
+              </div>
+              <Button
+                variant={isAddingEvent ? "outline" : "default"}
+                onClick={() => setIsAddingEvent(!isAddingEvent)}
+              >
+                {isAddingEvent ? "Cancel" : "Create New Event"}
+              </Button>
+            </CardHeader>
+            {isAddingEvent && (
+              <CardContent>
+                <form onSubmit={createEvent} className="flex flex-col gap-3 md:flex-row">
+                  <Input
+                    type="text"
+                    placeholder="Event name (e.g., Chinese New Year Show)"
+                    value={eventName}
+                    onChange={(e) => setEventName(e.target.value)}
+                    required
+                  />
+                  <Button type="submit">Create Event</Button>
+                </form>
+              </CardContent>
+            )}
+          </Card>
+
+          {!loading && (
+            events.length > 0 ? (
+              <div className="space-y-6">
+                {events.map((event) => (
+                  <EventCard
+                    key={event._id}
+                    event={event}
+                    baseUrl={baseUrl}
+                    linkedProduction={linkedProductions[event._id] || null}
+                    onDelete={() => deleteEvent(event._id)}
+                    onAddMedia={addMedia}
+                    onDeleteMedia={deleteMedia}
+                    onUpdateMedia={updateMedia}
+                    onAddRoute={addRoute}
+                    onDeleteRoute={deleteRoute}
+                    onUpdateRoute={updateRoute}
+                    onAdjustRouteClick={adjustRouteClick}
+                    onGenerateQR={generateQRCode}
+                    onUpdateEvent={updateEvent}
+                    onUpdate={fetchStats}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <p className="text-lg text-muted-foreground">
+                    No events yet. Create one above!
+                  </p>
+                </CardContent>
+              </Card>
+            )
           )}
-        </div>
 
-        {/* Events List */}
-        {!loading && (
-          events.length > 0 ? (
-            <div className="space-y-6">
-              {events.map((event) => (
-                <EventCard
-                  key={event._id}
-                  event={event}
-                  baseUrl={baseUrl}
-                  linkedProduction={linkedProductions[event._id] || null}
-                  onDelete={() => deleteEvent(event._id)}
-                  onAddMedia={addMedia}
-                  onDeleteMedia={deleteMedia}
-                  onUpdateMedia={updateMedia}
-                  onAddRoute={addRoute}
-                  onDeleteRoute={deleteRoute}
-                  onUpdateRoute={updateRoute}
-                  onAdjustRouteClick={adjustRouteClick}
-                  onGenerateQR={generateQRCode}
-                  onUpdateEvent={updateEvent}
-                  onUpdate={fetchStats}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-white rounded-lg shadow-md">
-              <p className="text-xl text-gray-600">
-                No events yet. Create one above!
-              </p>
-            </div>
-          )
-        )}
-
-        {/* QR Code Modal */}
-        {qrModal && (
-          <QRCodeModal
-            qrCode={qrModal.qrCode}
-            routeName={qrModal.routeName}
-            onClose={() => setQrModal(null)}
-          />
-        )}
+          {qrModal && (
+            <QRCodeModal
+              qrCode={qrModal.qrCode}
+              routeName={qrModal.routeName}
+              onClose={() => setQrModal(null)}
+            />
+          )}
         </div>
       </div>
     </>

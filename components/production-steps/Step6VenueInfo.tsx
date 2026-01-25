@@ -48,6 +48,7 @@ export default function Step6VenueInfo({
       address: '',
       contacts: '',
       otherInfo: '',
+      previewImage: '',
       requiredForms: { link: '', notes: '' },
       ticketDesign: { link: '', pricing: '' },
       seatMap: { link: '', notes: '' },
@@ -57,26 +58,21 @@ export default function Step6VenueInfo({
   };
 
   const handleVenueLink = (venueInfoId: string, linkedVenue: Venue | null) => {
-    // When linking a venue, automatically set the venue name
     updateVenue(venueInfoId, {
       linkedVenueId: linkedVenue?._id,
       venueName: linkedVenue?.name || '',
+      address: linkedVenue?.location || '',
+      contacts:
+        linkedVenue?.staff
+          ?.map((s) => `${s.name} (${s.role?.join(', ') || ''}) - ${s.email} / ${s.phone}`)
+          .join('\n') || '',
+      otherInfo: linkedVenue?.notes || linkedVenue?.intro || '',
+      previewImage: linkedVenue?.image || '',
     });
   };
 
   const handleVenueImport = (venueInfoId: string, linkedVenue: Venue) => {
-    // Import all venue data into the form fields
-    const staffContacts = linkedVenue.staff
-      ?.map((s) => `${s.name} (${s.role}) - ${s.email} / ${s.phone}`)
-      .join('\n') || '';
-
-    updateVenue(venueInfoId, {
-      linkedVenueId: linkedVenue._id,
-      venueName: linkedVenue.name,
-      address: linkedVenue.location || '',
-      contacts: staffContacts,
-      otherInfo: linkedVenue.intro || '',
-    });
+    handleVenueLink(venueInfoId, linkedVenue);
   };
 
   const removeVenue = (id: string) => {
@@ -162,48 +158,46 @@ export default function Step6VenueInfo({
               <div className="space-y-4 pb-4 border-b">
                 <h5 className="font-semibold text-sm text-gray-700">Basic Information</h5>
 
-                <div>
-                  <Label>Venue Name {!venue.linkedVenueId && <span className="text-red-500">*</span>}</Label>
-                  <Input
-                    placeholder={venue.linkedVenueId ? "Linked from venue database" : "e.g., Lincoln Center"}
-                    value={venue.venueName}
-                    onChange={(e) => updateVenue(venue.id, { venueName: e.target.value })}
-                                        disabled={!!venue.linkedVenueId}
-                    className={venue.linkedVenueId ? "bg-gray-50" : ""}
-                  />
-                  {venue.linkedVenueId && (
-                    <p className="text-xs text-gray-500 mt-1">Venue name is automatically set from the linked venue</p>
-                  )}
-                </div>
+                {!venue.linkedVenueId && (
+                  <p className="text-sm text-gray-500">Link a venue to view its details.</p>
+                )}
 
-                <div>
-                  <Label>Address <span className="text-red-500">*</span></Label>
-                  <Input
-                    placeholder="Full address"
-                    value={venue.address}
-                    onChange={(e) => updateVenue(venue.id, { address: e.target.value })}
-                                      />
-                </div>
-
-                <div>
-                  <Label>Contact Person(s)</Label>
-                  <Textarea
-                    placeholder="List of contact persons..."
-                    rows={2}
-                    value={venue.contacts}
-                    onChange={(e) => updateVenue(venue.id, { contacts: e.target.value })}
-                                      />
-                </div>
-
-                <div>
-                  <Label>Other Information</Label>
-                  <Textarea
-                    placeholder="Any other relevant info..."
-                    rows={2}
-                    value={venue.otherInfo}
-                    onChange={(e) => updateVenue(venue.id, { otherInfo: e.target.value })}
-                                      />
-                </div>
+                {venue.linkedVenueId && (
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Venue Name</Label>
+                      <p className="text-sm text-gray-800">{venue.venueName || '—'}</p>
+                    </div>
+                    <div>
+                      <Label>Address</Label>
+                      <p className="text-sm text-gray-800">{venue.address || '—'}</p>
+                    </div>
+                    <div>
+                      <Label>Preview Image</Label>
+                      {venue.previewImage ? (
+                        <img
+                          src={venue.previewImage}
+                          alt={venue.venueName || 'Venue'}
+                          className="mt-2 h-32 w-48 rounded-md border object-cover"
+                        />
+                      ) : (
+                        <p className="text-sm text-gray-500">No image available.</p>
+                      )}
+                    </div>
+                    <div>
+                      <Label>Contacts</Label>
+                      <p className="text-sm text-gray-800 whitespace-pre-line">
+                        {venue.contacts || '—'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label>Notes</Label>
+                      <p className="text-sm text-gray-800 whitespace-pre-line">
+                        {venue.otherInfo || '—'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Required Forms */}

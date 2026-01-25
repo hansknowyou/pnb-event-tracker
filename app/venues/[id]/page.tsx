@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import LogoUpload from '@/components/LogoUpload';
 import StaffRoleSelect from '@/components/StaffRoleSelect';
+import PreviewLink from '@/components/PreviewLink';
 import {
   Dialog,
   DialogContent,
@@ -500,7 +501,10 @@ export default function EditVenuePage({
 
           {/* Other Images (Google Drive) */}
           <div>
-            <Label htmlFor="otherImages">{t('otherImages')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="otherImages" className="mb-0">{t('otherImages')}</Label>
+              <PreviewLink href={otherImages} />
+            </div>
             <Input
               id="otherImages"
               placeholder={t('otherImagesPlaceholder')}
@@ -512,7 +516,10 @@ export default function EditVenuePage({
 
           {/* Files (Google Drive) */}
           <div>
-            <Label htmlFor="files">{t('files')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="files" className="mb-0">{t('files')}</Label>
+              <PreviewLink href={files} />
+            </div>
             <Input
               id="files"
               placeholder={t('filesPlaceholder')}

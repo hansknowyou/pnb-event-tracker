@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { Users, MapPin, UserCog, ListOrdered, Ticket, Image } from 'lucide-react';
+import { Users, MapPin, UserCog, ListOrdered, Ticket, Image, Building } from 'lucide-react';
 
 export default function AdminNav() {
   const pathname = usePathname();
   const t = useTranslations('admin');
 
   const navItems = [
+    { href: '/admin/organization-profile', label: t('organizationProfile'), icon: Building },
     { href: '/admin/users', label: t('users'), icon: Users },
     { href: '/admin/cities', label: t('cities'), icon: MapPin },
     { href: '/admin/staff-roles', label: t('staffRoles'), icon: UserCog },

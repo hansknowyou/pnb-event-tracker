@@ -78,6 +78,7 @@ export interface VenueInfo {
   address: string;
   contacts: string;
   otherInfo: string;
+  previewImage?: string;
   requiredForms: VenueRequiredForms;
   ticketDesign: VenueTicket;
   seatMap: VenueSeatMap;

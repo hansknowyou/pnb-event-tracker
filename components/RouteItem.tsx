@@ -2,6 +2,15 @@
 
 import { Route } from '@/types';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface RouteItemProps {
   route: Route;
@@ -58,93 +67,90 @@ export default function RouteItem({
   };
 
   return (
-    <div className="border border-gray-300 rounded p-3 bg-white">
-      <div className="flex justify-between items-start mb-2">
-        <div className="flex-1">
-          {isEditingName ? (
-            <input
-              type="text"
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              onBlur={handleSaveName}
-              onKeyDown={handleNameKeyDown}
-              className="font-medium text-gray-900 border-b-2 border-blue-500 outline-none bg-transparent"
-              autoFocus
-            />
-          ) : (
-            <h4
-              className="font-medium text-gray-900 cursor-pointer hover:text-blue-600"
-              onClick={() => setIsEditingName(true)}
-              title="Click to edit"
+    <Card className="bg-white">
+      <CardHeader className="space-y-2">
+        {isEditingName ? (
+          <Input
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            onBlur={handleSaveName}
+            onKeyDown={handleNameKeyDown}
+            className="font-semibold"
+            autoFocus
+          />
+        ) : (
+          <CardTitle
+            className="cursor-pointer hover:text-blue-600"
+            onClick={() => setIsEditingName(true)}
+            title="Click to edit"
+          >
+            {route.routeName}
+          </CardTitle>
+        )}
+        <CardDescription className="space-y-1">
+          <div>
+            <span className="font-semibold text-foreground">Tracking URL:</span>{' '}
+            <Button
+              variant="link"
+              className="h-auto p-0 text-blue-600"
+              onClick={() => copyToClipboard(trackingUrl)}
             >
-              {route.routeName}
-            </h4>
-          )}
-          <div className="text-xs text-gray-500 mt-1 space-y-1">
-            <div>
-              <span className="font-semibold">Tracking URL:</span>{' '}
-              <button
-                onClick={() => copyToClipboard(trackingUrl)}
-                className="text-blue-600 hover:underline break-all"
-              >
-                {trackingUrl}
-              </button>
-            </div>
-            <div>
-              <span className="font-semibold">Redirects to:</span>{' '}
-              <a
-                href={route.redirectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline break-all"
-              >
-                {route.redirectUrl}
-              </a>
-            </div>
+              {trackingUrl}
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+          <div>
+            <span className="font-semibold text-foreground">Redirects to:</span>{' '}
+            <a
+              href={route.redirectUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline break-all"
+            >
+              {route.redirectUrl}
+            </a>
+          </div>
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 border-t pt-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-700">Clicks:</span>
-          <div className="flex items-center gap-1">
-            <button
+          <span className="text-sm font-semibold text-muted-foreground">Clicks:</span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => onAdjustClick(-1)}
-              className="w-7 h-7 flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-sm"
               title="Decrease click count"
             >
               -
-            </button>
-            <span className="min-w-[3rem] text-center font-bold text-lg text-blue-600">
+            </Button>
+            <span className="min-w-[3rem] text-center font-semibold text-lg">
               {route.clickCount}
             </span>
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => onAdjustClick(1)}
-              className="w-7 h-7 flex items-center justify-center bg-green-100 hover:bg-green-200 text-green-700 rounded font-bold text-sm"
               title="Increase click count"
             >
               +
-            </button>
+            </Button>
           </div>
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={onGenerateQR}
-            className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded"
-          >
+          <Button onClick={onGenerateQR} size="sm">
             QR Code
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded disabled:opacity-50"
           >
             {isDeleting ? 'Deleting...' : 'Delete'}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

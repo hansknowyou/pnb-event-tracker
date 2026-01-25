@@ -54,6 +54,7 @@
   "admin": {
     "title": "用户管理",
     "description": "管理系统用户和权限",
+    "organizationProfile": "机构信息",
     "users": "用户",
     "cities": "城市",
     "staffRoles": "员工职位",
@@ -79,6 +80,26 @@
     "deleteConfirm": "您确定要删除用户",
     "cannotDeleteAdmin": "无法删除系统管理员账户",
     "cannotDeactivateAdmin": "无法停用系统管理员账户"
+  },
+  "organizationProfile": {
+    "title": "机构信息",
+    "description": "管理机构名称与标志",
+    "cardTitle": "机构详情",
+    "name": "机构名称",
+    "namePlaceholder": "请输入机构名称",
+    "logo": "机构标志",
+    "logoHelp": "上传 PNG 或 JPG，尺寸不超过 1000px。",
+    "logoInvalidType": "仅支持 PNG 或 JPG 文件。",
+    "logoFileTooLarge": "文件过大。",
+    "logoDimensionTooLarge": "标志尺寸需不超过 1000px。",
+    "logoLoadFailed": "图片加载失败。",
+    "logoRemove": "删除标志",
+    "logoEmpty": "未上传标志。",
+    "save": "保存",
+    "saving": "保存中...",
+    "saved": "机构信息已保存。",
+    "loadFailed": "机构信息加载失败。",
+    "saveFailed": "机构信息保存失败。"
   },
   "production": {
     "title": "执行管理",

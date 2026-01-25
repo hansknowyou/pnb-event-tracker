@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import LogoUpload from '@/components/LogoUpload';
 import StaffRoleSelect from '@/components/StaffRoleSelect';
+import PreviewLink from '@/components/PreviewLink';
 import {
   Select,
   SelectContent,
@@ -241,7 +242,10 @@ export default function NewCompanyPage() {
 
           {/* Files (Google Drive) */}
           <div>
-            <Label htmlFor="files">{t('files')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="files" className="mb-0">{t('files')}</Label>
+              <PreviewLink href={files} />
+            </div>
             <Input
               id="files"
               placeholder={t('filesPlaceholder')}
@@ -253,7 +257,10 @@ export default function NewCompanyPage() {
 
           {/* Images (Google Drive) */}
           <div>
-            <Label htmlFor="images">{t('images')}</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="images" className="mb-0">{t('images')}</Label>
+              <PreviewLink href={images} />
+            </div>
             <Input
               id="images"
               placeholder={t('imagesPlaceholder')}

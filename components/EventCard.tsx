@@ -2,8 +2,18 @@
 
 import { EventWithStats } from '@/types';
 import { useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import MediaItem from './MediaItem';
 import ProductionLinkButtons from './ProductionLinkButtons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import type { Production } from '@/types/production';
 
 interface EventCardProps {
@@ -87,39 +97,41 @@ export default function EventCard({
   };
 
   return (
-    <div className="border-2 border-gray-400 rounded-lg p-5 bg-gray-50 shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-3">
-          <button
+    <Card>
+      <CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-2xl font-bold text-gray-600 hover:text-gray-800"
+            aria-label={isExpanded ? 'Collapse event' : 'Expand event'}
           >
-            {isExpanded ? '▼' : '▶'}
-          </button>
-          <div>
+            {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+          </Button>
+          <div className="space-y-2">
             {isEditingTitle ? (
-              <input
-                type="text"
+              <Input
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 onBlur={handleSaveTitle}
                 onKeyDown={handleTitleKeyDown}
-                className="text-xl font-bold text-gray-900 border-b-2 border-blue-500 outline-none bg-transparent"
+                className="text-lg font-semibold"
                 autoFocus
               />
             ) : (
-              <h2
-                className="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600"
+              <CardTitle
+                className="cursor-pointer hover:text-blue-600"
                 onClick={() => setIsEditingTitle(true)}
                 title="Click to edit"
               >
                 {event.name}
-              </h2>
+              </CardTitle>
             )}
-            <p className="text-sm text-gray-600">
-              Total Clicks: <span className="font-bold text-green-600">{event.totalClicks || 0}</span>
-            </p>
-            <div className="mt-2">
+            <CardDescription>
+              Total Clicks: <span className="font-semibold text-foreground">{event.totalClicks || 0}</span>
+            </CardDescription>
+            <div>
               <ProductionLinkButtons
                 event={event}
                 linkedProduction={linkedProduction}
@@ -128,43 +140,35 @@ export default function EventCard({
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant={isAddingMedia ? 'outline' : 'default'}
             onClick={() => setIsAddingMedia(!isAddingMedia)}
-            className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded"
           >
-            {isAddingMedia ? 'Cancel' : '+ Add Media'}
-          </button>
-          <button
+            {isAddingMedia ? 'Cancel' : 'Add Media'}
+          </Button>
+          <Button
+            variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded disabled:opacity-50"
           >
             {isDeleting ? 'Deleting...' : 'Delete Event'}
-          </button>
+          </Button>
         </div>
-      </div>
+      </CardHeader>
 
       {isExpanded && (
-        <>
+        <CardContent className="space-y-4">
           {isAddingMedia && (
-            <form onSubmit={handleAddMedia} className="mb-4 p-3 bg-white rounded border border-gray-300">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Media name (e.g., Facebook, Instagram)"
-                  value={mediaName}
-                  onChange={(e) => setMediaName(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-                >
-                  Create Media
-                </button>
-              </div>
+            <form onSubmit={handleAddMedia} className="flex flex-col gap-2 md:flex-row">
+              <Input
+                type="text"
+                placeholder="Media name (e.g., Facebook, Instagram)"
+                value={mediaName}
+                onChange={(e) => setMediaName(e.target.value)}
+                required
+              />
+              <Button type="submit">Create Media</Button>
             </form>
           )}
 
@@ -185,11 +189,13 @@ export default function EventCard({
                 />
               ))
             ) : (
-              <p className="text-sm text-gray-500 italic">No media yet. Add one above!</p>
+              <p className="text-sm text-muted-foreground italic">
+                No media yet. Add one above!
+              </p>
             )}
           </div>
-        </>
+        </CardContent>
       )}
-    </div>
+    </Card>
   );
 }

@@ -54,6 +54,7 @@
   "admin": {
     "title": "User Management",
     "description": "Manage system users and permissions",
+    "organizationProfile": "Organization Profile",
     "users": "Users",
     "cities": "Cities",
     "staffRoles": "Staff Roles",
@@ -79,6 +80,26 @@
     "deleteConfirm": "Are you sure you want to delete user",
     "cannotDeleteAdmin": "Cannot delete the system administrator account",
     "cannotDeactivateAdmin": "Cannot deactivate the system administrator account"
+  },
+  "organizationProfile": {
+    "title": "Organization Profile",
+    "description": "Manage your organization name and logo",
+    "cardTitle": "Organization Details",
+    "name": "Organization Name",
+    "namePlaceholder": "Enter organization name",
+    "logo": "Organization Logo",
+    "logoHelp": "Upload a PNG or JPG logo up to 1000px.",
+    "logoInvalidType": "Only PNG or JPG files are supported.",
+    "logoFileTooLarge": "File is too large.",
+    "logoDimensionTooLarge": "Logo must be 1000px or smaller.",
+    "logoLoadFailed": "Failed to load image.",
+    "logoRemove": "Remove Logo",
+    "logoEmpty": "No logo uploaded.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Organization profile saved.",
+    "loadFailed": "Failed to load organization profile.",
+    "saveFailed": "Failed to save organization profile."
   },
   "production": {
     "title": "Production Management",

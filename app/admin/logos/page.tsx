@@ -241,9 +241,21 @@ export default function AdminLogosPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="new-googleLink">
-                    {t('googleFolderLink')} <span className="text-red-500">*</span>
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="new-googleLink" className="mb-0">
+                      {t('googleFolderLink')} <span className="text-red-500">*</span>
+                    </Label>
+                    {newGoogleLink.trim() && (
+                      <a
+                        href={newGoogleLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        Preview
+                      </a>
+                    )}
+                  </div>
                   <Input
                     id="new-googleLink"
                     value={newGoogleLink}
@@ -547,9 +559,21 @@ export default function AdminLogosPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-googleLink">
-                    {t('googleFolderLink')} <span className="text-red-500">*</span>
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="edit-googleLink" className="mb-0">
+                      {t('googleFolderLink')} <span className="text-red-500">*</span>
+                    </Label>
+                    {editingLogo.googleFolderLink?.trim() && (
+                      <a
+                        href={editingLogo.googleFolderLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        Preview
+                      </a>
+                    )}
+                  </div>
                   <Input
                     id="edit-googleLink"
                     value={editingLogo.googleFolderLink}
