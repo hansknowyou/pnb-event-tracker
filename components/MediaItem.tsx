@@ -41,7 +41,7 @@ export default function MediaItem({
   const [isAddingRoute, setIsAddingRoute] = useState(false);
   const [routeName, setRouteName] = useState('');
   const [redirectUrl, setRedirectUrl] = useState('');
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(media.name);
 

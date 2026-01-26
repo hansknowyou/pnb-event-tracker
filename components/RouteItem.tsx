@@ -42,11 +42,6 @@ export default function RouteItem({
     setIsDeleting(false);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
-  };
-
   const handleSaveName = async () => {
     if (!editedName.trim() || editedName === route.routeName) {
       setEditedName(route.routeName);
@@ -90,13 +85,14 @@ export default function RouteItem({
         <CardDescription className="space-y-1">
           <div>
             <span className="font-semibold text-foreground">Tracking URL:</span>{' '}
-            <Button
-              variant="link"
-              className="h-auto p-0 text-blue-600"
-              onClick={() => copyToClipboard(trackingUrl)}
+            <a
+              href={trackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline break-all"
             >
               {trackingUrl}
-            </Button>
+            </a>
           </div>
           <div>
             <span className="font-semibold text-foreground">Redirects to:</span>{' '}
