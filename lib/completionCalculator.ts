@@ -167,7 +167,11 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
         totalFields += 3;
         if (isStringFilled(item.title)) filledFields++;
         if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
-        if (isStringFilled(item.mediaLink)) filledFields++;
+        const packageLinks = item.mediaPackageLinks || {};
+        const hasAllLinks = (item.mediaPackageIds || []).every(
+          (pkgId) => isStringFilled(packageLinks[pkgId])
+        );
+        if (hasAllLinks && (item.mediaPackageIds || []).length > 0) filledFields++;
       });
     }
   }
@@ -181,7 +185,11 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
         totalFields += 3;
         if (isStringFilled(item.title)) filledFields++;
         if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
-        if (isStringFilled(item.mediaLink)) filledFields++;
+        const packageLinks = item.mediaPackageLinks || {};
+        const hasAllLinks = (item.mediaPackageIds || []).every(
+          (pkgId) => isStringFilled(packageLinks[pkgId])
+        );
+        if (hasAllLinks && (item.mediaPackageIds || []).length > 0) filledFields++;
       });
     }
   }
@@ -195,7 +203,11 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
         totalFields += 3;
         if (isStringFilled(item.title)) filledFields++;
         if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
-        if (isStringFilled(item.mediaLink)) filledFields++;
+        const packageLinks = item.mediaPackageLinks || {};
+        const hasAllLinks = (item.mediaPackageIds || []).every(
+          (pkgId) => isStringFilled(packageLinks[pkgId])
+        );
+        if (hasAllLinks && (item.mediaPackageIds || []).length > 0) filledFields++;
       });
     }
   }
@@ -209,7 +221,11 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
         totalFields += 3;
         if (isStringFilled(item.title)) filledFields++;
         if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
-        if (isStringFilled(item.mediaLink)) filledFields++;
+        const packageLinks = item.mediaPackageLinks || {};
+        const hasAllLinks = (item.mediaPackageIds || []).every(
+          (pkgId) => isStringFilled(packageLinks[pkgId])
+        );
+        if (hasAllLinks && (item.mediaPackageIds || []).length > 0) filledFields++;
       });
     }
   }

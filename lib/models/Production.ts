@@ -94,7 +94,7 @@ interface IMediaDesignItem {
   title: string;
   description: string;
   mediaPackageIds: string[];
-  mediaLink: string;
+  mediaPackageLinks: Record<string, string>;
 }
 
 interface IDesigns {
@@ -385,7 +385,7 @@ const ProductionSchema = new Schema<IProduction>(
           title: { type: String, default: '' },
           description: { type: String, default: '' },
           mediaPackageIds: { type: [String], default: [] },
-          mediaLink: { type: String, default: '' },
+          mediaPackageLinks: { type: Map, of: String, default: {} },
         }],
         default: [],
       },
@@ -399,7 +399,7 @@ const ProductionSchema = new Schema<IProduction>(
           title: { type: String, default: '' },
           description: { type: String, default: '' },
           mediaPackageIds: { type: [String], default: [] },
-          mediaLink: { type: String, default: '' },
+          mediaPackageLinks: { type: Map, of: String, default: {} },
         }],
         default: [],
       },
@@ -413,7 +413,7 @@ const ProductionSchema = new Schema<IProduction>(
           title: { type: String, default: '' },
           description: { type: String, default: '' },
           mediaPackageIds: { type: [String], default: [] },
-          mediaLink: { type: String, default: '' },
+          mediaPackageLinks: { type: Map, of: String, default: {} },
         }],
         default: [],
       },
@@ -542,7 +542,7 @@ const ProductionSchema = new Schema<IProduction>(
           title: { type: String, default: '' },
           description: { type: String, default: '' },
           mediaPackageIds: { type: [String], default: [] },
-          mediaLink: { type: String, default: '' },
+          mediaPackageLinks: { type: Map, of: String, default: {} },
         }],
         default: [],
       },

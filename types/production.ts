@@ -91,7 +91,7 @@ export interface MediaDesignItem {
   title: string;
   description: string;
   mediaPackageIds: string[];
-  mediaLink: string;
+  mediaPackageLinks: Record<string, string>;
 }
 
 export interface Designs {

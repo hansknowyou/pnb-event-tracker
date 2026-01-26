@@ -68,7 +68,7 @@ export default function Step7Designs({
       title: '',
       description: '',
       mediaPackageIds: [],
-      mediaLink: '',
+      mediaPackageLinks: {},
     };
     onChange({ ...data, media: [...mediaItems, nextItem] });
     setOpenMediaId(nextItem.id);
@@ -90,6 +90,28 @@ export default function Step7Designs({
     return hasPackage
       ? item.mediaPackageIds.filter((pkgId) => pkgId !== packageId)
       : [...item.mediaPackageIds, packageId];
+  };
+
+  const updateMediaPackages = (id: string, packageId: string) => {
+    const current = mediaItems.find((item) => item.id === id);
+    if (!current) return;
+    const nextPackageIds = togglePackage(current, packageId);
+    const nextLinks = { ...(current.mediaPackageLinks || {}) };
+    if (!nextPackageIds.includes(packageId)) {
+      delete nextLinks[packageId];
+    }
+    updateMediaItem(id, { mediaPackageIds: nextPackageIds, mediaPackageLinks: nextLinks });
+  };
+
+  const updateMediaPackageLink = (id: string, packageId: string, value: string) => {
+    const current = mediaItems.find((item) => item.id === id);
+    if (!current) return;
+    updateMediaItem(id, {
+      mediaPackageLinks: {
+        ...(current.mediaPackageLinks || {}),
+        [packageId]: value,
+      },
+    });
   };
 
   const renderPackageSummary = (pkg: MediaPackage) => {
@@ -232,9 +254,7 @@ export default function Step7Designs({
                             <button
                               key={pkgId}
                               type="button"
-                              onClick={() => updateMediaItem(item.id, {
-                                mediaPackageIds: togglePackage(item, pkgId),
-                              })}
+                              onClick={() => updateMediaPackages(item.id, pkgId)}
                               className={`w-full text-left px-3 py-2 border-b last:border-b-0 hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''}`}
                             >
                               <div className="text-sm font-medium text-gray-900 truncate">{pkg.name}</div>
@@ -271,16 +291,33 @@ export default function Step7Designs({
                 )}
 
                 <div>
-                  <div className="flex items-center gap-2">
-                    <Label className="mb-0">Media files link</Label>
-                    <PreviewLink href={item.mediaLink} />
-                  </div>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={item.mediaLink}
-                    onChange={(e) => updateMediaItem(item.id, { mediaLink: e.target.value })}
-                  />
+                  <Label>Media files links</Label>
+                  {item.mediaPackageIds.length === 0 ? (
+                    <div className="text-sm text-gray-500 mt-2">
+                      Select a media package to add its media files link.
+                    </div>
+                  ) : (
+                    <div className="space-y-3 mt-2">
+                      {item.mediaPackageIds.map((pkgId) => {
+                        const pkg = mediaPackages.find((entry) => entry._id === pkgId);
+                        const linkValue = item.mediaPackageLinks?.[pkgId] || '';
+                        return (
+                          <div key={pkgId}>
+                            <div className="flex items-center gap-2">
+                              <Label className="mb-0 text-sm">{pkg?.name || 'Media Package'}</Label>
+                              <PreviewLink href={linkValue} />
+                            </div>
+                            <Input
+                              type="url"
+                              placeholder="https://..."
+                              value={linkValue}
+                              onChange={(e) => updateMediaPackageLink(item.id, pkgId, e.target.value)}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             )}

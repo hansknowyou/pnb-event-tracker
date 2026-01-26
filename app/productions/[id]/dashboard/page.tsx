@@ -134,6 +134,11 @@ export default function ProductionDashboard() {
     return <Circle className="w-5 h-5 text-gray-400" />;
   };
 
+  const getMediaItemLink = (item: { mediaPackageLinks?: Record<string, string> }) => {
+    if (!item?.mediaPackageLinks) return '';
+    return Object.values(item.mediaPackageLinks).find((link) => link && link.trim()) || '';
+  };
+
   const LinkButton = ({ url }: { url: string }) => {
     if (!url || !url.trim()) return null;
 
@@ -440,7 +445,7 @@ export default function ProductionDashboard() {
                   <FieldDisplay
                     key={item.id}
                     label={item.title || 'Media Item'}
-                    link={item.mediaLink}
+                    link={getMediaItemLink(item)}
                   />
                 ))}
               </div>
@@ -470,7 +475,7 @@ export default function ProductionDashboard() {
                   <FieldDisplay
                     key={item.id}
                     label={item.title || 'Media Item'}
-                    link={item.mediaLink}
+                    link={getMediaItemLink(item)}
                   />
                 ))}
               </div>
@@ -500,7 +505,7 @@ export default function ProductionDashboard() {
                   <FieldDisplay
                     key={item.id}
                     label={item.title || 'Media Item'}
-                    link={item.mediaLink}
+                    link={getMediaItemLink(item)}
                   />
                 ))}
               </div>
@@ -530,7 +535,7 @@ export default function ProductionDashboard() {
                   <FieldDisplay
                     key={item.id}
                     label={item.title || 'Media Item'}
-                    link={item.mediaLink}
+                    link={getMediaItemLink(item)}
                   />
                 ))}
               </div>

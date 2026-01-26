@@ -130,6 +130,27 @@ export default function ProductionEditPage() {
     return false;
   };
 
+  const sanitizeMediaLinks = (mediaItems: Array<{
+    id: string;
+    title: string;
+    description: string;
+    mediaPackageIds: string[];
+    mediaPackageLinks?: Record<string, string>;
+  }>) => {
+    return mediaItems.map((item) => {
+      const allowedIds = new Set<string>(item.mediaPackageIds);
+      const existingLinks = item.mediaPackageLinks || {};
+      const nextLinks: Record<string, string> = {};
+      allowedIds.forEach((pkgId) => {
+        const value = existingLinks[pkgId];
+        if (typeof value === 'string') {
+          nextLinks[pkgId] = value;
+        }
+      });
+      return { ...item, mediaPackageLinks: nextLinks };
+    });
+  };
+
   // Clean empty items from arrays before saving
   const cleanProductionData = (prod: Production): Production => {
     return {
@@ -146,8 +167,21 @@ export default function ProductionEditPage() {
       step6_venueInfo: prod.step6_venueInfo.filter(venue =>
         !isEmpty(venue.venueName) || !isEmpty(venue.address)
       ),
+      step7_designs: {
+        ...prod.step7_designs,
+        media: sanitizeMediaLinks(prod.step7_designs.media || []),
+      },
       step8_promotionalImages: {
         ...prod.step8_promotionalImages,
+        media: sanitizeMediaLinks(prod.step8_promotionalImages.media || []),
+      },
+      step9_videos: {
+        ...prod.step9_videos,
+        media: sanitizeMediaLinks(prod.step9_videos.media || []),
+      },
+      step16_venueMediaDesign: {
+        ...prod.step16_venueMediaDesign,
+        media: sanitizeMediaLinks(prod.step16_venueMediaDesign.media || []),
       },
       step12_socialMedia: {
         ...prod.step12_socialMedia,
