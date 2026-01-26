@@ -102,6 +102,15 @@ export default function Step9Videos({
     );
   };
 
+  const getSelectedPackageLabel = (selectedIds: string[]) => {
+    if (selectedIds.length === 0) return 'Select media packages';
+    if (selectedIds.length === 1) {
+      const selected = mediaPackages.find((pkg) => pkg._id === selectedIds[0]);
+      return selected?.name || '1 package selected';
+    }
+    return `${selectedIds.length} packages selected`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
@@ -153,7 +162,9 @@ export default function Step9Videos({
         {mediaItems.map((item, index) => (
           <Card key={item.id}>
             <CardHeader className="flex flex-row items-start justify-between">
-              <CardTitle>Media {index + 1}</CardTitle>
+              <CardTitle>
+                Media {index + 1} · {item.title || 'Untitled'}
+              </CardTitle>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -173,10 +184,10 @@ export default function Step9Videos({
             </CardHeader>
             {openMediaId === item.id && (
               <CardContent className="space-y-4">
-              <div>
-                <Label>Title</Label>
-                <Input
-                  value={item.title}
+                <div>
+                  <Label>Title</Label>
+                  <Input
+                    value={item.title}
                   onChange={(e) => updateMediaItem(item.id, { title: e.target.value })}
                   placeholder="e.g., Trailer Cut"
                 />
@@ -190,35 +201,45 @@ export default function Step9Videos({
                   onChange={(e) => updateMediaItem(item.id, { description: e.target.value })}
                   placeholder="Short description..."
                 />
-              </div>
-
-              <div>
-                <Label>Media Packages</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                  {mediaPackages.map((pkg) => (
-                    <label
-                      key={pkg._id}
-                      className="flex items-start gap-3 rounded-md border p-3 cursor-pointer hover:border-gray-400"
-                    >
-                      <input
-                        type="checkbox"
-                        className="mt-1"
-                        checked={item.mediaPackageIds.includes(pkg._id || '')}
-                        onChange={() => updateMediaItem(item.id, {
-                          mediaPackageIds: togglePackage(item, pkg._id || ''),
-                        })}
-                      />
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">{pkg.name}</div>
-                        {pkg.description && (
-                          <div className="text-xs text-gray-500 line-clamp-2">{pkg.description}</div>
-                        )}
-                        {renderPackageSummary(pkg)}
-                      </div>
-                    </label>
-                  ))}
                 </div>
-              </div>
+
+                <div>
+                  <Label>Media Packages</Label>
+                  <div className="mt-2">
+                    <details className="relative">
+                      <summary className="flex items-center justify-between rounded-md border px-3 py-2 text-sm text-gray-700 cursor-pointer list-none">
+                        <span>{getSelectedPackageLabel(item.mediaPackageIds)}</span>
+                        <span className="text-xs text-gray-400">▼</span>
+                      </summary>
+                      <div className="absolute z-20 mt-2 w-full rounded-md border bg-white shadow-sm max-h-64 overflow-auto">
+                        {mediaPackages.length === 0 && (
+                          <div className="p-3 text-sm text-gray-500">No media packages available.</div>
+                        )}
+                        {mediaPackages.map((pkg) => {
+                          const pkgId = pkg._id ?? '';
+                          if (!pkgId) return null;
+                          const isSelected = item.mediaPackageIds.includes(pkgId);
+                          return (
+                            <button
+                              key={pkgId}
+                              type="button"
+                              onClick={() => updateMediaItem(item.id, {
+                                mediaPackageIds: togglePackage(item, pkgId),
+                              })}
+                              className={`w-full text-left px-3 py-2 border-b last:border-b-0 hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''}`}
+                            >
+                              <div className="text-sm font-medium text-gray-900 truncate">{pkg.name}</div>
+                              {pkg.description && (
+                                <div className="text-xs text-gray-500 line-clamp-2">{pkg.description}</div>
+                              )}
+                              {renderPackageSummary(pkg)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </details>
+                  </div>
+                </div>
 
               {item.mediaPackageIds.length > 0 && (
                 <div className="rounded-md border bg-gray-50 p-3 space-y-2">

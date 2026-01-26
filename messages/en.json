@@ -208,7 +208,7 @@
       "step4": "Itinerary",
       "step5": "Materials",
       "step6": "Venue Info",
-      "step7": "Designs",
+      "step7": "Backdrop & Roll-up Banner Design",
       "step8": "Promotional Images",
       "step9": "Videos",
       "step10": "Press Conference",
@@ -216,7 +216,8 @@
       "step12": "Social Media",
       "step13": "Advertising",
       "step14": "Sponsorship Packages",
-      "step15": "Community Alliance"
+      "step15": "Community Alliance",
+      "step16": "Venue Media Design"
     },
     "step1": {
       "contractLink": "Contract Link",
@@ -551,7 +552,7 @@
     "step4": "Team Itinerary",
     "step5": "Material Collection",
     "step6": "Venue Information",
-    "step7": "Backdrop & Banner Design",
+    "step7": "Backdrop & Roll-up Banner Design",
     "step8": "Promotional Images",
     "step9": "Video Production",
     "step10": "Press Conference",
@@ -559,7 +560,8 @@
     "step12": "Social Media",
     "step13": "Advertising",
     "step14": "Sponsorship Packages",
-    "step15": "Community Alliance"
+    "step15": "Community Alliance",
+    "step16": "Venue Media Design"
   },
   "cities": {
     "title": "City Management",

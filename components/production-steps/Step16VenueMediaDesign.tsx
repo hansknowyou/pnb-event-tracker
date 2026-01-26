@@ -16,7 +16,7 @@ import type { Designs, MediaDesignItem } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 import type { MediaPackage } from '@/types/mediaPackage';
 
-interface Step7Props {
+interface Step16Props {
   data: Designs;
   onChange: (data: Designs) => void;
   onBlur: () => void;
@@ -27,7 +27,7 @@ interface Step7Props {
   onAssignmentChange?: (section: string, userId: string | null) => void;
 }
 
-export default function Step7Designs({
+export default function Step16VenueMediaDesign({
   data,
   onChange,
   onBlur,
@@ -36,7 +36,7 @@ export default function Step7Designs({
   onKnowledgeChange,
   assignments,
   onAssignmentChange,
-}: Step7Props) {
+}: Step16Props) {
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
@@ -44,8 +44,7 @@ export default function Step7Designs({
   const [openMediaId, setOpenMediaId] = useState<string | null>(null);
   const mediaItems = data.media || [];
 
-  // Get linked items for each section
-  const linkedStep7 = getLinkedItems?.('step7') || [];
+  const linkedStep16 = getLinkedItems?.('step16') || [];
 
   useEffect(() => {
     const fetchMediaPackages = async () => {
@@ -155,10 +154,10 @@ export default function Step7Designs({
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-4">
         <div>
-          <h3 className="text-2xl font-bold mb-2">{tStep('step7')}</h3>
-          <p className="text-gray-600">Backdrop & Roll-up Banner Design</p>
+          <h3 className="text-2xl font-bold mb-2">{tStep('step16')}</h3>
+          <p className="text-gray-600">Venue Media Design</p>
         </div>
-        {renderSectionButtons('step7', linkedStep7, true)}
+        {renderSectionButtons('step16', linkedStep16, true)}
       </div>
 
       <div className="space-y-4">
@@ -198,7 +197,7 @@ export default function Step7Designs({
                   <Input
                     value={item.title}
                     onChange={(e) => updateMediaItem(item.id, { title: e.target.value })}
-                    placeholder="e.g., Backdrop Design"
+                    placeholder="e.g., Venue Lobby Screen"
                   />
                 </div>
 
@@ -292,10 +291,9 @@ export default function Step7Designs({
         </Button>
       </div>
 
-      {/* Knowledge View Dialogs */}
       <KnowledgeViewDialog
-        knowledgeItems={linkedStep7}
-        open={showKnowledge === 'step7'}
+        knowledgeItems={linkedStep16}
+        open={showKnowledge === 'step16'}
         onClose={() => setShowKnowledge(null)}
       />
     </div>

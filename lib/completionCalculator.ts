@@ -200,6 +200,20 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
     }
   }
 
+  // Step 16: Venue Media Design
+  if (production.step16_venueMediaDesign) {
+    totalFields += 1;
+    if (production.step16_venueMediaDesign.media && production.step16_venueMediaDesign.media.length > 0) {
+      filledFields += 0.5;
+      production.step16_venueMediaDesign.media.forEach((item) => {
+        totalFields += 3;
+        if (isStringFilled(item.title)) filledFields++;
+        if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
+        if (isStringFilled(item.mediaLink)) filledFields++;
+      });
+    }
+  }
+
   // Step 10: Press Conference
   if (production.step10_pressConference) {
     const press = production.step10_pressConference;

@@ -50,7 +50,11 @@ export default function ProductionDashboard() {
       const response = await fetch(`/api/productions/${productionId}`);
       if (response.ok) {
         const data = await response.json();
-        setProduction(data);
+        const normalized = {
+          ...data,
+          step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
+        };
+        setProduction(normalized);
       }
     } catch (error) {
       console.error('Error fetching production:', error);
@@ -433,6 +437,36 @@ export default function ProductionDashboard() {
             ) : (
               <div className="space-y-2">
                 {production.step7_designs.media?.map((item) => (
+                  <FieldDisplay
+                    key={item.id}
+                    label={item.title || 'Media Item'}
+                    link={item.mediaLink}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Step 16: Venue Media Design */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step16_venueMediaDesign)} />
+                <CardTitle>{tStep('step16')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step16`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {production.step16_venueMediaDesign.media?.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No media items added</div>
+            ) : (
+              <div className="space-y-2">
+                {production.step16_venueMediaDesign.media?.map((item) => (
                   <FieldDisplay
                     key={item.id}
                     label={item.title || 'Media Item'}

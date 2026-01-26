@@ -22,6 +22,7 @@ import Step12SocialMedia from '@/components/production-steps/Step12SocialMedia';
 import Step13Advertising from '@/components/production-steps/Step13Advertising';
 import Step14SponsorshipPackages from '@/components/production-steps/Step14SponsorshipPackages';
 import Step15CommunityAlliances from '@/components/production-steps/Step15CommunityAlliances';
+import Step16VenueMediaDesign from '@/components/production-steps/Step16VenueMediaDesign';
 import { useGlobalKnowledge } from '@/hooks/useGlobalKnowledge';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import type { Production } from '@/types/production';
@@ -105,7 +106,11 @@ export default function ProductionEditPage() {
       const response = await fetch(`/api/productions/${productionId}`);
       if (response.ok) {
         const data = await response.json();
-        setProduction(data);
+        const normalized = {
+          ...data,
+          step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
+        };
+        setProduction(normalized);
       } else {
         alert(t('loadFailed'));
       }
@@ -250,7 +255,7 @@ export default function ProductionEditPage() {
   const goToNextStep = () => {
     if (enabledSteps.length === 0) {
       const nextNum = currentStepNumber + 1;
-      if (nextNum <= 15) {
+      if (nextNum <= 16) {
         handleStepChange(`step${nextNum}`);
       }
       return;
@@ -281,7 +286,7 @@ export default function ProductionEditPage() {
 
   const isLastStep = enabledSteps.length > 0
     ? currentStepKey === enabledSteps[enabledSteps.length - 1]?.stepKey
-    : currentStepNumber === 15;
+    : currentStepNumber === 16;
 
   if (!production) {
     return <LoadingOverlay isLoading={true} message="Loading..." />;
@@ -540,6 +545,19 @@ export default function ProductionEditPage() {
               linkedKnowledge={getLinkedItems('step15')}
               onKnowledgeChange={refetchKnowledge}
               assignedUserId={production.assignments?.step15}
+              onAssignmentChange={handleAssignmentChange}
+            />
+          )}
+
+          {currentStepNumber === 16 && (
+            <Step16VenueMediaDesign
+              data={production.step16_venueMediaDesign}
+              onChange={(data) => updateProduction({ step16_venueMediaDesign: data })}
+              onBlur={saveProduction}
+              productionId={productionId}
+              getLinkedItems={getLinkedItems}
+              onKnowledgeChange={refetchKnowledge}
+              assignments={production.assignments}
               onAssignmentChange={handleAssignmentChange}
             />
           )}

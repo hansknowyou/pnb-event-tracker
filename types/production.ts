@@ -130,6 +130,8 @@ export interface Videos {
   media: MediaDesignItem[];
 }
 
+// Step 16: Venue Media Design
+
 // Step 10: Press Conference
 export interface VenueBasic {
   datetime: string;
@@ -268,8 +270,9 @@ export interface Production {
   step13_advertising: Advertising;
   step14_sponsorshipPackages: SponsorshipPackage[];
   step15_communityAlliances: CommunityAlliance[];
+  step16_venueMediaDesign: Designs;
 
-  // Knowledge Base Links (20 sections: 14 steps + 6 subsections of step 5)
+  // Knowledge Base Links (step sections plus step 5 subsections)
   knowledgeLinks_step1?: string[];
   knowledgeLinks_step2?: string[];
   knowledgeLinks_step3?: string[];
@@ -292,6 +295,7 @@ export interface Production {
   knowledgeLinks_step13?: string[];
   knowledgeLinks_step14?: string[];
   knowledgeLinks_step15?: string[];
+  knowledgeLinks_step16?: string[];
 
   // Step assignments (user ID for each step/sub-step)
   assignments?: Record<string, string>;
@@ -320,6 +324,7 @@ export const STEPS: StepInfo[] = [
   { number: 13, name: '投流宣传', description: 'Advertising' },
   { number: 14, name: '赞助方案筹备', description: 'Sponsorship Package Planning' },
   { number: 15, name: '社团联合', description: 'Community Alliance' },
+  { number: 16, name: '场馆媒体制作', description: 'Venue Media Design' },
 ];
 
 // Status type for steps

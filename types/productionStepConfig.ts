@@ -32,6 +32,7 @@ export const STEP_DEFINITIONS: StepDefinition[] = [
   { stepKey: 'step5', nameKey: 'step5', descriptionKey: 'Materials', defaultOrder: 5, requiresVenue: false },
   { stepKey: 'step6', nameKey: 'step6', descriptionKey: 'Venue Info', defaultOrder: 6, requiresVenue: true },
   { stepKey: 'step7', nameKey: 'step7', descriptionKey: 'Designs', defaultOrder: 7, requiresVenue: false },
+  { stepKey: 'step16', nameKey: 'step16', descriptionKey: 'Venue Media Design', defaultOrder: 7.5, requiresVenue: true },
   { stepKey: 'step8', nameKey: 'step8', descriptionKey: 'Promotional Images', defaultOrder: 8, requiresVenue: false },
   { stepKey: 'step9', nameKey: 'step9', descriptionKey: 'Videos', defaultOrder: 9, requiresVenue: false },
   { stepKey: 'step10', nameKey: 'step10', descriptionKey: 'Press Conference', defaultOrder: 10, requiresVenue: true },

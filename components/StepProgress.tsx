@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { STEPS, StepInfo } from '@/types/production';
 import type { StepConfig } from '@/types/productionStepConfig';
@@ -20,25 +21,23 @@ export default function StepProgress({
   completionPercentage,
   stepConfig,
 }: StepProgressProps) {
+  const tStep = useTranslations('stepConfig');
   // Use config order if available, otherwise fall back to default STEPS order
   const orderedSteps = stepConfig
     ? stepConfig
         .filter((s) => s.enabled)
         .sort((a, b) => a.order - b.order)
         .map((config, index) => {
-          const defaultStep = STEPS.find(
-            (s) => `step${s.number}` === config.stepKey
-          );
           return {
             stepKey: config.stepKey,
             displayOrder: index + 1,
-            name: defaultStep?.name || config.stepKey,
+            name: tStep(config.stepKey),
           };
         })
     : STEPS.map((s) => ({
         stepKey: `step${s.number}`,
         displayOrder: s.number,
-        name: s.name,
+        name: tStep(`step${s.number}`),
       }));
 
   return (
