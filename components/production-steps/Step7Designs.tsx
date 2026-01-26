@@ -41,6 +41,7 @@ export default function Step7Designs({
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState<string | null>(null);
   const [mediaPackages, setMediaPackages] = useState<MediaPackage[]>([]);
+  const [openMediaId, setOpenMediaId] = useState<string | null>(null);
   const mediaItems = data.media || [];
 
   // Get linked items for each section
@@ -70,6 +71,7 @@ export default function Step7Designs({
       mediaLink: '',
     };
     onChange({ ...data, media: [...mediaItems, nextItem] });
+    setOpenMediaId(nextItem.id);
   };
 
   const updateMediaItem = (id: string, updates: Partial<MediaDesignItem>) => {
@@ -161,15 +163,25 @@ export default function Step7Designs({
             <Card key={item.id}>
               <CardHeader className="flex flex-row items-start justify-between">
                 <CardTitle>Media {index + 1}</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeMediaItem(item.id)}
-                >
-                  <span className="text-red-500">×</span>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setOpenMediaId(openMediaId === item.id ? null : item.id)}
+                  >
+                    {openMediaId === item.id ? 'Collapse' : 'Expand'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeMediaItem(item.id)}
+                  >
+                    <span className="text-red-500">×</span>
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              {openMediaId === item.id && (
+                <CardContent className="space-y-4">
                 <div>
                   <Label>Title</Label>
                   <Input
@@ -249,7 +261,8 @@ export default function Step7Designs({
                     onChange={(e) => updateMediaItem(item.id, { mediaLink: e.target.value })}
                   />
                 </div>
-              </CardContent>
+                </CardContent>
+              )}
             </Card>
         ))}
 

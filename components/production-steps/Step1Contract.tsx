@@ -10,6 +10,7 @@ import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { Contract } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -81,9 +82,12 @@ export default function Step1Contract({
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="contract-link">
-            Contract Link <span className="text-red-500">*</span>
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="contract-link" className="mb-0">
+              Contract Link <span className="text-red-500">*</span>
+            </Label>
+            <PreviewLink href={data.link} />
+          </div>
           <Input
             id="contract-link"
             type="url"

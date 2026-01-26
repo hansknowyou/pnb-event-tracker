@@ -13,6 +13,7 @@ import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { SocialMedia, Platform, Post } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -176,7 +177,10 @@ export default function Step12SocialMedia({
             </Label>
           </div>
           <div>
-            <Label>Website Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Website Link</Label>
+              <PreviewLink href={data.websiteUpdated.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -281,7 +285,10 @@ export default function Step12SocialMedia({
                       </div>
 
                       <div>
-                        <Label className="text-xs">Post Link</Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="mb-0 text-xs">Post Link</Label>
+                          <PreviewLink href={post.postLink} className="text-xs" />
+                        </div>
                         <Input
                           type="url"
                           placeholder="https://..."
@@ -334,7 +341,10 @@ export default function Step12SocialMedia({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Event Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Event Link</Label>
+              <PreviewLink href={data.facebookEvent.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://facebook.com/events/..."

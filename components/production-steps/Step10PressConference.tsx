@@ -12,6 +12,7 @@ import { Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { PressConference } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -139,7 +140,10 @@ export default function Step10PressConference({
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Link</Label>
+              <div className="flex items-center gap-2">
+                <Label className="mb-0">Link</Label>
+                <PreviewLink href={(data as any)[key].link} />
+              </div>
               <Input
                 type="url"
                 placeholder="https://..."
@@ -173,7 +177,10 @@ export default function Step10PressConference({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>PDF Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">PDF Link</Label>
+              <PreviewLink href={data.rollupBannerPDF.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -219,7 +226,10 @@ export default function Step10PressConference({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Link</Label>
+              <PreviewLink href={data.smallPoster.link} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -265,7 +275,10 @@ export default function Step10PressConference({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Close-ups Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Close-ups Link</Label>
+              <PreviewLink href={data.onSiteFootage.closeUps} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."
@@ -277,7 +290,10 @@ export default function Step10PressConference({
                           />
           </div>
           <div>
-            <Label>Backdrop/Screen/Scenery Link</Label>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Backdrop/Screen/Scenery Link</Label>
+              <PreviewLink href={data.onSiteFootage.scenery} />
+            </div>
             <Input
               type="url"
               placeholder="https://..."

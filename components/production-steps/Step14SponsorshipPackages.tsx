@@ -11,6 +11,7 @@ import { Plus, Trash2, ExternalLink, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { SponsorshipPackage } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 
@@ -145,7 +146,10 @@ export default function Step14SponsorshipPackages({
                 </div>
 
                 <div>
-                  <Label>File Link</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="mb-0">File Link</Label>
+                    <PreviewLink href={pkg.fileLink} />
+                  </div>
                   <div className="flex gap-2">
                     <Input
                       type="url"

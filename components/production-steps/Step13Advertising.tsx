@@ -214,7 +214,10 @@ export default function Step13Advertising({
               </div>
 
               <div>
-                <Label>Resource Link</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="mb-0">Resource Link</Label>
+                  <PreviewLink href={item.resourceLink} />
+                </div>
                 <Input
                   type="url"
                   placeholder="https://..."

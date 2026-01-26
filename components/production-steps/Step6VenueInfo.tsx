@@ -12,6 +12,7 @@ import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
 import VenueLinkButton from '@/components/VenueLinkButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { VenueInfo } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 import type { Venue } from '@/types/venue';
@@ -40,6 +41,7 @@ export default function Step6VenueInfo({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
+  const [openVenueId, setOpenVenueId] = useState<string | null>(null);
   const addVenue = () => {
     const newVenue: VenueInfo = {
       id: Date.now().toString(),
@@ -55,6 +57,7 @@ export default function Step6VenueInfo({
       ticketLink: { link: '', notes: '' },
     };
     onChange([...data, newVenue]);
+    setOpenVenueId(newVenue.id);
   };
 
   const handleVenueLink = (venueInfoId: string, linkedVenue: Venue | null) => {
@@ -145,176 +148,203 @@ export default function Step6VenueInfo({
                     onImport={(v) => handleVenueImport(venue.id, v)}
                   />
                 </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => removeVenue(venue.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setOpenVenueId((current) => (current === venue.id ? null : venue.id))
+                    }
+                  >
+                    {openVenueId === venue.id ? 'Collapse' : 'Expand'}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeVenue(venue.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
 
-              {/* Basic Info */}
-              <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">Basic Information</h5>
+              {openVenueId === venue.id && (
+                <>
+                  {/* Basic Info */}
+                  <div className="space-y-4 pb-4 border-b">
+                    <h5 className="font-semibold text-sm text-gray-700">Basic Information</h5>
 
-                {!venue.linkedVenueId && (
-                  <p className="text-sm text-gray-500">Link a venue to view its details.</p>
-                )}
+                    {!venue.linkedVenueId && (
+                      <p className="text-sm text-gray-500">Link a venue to view its details.</p>
+                    )}
 
-                {venue.linkedVenueId && (
-                  <div className="space-y-3">
+                    {venue.linkedVenueId && (
+                      <div className="space-y-3">
+                        <div>
+                          <Label>Venue Name</Label>
+                          <p className="text-sm text-gray-800">{venue.venueName || '—'}</p>
+                        </div>
+                        <div>
+                          <Label>Address</Label>
+                          <p className="text-sm text-gray-800">{venue.address || '—'}</p>
+                        </div>
+                        <div>
+                          <Label>Preview Image</Label>
+                          {venue.previewImage ? (
+                            <img
+                              src={venue.previewImage}
+                              alt={venue.venueName || 'Venue'}
+                              className="mt-2 h-32 w-48 rounded-md border object-cover"
+                            />
+                          ) : (
+                            <p className="text-sm text-gray-500">No image available.</p>
+                          )}
+                        </div>
+                        <div>
+                          <Label>Contacts</Label>
+                          <p className="text-sm text-gray-800 whitespace-pre-line">
+                            {venue.contacts || '—'}
+                          </p>
+                        </div>
+                        <div>
+                          <Label>Notes</Label>
+                          <p className="text-sm text-gray-800 whitespace-pre-line">
+                            {venue.otherInfo || '—'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Required Forms */}
+                  <div className="space-y-4 pb-4 border-b">
+                    <h5 className="font-semibold text-sm text-gray-700">Venue Required Forms</h5>
+
                     <div>
-                      <Label>Venue Name</Label>
-                      <p className="text-sm text-gray-800">{venue.venueName || '—'}</p>
+                      <div className="flex items-center gap-2">
+                        <Label className="mb-0">Forms Link</Label>
+                        <PreviewLink href={venue.requiredForms.link} />
+                      </div>
+                      <Input
+                        type="url"
+                        placeholder="https://..."
+                        value={venue.requiredForms.link}
+                        onChange={(e) => updateVenue(venue.id, {
+                          requiredForms: { ...venue.requiredForms, link: e.target.value }
+                        })}
+                      />
                     </div>
-                    <div>
-                      <Label>Address</Label>
-                      <p className="text-sm text-gray-800">{venue.address || '—'}</p>
-                    </div>
-                    <div>
-                      <Label>Preview Image</Label>
-                      {venue.previewImage ? (
-                        <img
-                          src={venue.previewImage}
-                          alt={venue.venueName || 'Venue'}
-                          className="mt-2 h-32 w-48 rounded-md border object-cover"
-                        />
-                      ) : (
-                        <p className="text-sm text-gray-500">No image available.</p>
-                      )}
-                    </div>
-                    <div>
-                      <Label>Contacts</Label>
-                      <p className="text-sm text-gray-800 whitespace-pre-line">
-                        {venue.contacts || '—'}
-                      </p>
-                    </div>
+
                     <div>
                       <Label>Notes</Label>
-                      <p className="text-sm text-gray-800 whitespace-pre-line">
-                        {venue.otherInfo || '—'}
-                      </p>
+                      <Textarea
+                        placeholder="Notes about forms..."
+                        rows={2}
+                        value={venue.requiredForms.notes}
+                        onChange={(e) => updateVenue(venue.id, {
+                          requiredForms: { ...venue.requiredForms, notes: e.target.value }
+                        })}
+                      />
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Required Forms */}
-              <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">Venue Required Forms</h5>
+                  {/* Ticket Design & Pricing */}
+                  <div className="space-y-4 pb-4 border-b">
+                    <h5 className="font-semibold text-sm text-gray-700">Ticket Design & Pricing</h5>
 
-                <div>
-                  <Label>Forms Link</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={venue.requiredForms.link}
-                    onChange={(e) => updateVenue(venue.id, {
-                      requiredForms: { ...venue.requiredForms, link: e.target.value }
-                    })}
-                                      />
-                </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Label className="mb-0">Ticket Design Link</Label>
+                        <PreviewLink href={venue.ticketDesign.link} />
+                      </div>
+                      <Input
+                        type="url"
+                        placeholder="https://..."
+                        value={venue.ticketDesign.link}
+                        onChange={(e) => updateVenue(venue.id, {
+                          ticketDesign: { ...venue.ticketDesign, link: e.target.value }
+                        })}
+                      />
+                    </div>
 
-                <div>
-                  <Label>Notes</Label>
-                  <Textarea
-                    placeholder="Notes about forms..."
-                    rows={2}
-                    value={venue.requiredForms.notes}
-                    onChange={(e) => updateVenue(venue.id, {
-                      requiredForms: { ...venue.requiredForms, notes: e.target.value }
-                    })}
-                                      />
-                </div>
-              </div>
+                    <div>
+                      <Label>Pricing Information</Label>
+                      <Textarea
+                        placeholder="Ticket pricing details..."
+                        rows={2}
+                        value={venue.ticketDesign.pricing}
+                        onChange={(e) => updateVenue(venue.id, {
+                          ticketDesign: { ...venue.ticketDesign, pricing: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
 
-              {/* Ticket Design & Pricing */}
-              <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">Ticket Design & Pricing</h5>
+                  {/* Seat Map */}
+                  <div className="space-y-4 pb-4 border-b">
+                    <h5 className="font-semibold text-sm text-gray-700">Reserved Seat Map</h5>
 
-                <div>
-                  <Label>Ticket Design Link</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={venue.ticketDesign.link}
-                    onChange={(e) => updateVenue(venue.id, {
-                      ticketDesign: { ...venue.ticketDesign, link: e.target.value }
-                    })}
-                                      />
-                </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Label className="mb-0">Seat Map Link</Label>
+                        <PreviewLink href={venue.seatMap.link} />
+                      </div>
+                      <Input
+                        type="url"
+                        placeholder="https://..."
+                        value={venue.seatMap.link}
+                        onChange={(e) => updateVenue(venue.id, {
+                          seatMap: { ...venue.seatMap, link: e.target.value }
+                        })}
+                      />
+                    </div>
 
-                <div>
-                  <Label>Pricing Information</Label>
-                  <Textarea
-                    placeholder="Ticket pricing details..."
-                    rows={2}
-                    value={venue.ticketDesign.pricing}
-                    onChange={(e) => updateVenue(venue.id, {
-                      ticketDesign: { ...venue.ticketDesign, pricing: e.target.value }
-                    })}
-                                      />
-                </div>
-              </div>
+                    <div>
+                      <Label>Notes</Label>
+                      <Textarea
+                        placeholder="Notes about seat map..."
+                        rows={2}
+                        value={venue.seatMap.notes}
+                        onChange={(e) => updateVenue(venue.id, {
+                          seatMap: { ...venue.seatMap, notes: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
 
-              {/* Seat Map */}
-              <div className="space-y-4 pb-4 border-b">
-                <h5 className="font-semibold text-sm text-gray-700">Reserved Seat Map</h5>
+                  {/* Ticket Link */}
+                  <div className="space-y-4">
+                    <h5 className="font-semibold text-sm text-gray-700">Ticketing Link</h5>
 
-                <div>
-                  <Label>Seat Map Link</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={venue.seatMap.link}
-                    onChange={(e) => updateVenue(venue.id, {
-                      seatMap: { ...venue.seatMap, link: e.target.value }
-                    })}
-                                      />
-                </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Label className="mb-0">Ticket Purchase Link</Label>
+                        <PreviewLink href={venue.ticketLink.link} />
+                      </div>
+                      <Input
+                        type="url"
+                        placeholder="https://..."
+                        value={venue.ticketLink.link}
+                        onChange={(e) => updateVenue(venue.id, {
+                          ticketLink: { ...venue.ticketLink, link: e.target.value }
+                        })}
+                      />
+                    </div>
 
-                <div>
-                  <Label>Notes</Label>
-                  <Textarea
-                    placeholder="Notes about seat map..."
-                    rows={2}
-                    value={venue.seatMap.notes}
-                    onChange={(e) => updateVenue(venue.id, {
-                      seatMap: { ...venue.seatMap, notes: e.target.value }
-                    })}
-                                      />
-                </div>
-              </div>
-
-              {/* Ticket Link */}
-              <div className="space-y-4">
-                <h5 className="font-semibold text-sm text-gray-700">Ticketing Link</h5>
-
-                <div>
-                  <Label>Ticket Purchase Link</Label>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={venue.ticketLink.link}
-                    onChange={(e) => updateVenue(venue.id, {
-                      ticketLink: { ...venue.ticketLink, link: e.target.value }
-                    })}
-                                      />
-                </div>
-
-                <div>
-                  <Label>Notes</Label>
-                  <Textarea
-                    placeholder="Notes about ticketing..."
-                    rows={2}
-                    value={venue.ticketLink.notes}
-                    onChange={(e) => updateVenue(venue.id, {
-                      ticketLink: { ...venue.ticketLink, notes: e.target.value }
-                    })}
-                                      />
-                </div>
-              </div>
+                    <div>
+                      <Label>Notes</Label>
+                      <Textarea
+                        placeholder="Notes about ticketing..."
+                        rows={2}
+                        value={venue.ticketLink.notes}
+                        onChange={(e) => updateVenue(venue.id, {
+                          ticketLink: { ...venue.ticketLink, notes: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         ))}

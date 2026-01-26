@@ -12,6 +12,7 @@ import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
 import VenueLinkButton from '@/components/VenueLinkButton';
+import PreviewLink from '@/components/PreviewLink';
 import type { VenueContract } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
 import type { Venue } from '@/types/venue';
@@ -162,9 +163,12 @@ export default function Step3VenueContracts({
                 </div>
 
                 <div>
-                  <Label>
-                    Contract Link <span className="text-red-500">*</span>
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="mb-0">
+                      Contract Link <span className="text-red-500">*</span>
+                    </Label>
+                    <PreviewLink href={venue.contractLink} />
+                  </div>
                   <Input
                     type="url"
                     placeholder="https://..."
