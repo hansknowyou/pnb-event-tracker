@@ -110,39 +110,17 @@ interface IVideos {
   media: IMediaDesignItem[];
 }
 
-// Step 10: Press Conference
-interface IVenueBasic {
-  datetime: string;
-  location: string;
-  notes: string;
-}
-
 interface ILinkWithNotes {
   link: string;
   notes: string;
 }
 
-interface IPrintable extends ILinkWithNotes {
-  isPrinted: boolean;
-}
-
-interface IOnSiteFootage {
-  closeUps: string;
-  scenery: string;
-  notes: string;
-}
-
 interface IPressConference {
-  venue: IVenueBasic;
-  invitation: ILinkWithNotes;
+  location: string;
+  invitationLetter: ILinkWithNotes;
   guestList: ILinkWithNotes;
   pressRelease: ILinkWithNotes;
-  backdropVideo: ILinkWithNotes;
-  backgroundMusic: ILinkWithNotes;
-  screenContent: ILinkWithNotes;
-  rollupBannerPDF: IPrintable;
-  smallPoster: IPrintable;
-  onSiteFootage: IOnSiteFootage;
+  media: IMediaDesignItem[];
 }
 
 // Step 11: Performance Shooting
@@ -152,57 +130,28 @@ interface IPerformanceShooting {
 }
 
 // Step 12: Social Media
-interface IWebsiteUpdate {
-  isAdded: boolean;
-  link: string;
-  notes: string;
-}
-
-interface IPost {
+interface IPromoMediaFile {
   id: string;
-  stage: 'warm-up' | 'ticket-launch' | 'promotion' | 'live' | 'summary';
-  postLink: string;
-  publishDate: string;
-  notes: string;
-}
-
-interface IPlatform {
-  id: string;
-  platformName: string;
-  posts: IPost[];
-}
-
-interface IFacebookEvent {
+  name: string;
   link: string;
-  notes: string;
+}
+
+interface IPromotionItem {
+  id: string;
+  title: string;
+  description: string;
+  promotionChannelId: string;
+  mediaFiles: IPromoMediaFile[];
 }
 
 interface ISocialMedia {
-  websiteUpdated: IWebsiteUpdate;
-  platforms: IPlatform[];
-  facebookEvent: IFacebookEvent;
+  promotions: IPromotionItem[];
 }
 
-// Step 13: Advertising
-interface ITargetAudience {
-  id: string;
-  platformName: string;
-  targetAudience: ('chinese' | 'western')[];
-  resourceLink: string;
-  notes: string;
-}
-
-interface IOfflineAdvertising {
-  id: string;
-  organizationName: string;
-  targetAudience: ('chinese' | 'western')[];
-  googleResourceLink: string;
-  notes: string;
-}
-
-interface IAdvertising {
-  online: ITargetAudience[];
-  offline: IOfflineAdvertising[];
+// Step 13: After Event
+interface IAfterEvent {
+  eventSummary: ILinkWithNotes;
+  eventRetrospective: ILinkWithNotes;
 }
 
 // Step 14: Sponsorship Packages
@@ -244,7 +193,7 @@ export interface IProduction extends Document {
   step10_pressConference: IPressConference;
   step11_performanceShooting: IPerformanceShooting;
   step12_socialMedia: ISocialMedia;
-  step13_advertising: IAdvertising;
+  step13_afterEvent: IAfterEvent;
   step14_sponsorshipPackages: ISponsorshipPackage[];
   step15_communityAlliances: ICommunityAlliance[];
   step16_venueMediaDesign: IDesigns;
@@ -421,12 +370,8 @@ const ProductionSchema = new Schema<IProduction>(
 
     // Step 10: Press Conference
     step10_pressConference: {
-      venue: {
-        datetime: { type: String, default: '' },
-        location: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      invitation: {
+      location: { type: String, default: '' },
+      invitationLetter: {
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
       },
@@ -438,32 +383,15 @@ const ProductionSchema = new Schema<IProduction>(
         link: { type: String, default: '' },
         notes: { type: String, default: '' },
       },
-      backdropVideo: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      backgroundMusic: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      screenContent: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      rollupBannerPDF: {
-        link: { type: String, default: '' },
-        isPrinted: { type: Boolean, default: false },
-        notes: { type: String, default: '' },
-      },
-      smallPoster: {
-        link: { type: String, default: '' },
-        isPrinted: { type: Boolean, default: false },
-        notes: { type: String, default: '' },
-      },
-      onSiteFootage: {
-        closeUps: { type: String, default: '' },
-        scenery: { type: String, default: '' },
-        notes: { type: String, default: '' },
+      media: {
+        type: [{
+          id: { type: String, required: true },
+          title: { type: String, default: '' },
+          description: { type: String, default: '' },
+          mediaPackageIds: { type: [String], default: [] },
+          mediaPackageLinks: { type: Map, of: String, default: {} },
+        }],
+        default: [],
       },
     },
 
@@ -473,46 +401,34 @@ const ProductionSchema = new Schema<IProduction>(
       notes: { type: String, default: '' },
     },
 
-    // Step 12: Social Media
+    // Step 12: Online Promotion
     step12_socialMedia: {
-      websiteUpdated: {
-        isAdded: { type: Boolean, default: false },
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
-      },
-      platforms: [{
-        id: { type: String, required: true },
-        platformName: { type: String, default: '' },
-        posts: [{
+      promotions: {
+        type: [{
           id: { type: String, required: true },
-          stage: { type: String, enum: ['warm-up', 'ticket-launch', 'promotion', 'live', 'summary'], default: 'warm-up' },
-          postLink: { type: String, default: '' },
-          publishDate: { type: String, default: '' },
-          notes: { type: String, default: '' },
+          title: { type: String, default: '' },
+          description: { type: String, default: '' },
+          promotionChannelId: { type: String, default: '' },
+          mediaFiles: [{
+            id: { type: String, required: true },
+            name: { type: String, default: '' },
+            link: { type: String, default: '' },
+          }],
         }],
-      }],
-      facebookEvent: {
-        link: { type: String, default: '' },
-        notes: { type: String, default: '' },
+        default: [],
       },
     },
 
-    // Step 13: Advertising
-    step13_advertising: {
-      online: [{
-        id: { type: String, required: true },
-        platformName: { type: String, default: '' },
-        targetAudience: [{ type: String, enum: ['chinese', 'western'] }],
-        resourceLink: { type: String, default: '' },
+    // Step 13: After Event
+    step13_afterEvent: {
+      eventSummary: {
+        link: { type: String, default: '' },
         notes: { type: String, default: '' },
-      }],
-      offline: [{
-        id: { type: String, required: true },
-        organizationName: { type: String, default: '' },
-        targetAudience: [{ type: String, enum: ['chinese', 'western'] }],
-        googleResourceLink: { type: String, default: '' },
+      },
+      eventRetrospective: {
+        link: { type: String, default: '' },
         notes: { type: String, default: '' },
-      }],
+      },
     },
 
     // Step 14: Sponsorship Packages

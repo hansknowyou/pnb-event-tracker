@@ -19,7 +19,7 @@ import Step9Videos from '@/components/production-steps/Step9Videos';
 import Step10PressConference from '@/components/production-steps/Step10PressConference';
 import Step11PerformanceShooting from '@/components/production-steps/Step11PerformanceShooting';
 import Step12SocialMedia from '@/components/production-steps/Step12SocialMedia';
-import Step13Advertising from '@/components/production-steps/Step13Advertising';
+import Step13AfterEvent from '@/components/production-steps/Step13AfterEvent';
 import Step14SponsorshipPackages from '@/components/production-steps/Step14SponsorshipPackages';
 import Step15CommunityAlliances from '@/components/production-steps/Step15CommunityAlliances';
 import Step16VenueMediaDesign from '@/components/production-steps/Step16VenueMediaDesign';
@@ -108,6 +108,22 @@ export default function ProductionEditPage() {
         const data = await response.json();
         const normalized = {
           ...data,
+          step12_socialMedia: {
+            promotions: data.step12_socialMedia?.promotions || [],
+          },
+          step10_pressConference: {
+            ...data.step10_pressConference,
+            location: data.step10_pressConference?.location || '',
+            invitationLetter: data.step10_pressConference?.invitationLetter || { link: '', notes: '' },
+            guestList: data.step10_pressConference?.guestList || { link: '', notes: '' },
+            pressRelease: data.step10_pressConference?.pressRelease || { link: '', notes: '' },
+            media: data.step10_pressConference?.media || [],
+          },
+          step13_afterEvent: {
+            ...data.step13_afterEvent,
+            eventSummary: data.step13_afterEvent?.eventSummary || { link: '', notes: '' },
+            eventRetrospective: data.step13_afterEvent?.eventRetrospective || { link: '', notes: '' },
+          },
           step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
         };
         setProduction(normalized);
@@ -179,26 +195,32 @@ export default function ProductionEditPage() {
         ...prod.step9_videos,
         media: sanitizeMediaLinks(prod.step9_videos.media || []),
       },
+      step10_pressConference: {
+        ...prod.step10_pressConference,
+        media: sanitizeMediaLinks(prod.step10_pressConference.media || []),
+      },
       step16_venueMediaDesign: {
         ...prod.step16_venueMediaDesign,
         media: sanitizeMediaLinks(prod.step16_venueMediaDesign.media || []),
       },
       step12_socialMedia: {
-        ...prod.step12_socialMedia,
-        platforms: prod.step12_socialMedia.platforms
-          .filter(platform => !isEmpty(platform.platformName))
-          .map(platform => ({
-            ...platform,
-            posts: platform.posts.filter(post => !isEmpty(post.postLink))
+        promotions: (prod.step12_socialMedia.promotions || [])
+          .filter((promo) =>
+            !isEmpty(promo.title) ||
+            !isEmpty(promo.description) ||
+            !isEmpty(promo.promotionChannelId) ||
+            (promo.mediaFiles || []).some((file) => !isEmpty(file.name) || !isEmpty(file.link))
+          )
+          .map((promo) => ({
+            ...promo,
+            mediaFiles: (promo.mediaFiles || []).filter(
+              (file) => !isEmpty(file.name) || !isEmpty(file.link)
+            ),
           })),
       },
-      step13_advertising: {
-        online: prod.step13_advertising.online.filter(item =>
-          !isEmpty(item.platformName) || !isEmpty(item.resourceLink)
-        ),
-        offline: prod.step13_advertising.offline.filter(item =>
-          !isEmpty(item.organizationName) || !isEmpty(item.googleResourceLink)
-        ),
+      step13_afterEvent: {
+        eventSummary: prod.step13_afterEvent?.eventSummary || { link: '', notes: '' },
+        eventRetrospective: prod.step13_afterEvent?.eventRetrospective || { link: '', notes: '' },
       },
     };
   };
@@ -545,9 +567,9 @@ export default function ProductionEditPage() {
           )}
 
           {currentStepNumber === 13 && (
-            <Step13Advertising
-              data={production.step13_advertising}
-              onChange={(data) => updateProduction({ step13_advertising: data })}
+            <Step13AfterEvent
+              data={production.step13_afterEvent}
+              onChange={(data) => updateProduction({ step13_afterEvent: data })}
               onBlur={saveProduction}
               productionId={productionId}
               linkedKnowledge={getLinkedItems('step13')}

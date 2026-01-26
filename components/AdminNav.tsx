@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { Users, MapPin, UserCog, ListOrdered, Ticket, Image, Building, Film } from 'lucide-react';
+import { Users, MapPin, UserCog, ListOrdered, Ticket, Image, Building, Film, Megaphone } from 'lucide-react';
 
 export default function AdminNav() {
   const pathname = usePathname();
@@ -13,6 +13,7 @@ export default function AdminNav() {
   const navItems = [
     { href: '/admin/organization-profile', label: t('organizationProfile'), icon: Building },
     { href: '/admin/media-packages', label: t('mediaPackages'), icon: Film },
+    { href: '/admin/promotion-channels', label: t('promotionChannels'), icon: Megaphone },
     { href: '/admin/users', label: t('users'), icon: Users },
     { href: '/admin/cities', label: t('cities'), icon: MapPin },
     { href: '/admin/staff-roles', label: t('staffRoles'), icon: UserCog },

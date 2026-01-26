@@ -132,39 +132,17 @@ export interface Videos {
 
 // Step 16: Venue Media Design
 
-// Step 10: Press Conference
-export interface VenueBasic {
-  datetime: string;
-  location: string;
-  notes: string;
-}
-
 export interface LinkWithNotes {
   link: string;
   notes: string;
 }
 
-export interface Printable extends LinkWithNotes {
-  isPrinted: boolean;
-}
-
-export interface OnSiteFootage {
-  closeUps: string;
-  scenery: string;
-  notes: string;
-}
-
 export interface PressConference {
-  venue: VenueBasic;
-  invitation: LinkWithNotes;
+  location: string;
+  invitationLetter: LinkWithNotes;
   guestList: LinkWithNotes;
   pressRelease: LinkWithNotes;
-  backdropVideo: LinkWithNotes;
-  backgroundMusic: LinkWithNotes;
-  screenContent: LinkWithNotes;
-  rollupBannerPDF: Printable;
-  smallPoster: Printable;
-  onSiteFootage: OnSiteFootage;
+  media: MediaDesignItem[];
 }
 
 // Step 11: Performance Shooting
@@ -173,58 +151,28 @@ export interface PerformanceShooting {
   notes: string;
 }
 
-// Step 12: Social Media
-export interface WebsiteUpdate {
-  isAdded: boolean;
-  link: string;
-  notes: string;
-}
-
-export interface Post {
+export interface PromoMediaFile {
   id: string;
-  stage: 'warm-up' | 'ticket-launch' | 'promotion' | 'live' | 'summary';
-  postLink: string;
-  publishDate: string;
-  notes: string;
-}
-
-export interface Platform {
-  id: string;
-  platformName: string;
-  posts: Post[];
-}
-
-export interface FacebookEvent {
+  name: string;
   link: string;
-  notes: string;
+}
+
+export interface PromotionItem {
+  id: string;
+  title: string;
+  description: string;
+  promotionChannelId: string;
+  mediaFiles: PromoMediaFile[];
 }
 
 export interface SocialMedia {
-  websiteUpdated: WebsiteUpdate;
-  platforms: Platform[];
-  facebookEvent: FacebookEvent;
+  promotions: PromotionItem[];
 }
 
-// Step 13: Advertising
-export interface TargetAudience {
-  id: string;
-  platformName: string;
-  targetAudience: ('chinese' | 'western')[];
-  resourceLink: string;
-  notes: string;
-}
-
-export interface OfflineAdvertising {
-  id: string;
-  organizationName: string;
-  targetAudience: ('chinese' | 'western')[];
-  googleResourceLink: string;
-  notes: string;
-}
-
-export interface Advertising {
-  online: TargetAudience[];
-  offline: OfflineAdvertising[];
+// Step 13: After Event
+export interface AfterEvent {
+  eventSummary: LinkWithNotes;
+  eventRetrospective: LinkWithNotes;
 }
 
 // Step 14: Sponsorship Package Planning
@@ -267,7 +215,7 @@ export interface Production {
   step10_pressConference: PressConference;
   step11_performanceShooting: PerformanceShooting;
   step12_socialMedia: SocialMedia;
-  step13_advertising: Advertising;
+  step13_afterEvent: AfterEvent;
   step14_sponsorshipPackages: SponsorshipPackage[];
   step15_communityAlliances: CommunityAlliance[];
   step16_venueMediaDesign: Designs;
@@ -321,7 +269,7 @@ export const STEPS: StepInfo[] = [
   { number: 10, name: '媒体发布会收集', description: 'Press Conference' },
   { number: 11, name: '演出拍摄收集', description: 'Performance Shooting' },
   { number: 12, name: '社媒宣传', description: 'Social Media' },
-  { number: 13, name: '投流宣传', description: 'Advertising' },
+  { number: 13, name: '演出结束', description: 'After Event' },
   { number: 14, name: '赞助方案筹备', description: 'Sponsorship Package Planning' },
   { number: 15, name: '社团联合', description: 'Community Alliance' },
   { number: 16, name: '场馆媒体制作', description: 'Venue Media Design' },

@@ -56,29 +56,22 @@ export async function POST(req: NextRequest) {
         media: [],
       },
       step10_pressConference: {
-        venue: { datetime: '', location: '', notes: '' },
-        invitation: { link: '', notes: '' },
+        location: '',
+        invitationLetter: { link: '', notes: '' },
         guestList: { link: '', notes: '' },
         pressRelease: { link: '', notes: '' },
-        backdropVideo: { link: '', notes: '' },
-        backgroundMusic: { link: '', notes: '' },
-        screenContent: { link: '', notes: '' },
-        rollupBannerPDF: { link: '', isPrinted: false, notes: '' },
-        smallPoster: { link: '', isPrinted: false, notes: '' },
-        onSiteFootage: { closeUps: '', scenery: '', notes: '' },
+        media: [],
       },
       step11_performanceShooting: {
         googleDriveLink: '',
         notes: '',
       },
       step12_socialMedia: {
-        websiteUpdated: { isAdded: false, link: '', notes: '' },
-        platforms: [],
-        facebookEvent: { link: '', notes: '' },
+        promotions: [],
       },
-      step13_advertising: {
-        online: [],
-        offline: [],
+      step13_afterEvent: {
+        eventSummary: { link: '', notes: '' },
+        eventRetrospective: { link: '', notes: '' },
       },
     });
 

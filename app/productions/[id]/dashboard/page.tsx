@@ -52,6 +52,22 @@ export default function ProductionDashboard() {
         const data = await response.json();
         const normalized = {
           ...data,
+          step12_socialMedia: {
+            promotions: data.step12_socialMedia?.promotions || [],
+          },
+          step10_pressConference: {
+            ...data.step10_pressConference,
+            location: data.step10_pressConference?.location || '',
+            invitationLetter: data.step10_pressConference?.invitationLetter || { link: '', notes: '' },
+            guestList: data.step10_pressConference?.guestList || { link: '', notes: '' },
+            pressRelease: data.step10_pressConference?.pressRelease || { link: '', notes: '' },
+            media: data.step10_pressConference?.media || [],
+          },
+          step13_afterEvent: {
+            ...data.step13_afterEvent,
+            eventSummary: data.step13_afterEvent?.eventSummary || { link: '', notes: '' },
+            eventRetrospective: data.step13_afterEvent?.eventRetrospective || { link: '', notes: '' },
+          },
           step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
         };
         setProduction(normalized);
@@ -557,9 +573,21 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <FieldDisplay label="Date/Time" value={production.step10_pressConference.venue.datetime} />
-            <FieldDisplay label="Location" value={production.step10_pressConference.venue.location} />
-            <FieldDisplay label="Invitation" link={production.step10_pressConference.invitation.link} />
+            <FieldDisplay label="Press Conference Location" value={production.step10_pressConference.location} />
+            <FieldDisplay label="Invitation Letter" link={production.step10_pressConference.invitationLetter.link} />
+            <FieldDisplay label="Guest List" link={production.step10_pressConference.guestList.link} />
+            <FieldDisplay label="Official Press Release" link={production.step10_pressConference.pressRelease.link} />
+            {production.step10_pressConference.media?.length > 0 && (
+              <div className="space-y-2">
+                {production.step10_pressConference.media?.map((item) => (
+                  <FieldDisplay
+                    key={item.id}
+                    label={item.title || 'Media Item'}
+                    link={getMediaItemLink(item)}
+                  />
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -582,7 +610,7 @@ export default function ProductionDashboard() {
           </CardContent>
         </Card>
 
-        {/* Step 12: Social Media */}
+        {/* Step 12: Online Promotion */}
         <Card className="mb-6">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -596,20 +624,33 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div><span className={production.step12_socialMedia.websiteUpdated.isAdded ? "text-green-600" : "text-red-500"}>
-              {production.step12_socialMedia.websiteUpdated.isAdded ? "✓" : "✗"}</span> Website Updated</div>
-            <div><span className={production.step12_socialMedia.platforms.length > 0 ? "text-green-600" : "text-red-500"}>
-              {production.step12_socialMedia.platforms.length > 0 ? "✓" : "✗"}</span> Platforms: {production.step12_socialMedia.platforms.length}</div>
-            <FieldDisplay label="Facebook Event" link={production.step12_socialMedia.facebookEvent.link} />
+            {production.step12_socialMedia.promotions?.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No promotions added</div>
+            ) : (
+              <div className="space-y-2">
+                {production.step12_socialMedia.promotions?.map((promo) => (
+                  <div key={promo.id} className="rounded-md border bg-gray-50 p-3">
+                    <div className="text-sm font-semibold">{promo.title || 'Promotion'}</div>
+                    {promo.mediaFiles?.length > 0 && (
+                      <div className="space-y-1 mt-2">
+                        {promo.mediaFiles.map((file) => (
+                          <FieldDisplay key={file.id} label={file.name || 'Media File'} link={file.link} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Step 13: Advertising */}
+        {/* Step 13: After Event */}
         <Card className="mb-6">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <StatusIcon status={getStepStatus(production.step13_advertising)} />
+                <StatusIcon status={getStepStatus(production.step13_afterEvent)} />
                 <CardTitle>{tStep('step13')}</CardTitle>
               </div>
               <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step13`)}>
@@ -617,41 +658,9 @@ export default function ProductionDashboard() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="font-medium mb-2">
-                  <span className={production.step13_advertising.online.length > 0 ? "text-green-600" : "text-red-500"}>
-                    {production.step13_advertising.online.length > 0 ? "✓" : "✗"}
-                  </span> Online Advertising ({production.step13_advertising.online.length})
-                </div>
-                {production.step13_advertising.online.map((item, i) => (
-                  <div key={item.id} className="ml-6 p-2 bg-gray-50 rounded mb-2">
-                    <div className="font-medium">{item.platformName || 'Unnamed Platform'}</div>
-                    <div className="text-sm text-gray-600">
-                      Target: {item.targetAudience.join(', ') || 'Not set'}
-                    </div>
-                    {item.resourceLink && <div className="mt-1"><LinkButton url={item.resourceLink} /></div>}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="font-medium mb-2">
-                  <span className={production.step13_advertising.offline.length > 0 ? "text-green-600" : "text-red-500"}>
-                    {production.step13_advertising.offline.length > 0 ? "✓" : "✗"}
-                  </span> Offline Collaboration ({production.step13_advertising.offline.length})
-                </div>
-                {production.step13_advertising.offline.map((item, i) => (
-                  <div key={item.id} className="ml-6 p-2 bg-gray-50 rounded mb-2">
-                    <div className="font-medium">{item.organizationName || 'Unnamed Organization'}</div>
-                    <div className="text-sm text-gray-600">
-                      Target: {item.targetAudience.join(', ') || 'Not set'}
-                    </div>
-                    {item.googleResourceLink && <div className="mt-1"><LinkButton url={item.googleResourceLink} /></div>}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <CardContent className="space-y-3">
+            <FieldDisplay label="Event Summary" link={production.step13_afterEvent.eventSummary.link} />
+            <FieldDisplay label="Event Retrospective" link={production.step13_afterEvent.eventRetrospective.link} />
           </CardContent>
         </Card>
 

@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2, Save } from 'lucide-react';
@@ -14,8 +13,9 @@ import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
 import PreviewLink from '@/components/PreviewLink';
-import type { SocialMedia, Platform, Post } from '@/types/production';
+import type { SocialMedia, PromotionItem, PromoMediaFile } from '@/types/production';
 import type { KnowledgeBaseItem } from '@/types/knowledge';
+import type { PromotionChannel } from '@/types/promotionChannel';
 
 interface Step12Props {
   data: SocialMedia;
@@ -41,77 +41,85 @@ export default function Step12SocialMedia({
   const t = useTranslations('knowledgeLink');
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
-  // Platform management
-  const addPlatform = () => {
-    const newPlatform: Platform = {
-      id: Date.now().toString(),
-      platformName: '',
-      posts: [],
+  const [promotionChannels, setPromotionChannels] = useState<PromotionChannel[]>([]);
+  const promotions = data.promotions || [];
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const response = await fetch('/api/promotion-channels');
+        if (response.ok) {
+          const items = await response.json();
+          setPromotionChannels(items || []);
+        }
+      } catch (error) {
+        console.error('Error fetching promotion channels:', error);
+      }
     };
-    onChange({ ...data, platforms: [...data.platforms, newPlatform] });
-  };
+    fetchChannels();
+  }, []);
 
-  const removePlatform = (id: string) => {
-    onChange({ ...data, platforms: data.platforms.filter((p) => p.id !== id) });
-  };
-
-  const updatePlatform = (id: string, field: keyof Platform, value: any) => {
-    onChange({
-      ...data,
-      platforms: data.platforms.map((p) =>
-        p.id === id ? { ...p, [field]: value } : p
-      ),
-    });
-  };
-
-  // Post management
-  const addPost = (platformId: string) => {
-    const newPost: Post = {
+  const addPromotion = () => {
+    const nextPromo: PromotionItem = {
       id: Date.now().toString(),
-      stage: 'warm-up',
-      postLink: '',
-      publishDate: '',
-      notes: '',
+      title: '',
+      description: '',
+      promotionChannelId: '',
+      mediaFiles: [],
     };
+    onChange({ ...data, promotions: [...promotions, nextPromo] });
+  };
 
+  const removePromotion = (id: string) => {
+    onChange({ ...data, promotions: promotions.filter((promo) => promo.id !== id) });
+  };
+
+  const updatePromotion = (id: string, updates: Partial<PromotionItem>) => {
     onChange({
       ...data,
-      platforms: data.platforms.map((p) =>
-        p.id === platformId
-          ? { ...p, posts: [...p.posts, newPost] }
-          : p
+      promotions: promotions.map((promo) =>
+        promo.id === id ? { ...promo, ...updates } : promo
       ),
     });
   };
 
-  const removePost = (platformId: string, postId: string) => {
+  const addMediaFile = (promoId: string) => {
+    const nextFile: PromoMediaFile = {
+      id: Date.now().toString(),
+      name: '',
+      link: '',
+    };
     onChange({
       ...data,
-      platforms: data.platforms.map((p) =>
-        p.id === platformId
-          ? { ...p, posts: p.posts.filter((post) => post.id !== postId) }
-          : p
+      promotions: promotions.map((promo) =>
+        promo.id === promoId ? { ...promo, mediaFiles: [...promo.mediaFiles, nextFile] } : promo
       ),
     });
   };
 
-  const updatePost = (
-    platformId: string,
-    postId: string,
-    field: keyof Post,
-    value: string
-  ) => {
+  const removeMediaFile = (promoId: string, fileId: string) => {
     onChange({
       ...data,
-      platforms: data.platforms.map((p) =>
-        p.id === platformId
+      promotions: promotions.map((promo) =>
+        promo.id === promoId
+          ? { ...promo, mediaFiles: promo.mediaFiles.filter((file) => file.id !== fileId) }
+          : promo
+      ),
+    });
+  };
+
+  const updateMediaFile = (promoId: string, fileId: string, updates: Partial<PromoMediaFile>) => {
+    onChange({
+      ...data,
+      promotions: promotions.map((promo) =>
+        promo.id === promoId
           ? {
-              ...p,
-              posts: p.posts.map((post) =>
-                post.id === postId ? { ...post, [field]: value } : post
+              ...promo,
+              mediaFiles: promo.mediaFiles.map((file) =>
+                file.id === fileId ? { ...file, ...updates } : file
               ),
             }
-          : p
+          : promo
       ),
     });
   };
@@ -121,7 +129,7 @@ export default function Step12SocialMedia({
       <div className="flex justify-between items-start gap-4">
         <div>
           <h3 className="text-2xl font-bold mb-2">{tStep('step12')}</h3>
-          <p className="text-gray-600">Social Media</p>
+          <p className="text-gray-600">Online Promotion 线上宣传</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => setTimeout(onBlur, 100)} size="sm">
@@ -157,216 +165,120 @@ export default function Step12SocialMedia({
         </div>
       </div>
 
-      {/* Website Update */}
       <Card>
         <CardHeader>
-          <CardTitle>Website Update</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="website-added"
-              checked={data.websiteUpdated.isAdded}
-              onCheckedChange={(checked) => onChange({
-                ...data,
-                websiteUpdated: { ...data.websiteUpdated, isAdded: checked as boolean }
-              })}
-            />
-            <Label htmlFor="website-added" className="cursor-pointer">
-              Added to Website
-            </Label>
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <Label className="mb-0">Website Link</Label>
-              <PreviewLink href={data.websiteUpdated.link} />
-            </div>
-            <Input
-              type="url"
-              placeholder="https://..."
-              value={data.websiteUpdated.link}
-              onChange={(e) => onChange({
-                ...data,
-                websiteUpdated: { ...data.websiteUpdated, link: e.target.value }
-              })}
-                          />
-          </div>
-          <div>
-            <Label>Notes</Label>
-            <Textarea
-              placeholder="Notes..."
-              rows={2}
-              value={data.websiteUpdated.notes}
-              onChange={(e) => onChange({
-                ...data,
-                websiteUpdated: { ...data.websiteUpdated, notes: e.target.value }
-              })}
-                          />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Platform Posts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Social Media Platforms</CardTitle>
+          <CardTitle>Promotions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {data.platforms.map((platform, pIndex) => (
-            <div key={platform.id} className="border-2 rounded-lg p-4 space-y-4">
+          {promotions.map((promo, promoIndex) => (
+            <div key={promo.id} className="border-2 rounded-lg p-4 space-y-4">
               <div className="flex justify-between items-center">
-                <h5 className="font-semibold text-lg">Platform {pIndex + 1}</h5>
+                <h5 className="font-semibold text-lg">Promo {promoIndex + 1}</h5>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => removePlatform(platform.id)}
+                  onClick={() => removePromotion(promo.id)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
 
               <div>
-                <Label>Platform Name</Label>
+                <Label>Title</Label>
                 <Input
-                  placeholder="e.g., WeChat, Facebook, Instagram"
-                  value={platform.platformName}
-                  onChange={(e) => updatePlatform(platform.id, 'platformName', e.target.value)}
-                                  />
+                  placeholder="e.g., Opening Week Promo"
+                  value={promo.title}
+                  onChange={(e) => updatePromotion(promo.id, { title: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  placeholder="Short description..."
+                  rows={2}
+                  value={promo.description}
+                  onChange={(e) => updatePromotion(promo.id, { description: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label>Promotion Channel</Label>
+                <Select
+                  value={promo.promotionChannelId}
+                  onValueChange={(value) => updatePromotion(promo.id, { promotionChannelId: value })}
+                >
+                  <SelectTrigger onBlur={onBlur}>
+                    <SelectValue placeholder="Select a channel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {promotionChannels.map((channel) => (
+                      <SelectItem key={channel._id} value={channel._id || ''}>
+                        {channel.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="border-t pt-4">
-                <h6 className="font-medium mb-3">Posts</h6>
+                <h6 className="font-medium mb-3">Media Files</h6>
                 <div className="space-y-3">
-                  {platform.posts.map((post, postIndex) => (
-                    <div key={post.id} className="border rounded p-3 space-y-3 bg-gray-50">
+                  {promo.mediaFiles.map((file, fileIndex) => (
+                    <div key={file.id} className="border rounded p-3 space-y-3 bg-gray-50">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Post {postIndex + 1}</span>
+                        <span className="text-sm font-medium">File {fileIndex + 1}</span>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removePost(platform.id, post.id)}
+                          onClick={() => removeMediaFile(promo.id, file.id)}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                          <Label className="text-xs">Stage</Label>
-                          <Select
-                            value={post.stage}
-                            onValueChange={(value) =>
-                              updatePost(platform.id, post.id, 'stage', value)
-                            }
-                          >
-                            <SelectTrigger onBlur={onBlur}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="warm-up">Warm-up (预热)</SelectItem>
-                              <SelectItem value="ticket-launch">Ticket Launch (开票)</SelectItem>
-                              <SelectItem value="promotion">Promotion (推票)</SelectItem>
-                              <SelectItem value="live">Live (现场)</SelectItem>
-                              <SelectItem value="summary">Summary (总结)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div>
-                          <Label className="text-xs">Publish Date</Label>
-                          <Input
-                            type="date"
-                            value={post.publishDate}
-                            onChange={(e) =>
-                              updatePost(platform.id, post.id, 'publishDate', e.target.value)
-                            }
-                                                      />
-                        </div>
+                      <div>
+                        <Label className="text-xs">Name</Label>
+                        <Input
+                          placeholder="e.g., Content Link"
+                          value={file.name}
+                          onChange={(e) => updateMediaFile(promo.id, file.id, { name: e.target.value })}
+                        />
                       </div>
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <Label className="mb-0 text-xs">Post Link</Label>
-                          <PreviewLink href={post.postLink} className="text-xs" />
+                          <Label className="mb-0 text-xs">Link</Label>
+                          <PreviewLink href={file.link} className="text-xs" />
                         </div>
                         <Input
                           type="url"
                           placeholder="https://..."
-                          value={post.postLink}
-                          onChange={(e) =>
-                            updatePost(platform.id, post.id, 'postLink', e.target.value)
-                          }
-                                                  />
-                      </div>
-
-                      <div>
-                        <Label className="text-xs">Notes</Label>
-                        <Textarea
-                          placeholder="Notes..."
-                          rows={1}
-                          value={post.notes}
-                          onChange={(e) =>
-                            updatePost(platform.id, post.id, 'notes', e.target.value)
-                          }
-                                                  />
+                          value={file.link}
+                          onChange={(e) => updateMediaFile(promo.id, file.id, { link: e.target.value })}
+                        />
                       </div>
                     </div>
                   ))}
 
                   <Button
-                    onClick={() => addPost(platform.id)}
+                    onClick={() => addMediaFile(promo.id)}
                     variant="outline"
                     size="sm"
                     className="w-full"
                   >
                     <Plus className="w-3 h-3 mr-2" />
-                    Add Post
+                    Add Media File
                   </Button>
                 </div>
               </div>
             </div>
           ))}
 
-          <Button onClick={addPlatform} variant="outline" className="w-full">
+          <Button onClick={addPromotion} variant="outline" className="w-full">
             <Plus className="w-4 h-4 mr-2" />
-            Add Platform
+            Add Promo
           </Button>
-        </CardContent>
-      </Card>
-
-      {/* Facebook Event */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Facebook Event Page</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Label className="mb-0">Event Link</Label>
-              <PreviewLink href={data.facebookEvent.link} />
-            </div>
-            <Input
-              type="url"
-              placeholder="https://facebook.com/events/..."
-              value={data.facebookEvent.link}
-              onChange={(e) => onChange({
-                ...data,
-                facebookEvent: { ...data.facebookEvent, link: e.target.value }
-              })}
-                          />
-          </div>
-          <div>
-            <Label>Notes</Label>
-            <Textarea
-              placeholder="Notes..."
-              rows={2}
-              value={data.facebookEvent.notes}
-              onChange={(e) => onChange({
-                ...data,
-                facebookEvent: { ...data.facebookEvent, notes: e.target.value }
-              })}
-                          />
-          </div>
         </CardContent>
       </Card>
 

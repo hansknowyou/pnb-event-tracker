@@ -77,7 +77,7 @@ export const KNOWLEDGE_SECTIONS: Record<KnowledgeSection, string> = {
   step10: 'Press Conference',
   step11: 'Performance Shooting',
   step12: 'Social Media',
-  step13: 'Advertising',
+  step13: 'After Event',
   step14: 'Sponsorship Packages',
   step15: 'Community Alliance',
   step16: 'Venue Media Design',

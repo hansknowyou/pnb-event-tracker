@@ -234,14 +234,10 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
   if (production.step10_pressConference) {
     const press = production.step10_pressConference;
 
-    // Venue
-    totalFields += 3;
-    if (isStringFilled(press.venue.datetime)) filledFields++;
-    if (isStringFilled(press.venue.location)) filledFields++;
-    if (isStringFilled(press.venue.notes)) filledFields++;
+    totalFields += 1;
+    if (isStringFilled(press.location)) filledFields++;
 
-    // Various links
-    const invitationCount = isLinkNotesObjectFilled(press.invitation);
+    const invitationCount = isLinkNotesObjectFilled(press.invitationLetter);
     totalFields += invitationCount.total;
     filledFields += invitationCount.filled;
 
@@ -249,38 +245,24 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
     totalFields += guestCount.total;
     filledFields += guestCount.filled;
 
-    const releaseCount = isLinkNotesObjectFilled(press.pressRelease);
-    totalFields += releaseCount.total;
-    filledFields += releaseCount.filled;
+    const pressReleaseCount = isLinkNotesObjectFilled(press.pressRelease);
+    totalFields += pressReleaseCount.total;
+    filledFields += pressReleaseCount.filled;
 
-    const backdropVideoCount = isLinkNotesObjectFilled(press.backdropVideo);
-    totalFields += backdropVideoCount.total;
-    filledFields += backdropVideoCount.filled;
-
-    const musicCount = isLinkNotesObjectFilled(press.backgroundMusic);
-    totalFields += musicCount.total;
-    filledFields += musicCount.filled;
-
-    const screenCount = isLinkNotesObjectFilled(press.screenContent);
-    totalFields += screenCount.total;
-    filledFields += screenCount.filled;
-
-    // Printables (with isPrinted checkbox)
-    totalFields += 3; // link, notes, isPrinted
-    if (isStringFilled(press.rollupBannerPDF.link)) filledFields++;
-    if (isStringFilled(press.rollupBannerPDF.notes)) filledFields++;
-    if (press.rollupBannerPDF.isPrinted) filledFields++;
-
-    totalFields += 3;
-    if (isStringFilled(press.smallPoster.link)) filledFields++;
-    if (isStringFilled(press.smallPoster.notes)) filledFields++;
-    if (press.smallPoster.isPrinted) filledFields++;
-
-    // On-site footage
-    totalFields += 3;
-    if (isStringFilled(press.onSiteFootage.closeUps)) filledFields++;
-    if (isStringFilled(press.onSiteFootage.scenery)) filledFields++;
-    if (isStringFilled(press.onSiteFootage.notes)) filledFields++;
+    totalFields += 1;
+    if (press.media && press.media.length > 0) {
+      filledFields += 0.5;
+      press.media.forEach((item) => {
+        totalFields += 3;
+        if (isStringFilled(item.title)) filledFields++;
+        if (item.mediaPackageIds && item.mediaPackageIds.length > 0) filledFields++;
+        const packageLinks = item.mediaPackageLinks || {};
+        const hasAllLinks = (item.mediaPackageIds || []).every(
+          (pkgId) => isStringFilled(packageLinks[pkgId])
+        );
+        if (hasAllLinks && (item.mediaPackageIds || []).length > 0) filledFields++;
+      });
+    }
   }
 
   // Step 11: Performance Shooting
@@ -294,35 +276,20 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
   if (production.step12_socialMedia) {
     const social = production.step12_socialMedia;
 
-    // Website updated
-    totalFields += 3;
-    if (social.websiteUpdated.isAdded) filledFields++;
-    if (isStringFilled(social.websiteUpdated.link)) filledFields++;
-    if (isStringFilled(social.websiteUpdated.notes)) filledFields++;
-
-    // Platforms (at least one)
+    // Promotions (at least one)
     totalFields += 1;
-    if (social.platforms && social.platforms.length > 0) filledFields++;
-
-    // Facebook event
-    const fbCount = isLinkNotesObjectFilled(social.facebookEvent);
-    totalFields += fbCount.total;
-    filledFields += fbCount.filled;
+    if (social.promotions && social.promotions.length > 0) filledFields++;
   }
 
-  // Step 13: Advertising
-  if (production.step13_advertising) {
-    // Online (at least one)
-    totalFields += 1;
-    if (production.step13_advertising.online && production.step13_advertising.online.length > 0) {
-      filledFields++;
-    }
+  // Step 13: After Event
+  if (production.step13_afterEvent) {
+    const summaryCount = isLinkNotesObjectFilled(production.step13_afterEvent.eventSummary);
+    totalFields += summaryCount.total;
+    filledFields += summaryCount.filled;
 
-    // Offline (at least one)
-    totalFields += 1;
-    if (production.step13_advertising.offline && production.step13_advertising.offline.length > 0) {
-      filledFields++;
-    }
+    const retrospectiveCount = isLinkNotesObjectFilled(production.step13_afterEvent.eventRetrospective);
+    totalFields += retrospectiveCount.total;
+    filledFields += retrospectiveCount.filled;
   }
 
   // Calculate percentage
