@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       step16_venueMediaDesign: {
         media: [],
       },
+      step17_meetups: [],
       step10_pressConference: {
         location: '',
         invitationLetter: { link: '', notes: '' },

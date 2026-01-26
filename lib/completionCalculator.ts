@@ -296,6 +296,21 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
     filledFields += retrospectiveCount.filled;
   }
 
+  // Step 17: Meet-ups
+  if (production.step17_meetups) {
+    totalFields += 1;
+    if (production.step17_meetups.length > 0) {
+      filledFields += 0.5;
+      const firstMeetup = production.step17_meetups[0];
+      totalFields += 5;
+      if (isStringFilled(firstMeetup.title)) filledFields++;
+      if (isStringFilled(firstMeetup.datetime)) filledFields++;
+      if (isStringFilled(firstMeetup.location)) filledFields++;
+      if (isStringFilled(firstMeetup.description)) filledFields++;
+      if (isStringFilled(firstMeetup.fileLink)) filledFields++;
+    }
+  }
+
   // Calculate percentage
   if (totalFields === 0) return 0;
   return Math.round((filledFields / totalFields) * 100);

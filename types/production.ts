@@ -176,6 +176,17 @@ export interface AfterEvent {
   eventRetrospective: LinkWithNotes;
 }
 
+// Step 17: Meet-ups
+export interface MeetUp {
+  id: string;
+  title: string;
+  datetime: string;
+  location: string;
+  description: string;
+  fileLink: string;
+  notes: string;
+}
+
 // Step 14: Sponsorship Package Planning
 export interface SponsorshipPackage {
   id: string;
@@ -220,6 +231,7 @@ export interface Production {
   step14_sponsorshipPackages: SponsorshipPackage[];
   step15_communityAlliances: CommunityAlliance[];
   step16_venueMediaDesign: Designs;
+  step17_meetups: MeetUp[];
 
   // Knowledge Base Links (step sections plus step 5 subsections)
   knowledgeLinks_step1?: string[];
@@ -245,6 +257,7 @@ export interface Production {
   knowledgeLinks_step14?: string[];
   knowledgeLinks_step15?: string[];
   knowledgeLinks_step16?: string[];
+  knowledgeLinks_step17?: string[];
 
   // Step assignments (user ID for each step/sub-step)
   assignments?: Record<string, string>;
@@ -274,6 +287,7 @@ export const STEPS: StepInfo[] = [
   { number: 14, name: '赞助方案筹备', description: 'Sponsorship Package Planning' },
   { number: 15, name: '社团联合', description: 'Community Alliance' },
   { number: 16, name: '场馆媒体制作', description: 'Venue Media Design' },
+  { number: 17, name: '见面会', description: 'Meet-ups' },
 ];
 
 // Status type for steps

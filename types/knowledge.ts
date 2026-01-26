@@ -44,6 +44,7 @@ export interface ProductionKnowledgeLinks {
   step14?: string[];
   step15?: string[];
   step16?: string[];
+  step17?: string[];
 }
 
 export type KnowledgeSection = keyof ProductionKnowledgeLinks;
@@ -81,4 +82,5 @@ export const KNOWLEDGE_SECTIONS: Record<KnowledgeSection, string> = {
   step14: 'Sponsorship Packages',
   step15: 'Community Alliance',
   step16: 'Venue Media Design',
+  step17: 'Meet-ups',
 };

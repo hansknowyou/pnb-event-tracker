@@ -41,6 +41,7 @@ export const STEP_DEFINITIONS: StepDefinition[] = [
   { stepKey: 'step13', nameKey: 'step13', descriptionKey: 'After Event', defaultOrder: 13, requiresVenue: false },
   { stepKey: 'step14', nameKey: 'step14', descriptionKey: 'Sponsorship Package Planning', defaultOrder: 14, requiresVenue: false },
   { stepKey: 'step15', nameKey: 'step15', descriptionKey: 'Community Alliance', defaultOrder: 15, requiresVenue: false },
+  { stepKey: 'step17', nameKey: 'step17', descriptionKey: 'Meet-ups', defaultOrder: 17, requiresVenue: false },
 ];
 
 // Steps that are disabled by default

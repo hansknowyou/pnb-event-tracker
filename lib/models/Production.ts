@@ -174,6 +174,17 @@ interface ICommunityAlliance {
   note: string;
 }
 
+// Step 17: Meet-ups
+interface IMeetUp {
+  id: string;
+  title: string;
+  datetime: string;
+  location: string;
+  description: string;
+  fileLink: string;
+  notes: string;
+}
+
 // Main Production Interface
 export interface IProduction extends Document {
   title: string;
@@ -198,6 +209,7 @@ export interface IProduction extends Document {
   step14_sponsorshipPackages: ISponsorshipPackage[];
   step15_communityAlliances: ICommunityAlliance[];
   step16_venueMediaDesign: IDesigns;
+  step17_meetups: IMeetUp[];
 
   // Step assignments (user ID for each step/sub-step)
   assignments?: Record<string, string>;
@@ -226,6 +238,7 @@ export interface IProduction extends Document {
   knowledgeLinks_step14?: string[];
   knowledgeLinks_step15?: string[];
   knowledgeLinks_step16?: string[];
+  knowledgeLinks_step17?: string[];
 }
 
 const ProductionSchema = new Schema<IProduction>(
@@ -469,6 +482,17 @@ const ProductionSchema = new Schema<IProduction>(
       },
     },
 
+    // Step 17: Meet-ups
+    step17_meetups: [{
+      id: { type: String, required: true },
+      title: { type: String, default: '' },
+      datetime: { type: String, default: '' },
+      location: { type: String, default: '' },
+      description: { type: String, default: '' },
+      fileLink: { type: String, default: '' },
+      notes: { type: String, default: '' },
+    }],
+
     // Step assignments
     assignments: { type: Map, of: String, default: {} },
 
@@ -496,6 +520,7 @@ const ProductionSchema = new Schema<IProduction>(
     knowledgeLinks_step14: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step15: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
     knowledgeLinks_step16: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
+    knowledgeLinks_step17: [{ type: String, ref: 'KnowledgeBaseItem', default: [] }],
   },
   {
     timestamps: true,

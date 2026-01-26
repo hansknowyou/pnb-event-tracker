@@ -70,6 +70,7 @@ export default function ProductionDashboard() {
             eventRetrospective: data.step13_afterEvent?.eventRetrospective || { link: '', notes: '' },
           },
           step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
+          step17_meetups: data.step17_meetups || [],
         };
         setProduction(normalized);
       }
@@ -719,6 +720,37 @@ export default function ProductionDashboard() {
                     <div className="font-semibold">{i + 1}. {alliance.communityName || 'Unnamed Community'}</div>
                     {alliance.allianceDetail && <div className="text-sm text-gray-600 mt-1">{alliance.allianceDetail}</div>}
                     {alliance.files && <div className="mt-2"><LinkButton url={alliance.files} /></div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Step 17: Meet-ups */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <StatusIcon status={getStepStatus(production.step17_meetups)} />
+                <CardTitle>{tStep('step17')}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => router.push(`/productions/${productionId}?step=step17`)}>
+                <Edit className="w-4 h-4 mr-2" />{t('edit')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {production.step17_meetups.length === 0 ? (
+              <div className="text-gray-500"><span className="text-red-500">✗</span> No meet-ups added</div>
+            ) : (
+              <div className="space-y-3">
+                {production.step17_meetups.map((meetup, i) => (
+                  <div key={meetup.id} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-semibold">{i + 1}. {meetup.title || 'Untitled Meet-up'}</div>
+                    {meetup.datetime && <div className="text-sm text-gray-600">{meetup.datetime}</div>}
+                    {meetup.location && <div className="text-sm text-gray-600">{meetup.location}</div>}
+                    {meetup.fileLink && <div className="mt-2"><LinkButton url={meetup.fileLink} /></div>}
                   </div>
                 ))}
               </div>

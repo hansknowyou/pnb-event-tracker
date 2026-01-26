@@ -251,7 +251,8 @@
       "step13": "After Event",
       "step14": "Sponsorship Packages",
       "step15": "Community Alliance",
-      "step16": "Venue Media Design"
+      "step16": "Venue Media Design",
+      "step17": "Meet-ups"
     },
     "step1": {
       "contractLink": "Contract Link",
@@ -594,7 +595,8 @@
     "step13": "After Event",
     "step14": "Sponsorship Packages",
     "step15": "Community Alliance",
-    "step16": "Venue Media Design"
+    "step16": "Venue Media Design",
+    "step17": "Meet-ups"
   },
   "cities": {
     "title": "City Management",

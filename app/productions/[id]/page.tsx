@@ -23,6 +23,7 @@ import Step13AfterEvent from '@/components/production-steps/Step13AfterEvent';
 import Step14SponsorshipPackages from '@/components/production-steps/Step14SponsorshipPackages';
 import Step15CommunityAlliances from '@/components/production-steps/Step15CommunityAlliances';
 import Step16VenueMediaDesign from '@/components/production-steps/Step16VenueMediaDesign';
+import Step17Meetups from '@/components/production-steps/Step17Meetups';
 import { useGlobalKnowledge } from '@/hooks/useGlobalKnowledge';
 import LoadingOverlay from '@/components/LoadingOverlay';
 import type { Production } from '@/types/production';
@@ -126,6 +127,7 @@ export default function ProductionEditPage() {
             eventRetrospective: data.step13_afterEvent?.eventRetrospective || { link: '', notes: '' },
           },
           step16_venueMediaDesign: data.step16_venueMediaDesign || { media: [] },
+          step17_meetups: data.step17_meetups || [],
         };
         setProduction(normalized);
       } else {
@@ -204,6 +206,14 @@ export default function ProductionEditPage() {
         ...prod.step16_venueMediaDesign,
         media: sanitizeMediaLinks(prod.step16_venueMediaDesign.media || []),
       },
+      step17_meetups: (prod.step17_meetups || []).filter((meetup) =>
+        !isEmpty(meetup.title) ||
+        !isEmpty(meetup.datetime) ||
+        !isEmpty(meetup.location) ||
+        !isEmpty(meetup.description) ||
+        !isEmpty(meetup.fileLink) ||
+        !isEmpty(meetup.notes)
+      ),
       step12_socialMedia: {
         strategyLink: prod.step12_socialMedia.strategyLink || { link: '', notes: '' },
         promotions: (prod.step12_socialMedia.promotions || [])
@@ -313,7 +323,7 @@ export default function ProductionEditPage() {
   const goToNextStep = () => {
     if (enabledSteps.length === 0) {
       const nextNum = currentStepNumber + 1;
-      if (nextNum <= 16) {
+      if (nextNum <= 17) {
         handleStepChange(`step${nextNum}`);
       }
       return;
@@ -344,7 +354,7 @@ export default function ProductionEditPage() {
 
   const isLastStep = enabledSteps.length > 0
     ? currentStepKey === enabledSteps[enabledSteps.length - 1]?.stepKey
-    : currentStepNumber === 16;
+    : currentStepNumber === 17;
 
   if (!production) {
     return <LoadingOverlay isLoading={true} message="Loading..." />;
@@ -616,6 +626,19 @@ export default function ProductionEditPage() {
               getLinkedItems={getLinkedItems}
               onKnowledgeChange={refetchKnowledge}
               assignments={production.assignments}
+              onAssignmentChange={handleAssignmentChange}
+            />
+          )}
+
+          {currentStepNumber === 17 && (
+            <Step17Meetups
+              data={production.step17_meetups || []}
+              onChange={(data) => updateProduction({ step17_meetups: data })}
+              onBlur={saveProduction}
+              productionId={productionId}
+              linkedKnowledge={getLinkedItems('step17')}
+              onKnowledgeChange={refetchKnowledge}
+              assignedUserId={production.assignments?.step17}
               onAssignmentChange={handleAssignmentChange}
             />
           )}

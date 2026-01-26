@@ -28,6 +28,7 @@ const VALID_SECTIONS: KnowledgeSection[] = [
   'step12',
   'step13',
   'step16',
+  'step17',
 ];
 
 // POST - Add knowledge link to production step/subsection
