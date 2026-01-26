@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
         notes: '',
       },
       step12_socialMedia: {
+        strategyLink: { link: '', notes: '' },
         promotions: [],
       },
       step13_afterEvent: {

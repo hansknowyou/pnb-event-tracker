@@ -109,6 +109,7 @@ export default function ProductionEditPage() {
         const normalized = {
           ...data,
           step12_socialMedia: {
+            strategyLink: data.step12_socialMedia?.strategyLink || { link: '', notes: '' },
             promotions: data.step12_socialMedia?.promotions || [],
           },
           step10_pressConference: {
@@ -204,6 +205,7 @@ export default function ProductionEditPage() {
         media: sanitizeMediaLinks(prod.step16_venueMediaDesign.media || []),
       },
       step12_socialMedia: {
+        strategyLink: prod.step12_socialMedia.strategyLink || { link: '', notes: '' },
         promotions: (prod.step12_socialMedia.promotions || [])
           .filter((promo) =>
             !isEmpty(promo.title) ||

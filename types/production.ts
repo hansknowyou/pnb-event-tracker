@@ -166,6 +166,7 @@ export interface PromotionItem {
 }
 
 export interface SocialMedia {
+  strategyLink: LinkWithNotes;
   promotions: PromotionItem[];
 }
 

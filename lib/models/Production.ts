@@ -145,6 +145,7 @@ interface IPromotionItem {
 }
 
 interface ISocialMedia {
+  strategyLink: ILinkWithNotes;
   promotions: IPromotionItem[];
 }
 
@@ -403,6 +404,10 @@ const ProductionSchema = new Schema<IProduction>(
 
     // Step 12: Online Promotion
     step12_socialMedia: {
+      strategyLink: {
+        link: { type: String, default: '' },
+        notes: { type: String, default: '' },
+      },
       promotions: {
         type: [{
           id: { type: String, required: true },

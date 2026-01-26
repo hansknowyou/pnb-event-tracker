@@ -167,6 +167,41 @@ export default function Step12SocialMedia({
 
       <Card>
         <CardHeader>
+          <CardTitle>Strategy Link</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Label className="mb-0">Google Drive Link</Label>
+              <PreviewLink href={data.strategyLink?.link || ''} />
+            </div>
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={data.strategyLink?.link || ''}
+              onChange={(e) => onChange({
+                ...data,
+                strategyLink: { ...(data.strategyLink || { link: '', notes: '' }), link: e.target.value }
+              })}
+            />
+          </div>
+          <div>
+            <Label>Notes</Label>
+            <Textarea
+              placeholder="Notes..."
+              rows={2}
+              value={data.strategyLink?.notes || ''}
+              onChange={(e) => onChange({
+                ...data,
+                strategyLink: { ...(data.strategyLink || { link: '', notes: '' }), notes: e.target.value }
+              })}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Promotions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">

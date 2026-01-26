@@ -53,6 +53,7 @@ export default function ProductionDashboard() {
         const normalized = {
           ...data,
           step12_socialMedia: {
+            strategyLink: data.step12_socialMedia?.strategyLink || { link: '', notes: '' },
             promotions: data.step12_socialMedia?.promotions || [],
           },
           step10_pressConference: {
@@ -624,6 +625,7 @@ export default function ProductionDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
+            <FieldDisplay label="Strategy Link" link={production.step12_socialMedia.strategyLink?.link || ''} />
             {production.step12_socialMedia.promotions?.length === 0 ? (
               <div className="text-gray-500"><span className="text-red-500">✗</span> No promotions added</div>
             ) : (

@@ -276,6 +276,10 @@ export function calculateCompletionPercentage(production: Partial<Production>): 
   if (production.step12_socialMedia) {
     const social = production.step12_socialMedia;
 
+    const strategyCount = isLinkNotesObjectFilled(social.strategyLink);
+    totalFields += strategyCount.total;
+    filledFields += strategyCount.filled;
+
     // Promotions (at least one)
     totalFields += 1;
     if (social.promotions && social.promotions.length > 0) filledFields++;
