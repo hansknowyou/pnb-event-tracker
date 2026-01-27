@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2, Save } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
@@ -22,6 +23,7 @@ interface Step6Props {
   onChange: (data: VenueInfo[]) => void;
   onBlur: () => void;
   productionId?: string;
+  cities?: { id: string; city: string; date: string; time: string; notes: string }[];
   linkedKnowledge?: KnowledgeBaseItem[];
   onKnowledgeChange?: () => void;
   assignedUserId?: string;
@@ -33,6 +35,7 @@ export default function Step6VenueInfo({
   onChange,
   onBlur,
   productionId,
+  cities = [],
   linkedKnowledge = [],
   onKnowledgeChange,
   assignedUserId,
@@ -46,6 +49,7 @@ export default function Step6VenueInfo({
     const newVenue: VenueInfo = {
       id: Date.now().toString(),
       linkedVenueId: undefined,
+      linkedCityId: undefined,
       venueName: '',
       address: '',
       contacts: '',
@@ -170,6 +174,33 @@ export default function Step6VenueInfo({
 
               {openVenueId === venue.id && (
                 <>
+                  <div className="space-y-4 pb-4 border-b">
+                    <h5 className="font-semibold text-sm text-gray-700">City & Date</h5>
+                    <div>
+                      <Label>Linked City & Date</Label>
+                      <Select
+                        value={venue.linkedCityId || ''}
+                        onValueChange={(value) => updateVenue(venue.id, { linkedCityId: value || undefined })}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a city & date" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cities.length === 0 && (
+                            <SelectItem value="no-options" disabled>
+                              No cities available
+                            </SelectItem>
+                          )}
+                          {cities.map((city) => (
+                            <SelectItem key={city.id} value={city.id}>
+                              {city.city} {city.date ? `- ${city.date}` : ''} {city.time ? `${city.time}` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   {/* Basic Info */}
                   <div className="space-y-4 pb-4 border-b">
                     <h5 className="font-semibold text-sm text-gray-700">Basic Information</h5>

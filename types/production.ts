@@ -74,6 +74,7 @@ export interface VenueRequiredForms {
 export interface VenueInfo {
   id: string;
   linkedVenueId?: string; // Link to venue database
+  linkedCityId?: string; // Link to Cities & Dates
   venueName: string;
   address: string;
   contacts: string;

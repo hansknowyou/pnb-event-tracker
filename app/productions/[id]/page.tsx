@@ -493,6 +493,7 @@ export default function ProductionEditPage() {
               onChange={(data) => updateProduction({ step6_venueInfo: data })}
               onBlur={saveProduction}
               productionId={productionId}
+              cities={production.step2_cities}
               linkedKnowledge={getLinkedItems('step6')}
               onKnowledgeChange={refetchKnowledge}
               assignedUserId={production.assignments?.step6}

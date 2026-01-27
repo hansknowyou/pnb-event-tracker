@@ -77,6 +77,7 @@ interface IVenueRequiredForms {
 interface IVenueInfo {
   id: string;
   linkedVenueId?: string;
+  linkedCityId?: string;
   venueName: string;
   address: string;
   contacts: string;
@@ -317,6 +318,7 @@ const ProductionSchema = new Schema<IProduction>(
     step6_venueInfo: [{
       id: { type: String, required: true },
       linkedVenueId: { type: String },
+      linkedCityId: { type: String },
       venueName: { type: String, default: '' },
       address: { type: String, default: '' },
       contacts: { type: String, default: '' },
