@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Plus, Trash2, Save, ChevronDown, ChevronRight } from 'lucide-react';
 import KnowledgeLinkButton from '@/components/KnowledgeLinkButton';
 import KnowledgeViewDialog from '@/components/KnowledgeViewDialog';
 import AssignButton from '@/components/AssignButton';
@@ -42,6 +42,7 @@ export default function Step12SocialMedia({
   const tStep = useTranslations('stepConfig');
   const [showKnowledge, setShowKnowledge] = useState(false);
   const [promotionChannels, setPromotionChannels] = useState<PromotionChannel[]>([]);
+  const [expandedPromos, setExpandedPromos] = useState<Record<string, boolean>>({});
   const promotions = data.promotions || [];
 
   useEffect(() => {
@@ -67,11 +68,21 @@ export default function Step12SocialMedia({
       promotionChannelId: '',
       mediaFiles: [],
     };
+    setExpandedPromos((prev) => ({ ...prev, [nextPromo.id]: true }));
     onChange({ ...data, promotions: [...promotions, nextPromo] });
   };
 
   const removePromotion = (id: string) => {
+    setExpandedPromos((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
     onChange({ ...data, promotions: promotions.filter((promo) => promo.id !== id) });
+  };
+
+  const togglePromotion = (id: string) => {
+    setExpandedPromos((prev) => ({ ...prev, [id]: !(prev[id] ?? true) }));
   };
 
   const updatePromotion = (id: string, updates: Partial<PromotionItem>) => {
@@ -208,7 +219,25 @@ export default function Step12SocialMedia({
           {promotions.map((promo, promoIndex) => (
             <div key={promo.id} className="border-2 rounded-lg p-4 space-y-4">
               <div className="flex justify-between items-center">
-                <h5 className="font-semibold text-lg">Promo {promoIndex + 1}</h5>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => togglePromotion(promo.id)}
+                    className="px-2"
+                  >
+                    {(expandedPromos[promo.id] ?? true) ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </Button>
+                  <h5 className="font-semibold text-lg">
+                    Promo {promoIndex + 1}
+                    {promo.title?.trim() ? ` • ${promo.title}` : ''}
+                  </h5>
+                </div>
                 <Button
                   variant="destructive"
                   size="sm"
@@ -218,95 +247,99 @@ export default function Step12SocialMedia({
                 </Button>
               </div>
 
-              <div>
-                <Label>Title</Label>
-                <Input
-                  placeholder="e.g., Opening Week Promo"
-                  value={promo.title}
-                  onChange={(e) => updatePromotion(promo.id, { title: e.target.value })}
-                />
-              </div>
+              {(expandedPromos[promo.id] ?? true) && (
+                <>
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      placeholder="e.g., Opening Week Promo"
+                      value={promo.title}
+                      onChange={(e) => updatePromotion(promo.id, { title: e.target.value })}
+                    />
+                  </div>
 
-              <div>
-                <Label>Description</Label>
-                <Textarea
-                  placeholder="Short description..."
-                  rows={2}
-                  value={promo.description}
-                  onChange={(e) => updatePromotion(promo.id, { description: e.target.value })}
-                />
-              </div>
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea
+                      placeholder="Short description..."
+                      rows={2}
+                      value={promo.description}
+                      onChange={(e) => updatePromotion(promo.id, { description: e.target.value })}
+                    />
+                  </div>
 
-              <div>
-                <Label>Promotion Channel</Label>
-                <Select
-                  value={promo.promotionChannelId}
-                  onValueChange={(value) => updatePromotion(promo.id, { promotionChannelId: value })}
-                >
-                  <SelectTrigger onBlur={onBlur}>
-                    <SelectValue placeholder="Select a channel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {promotionChannels.map((channel) => (
-                      <SelectItem key={channel._id} value={channel._id || ''}>
-                        {channel.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <Label>Promotion Channel</Label>
+                    <Select
+                      value={promo.promotionChannelId}
+                      onValueChange={(value) => updatePromotion(promo.id, { promotionChannelId: value })}
+                    >
+                      <SelectTrigger onBlur={onBlur}>
+                        <SelectValue placeholder="Select a channel" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {promotionChannels.map((channel) => (
+                          <SelectItem key={channel._id} value={channel._id || ''}>
+                            {channel.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <div className="border-t pt-4">
-                <h6 className="font-medium mb-3">Media Files</h6>
-                <div className="space-y-3">
-                  {promo.mediaFiles.map((file, fileIndex) => (
-                    <div key={file.id} className="border rounded p-3 space-y-3 bg-gray-50">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">File {fileIndex + 1}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeMediaFile(promo.id, file.id)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
+                  <div className="border-t pt-4">
+                    <h6 className="font-medium mb-3">Media Files</h6>
+                    <div className="space-y-3">
+                      {promo.mediaFiles.map((file, fileIndex) => (
+                        <div key={file.id} className="border rounded p-3 space-y-3 bg-gray-50">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">File {fileIndex + 1}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeMediaFile(promo.id, file.id)}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
 
-                      <div>
-                        <Label className="text-xs">Name</Label>
-                        <Input
-                          placeholder="e.g., Content Link"
-                          value={file.name}
-                          onChange={(e) => updateMediaFile(promo.id, file.id, { name: e.target.value })}
-                        />
-                      </div>
+                          <div>
+                            <Label className="text-xs">Name</Label>
+                            <Input
+                              placeholder="e.g., Content Link"
+                              value={file.name}
+                              onChange={(e) => updateMediaFile(promo.id, file.id, { name: e.target.value })}
+                            />
+                          </div>
 
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Label className="mb-0 text-xs">Link</Label>
-                          <PreviewLink href={file.link} className="text-xs" />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <Label className="mb-0 text-xs">Link</Label>
+                              <PreviewLink href={file.link} className="text-xs" />
+                            </div>
+                            <Input
+                              type="url"
+                              placeholder="https://..."
+                              value={file.link}
+                              onChange={(e) => updateMediaFile(promo.id, file.id, { link: e.target.value })}
+                            />
+                          </div>
                         </div>
-                        <Input
-                          type="url"
-                          placeholder="https://..."
-                          value={file.link}
-                          onChange={(e) => updateMediaFile(promo.id, file.id, { link: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                      ))}
 
-                  <Button
-                    onClick={() => addMediaFile(promo.id)}
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Plus className="w-3 h-3 mr-2" />
-                    Add Media File
-                  </Button>
-                </div>
-              </div>
+                      <Button
+                        onClick={() => addMediaFile(promo.id)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Plus className="w-3 h-3 mr-2" />
+                        Add Media File
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           ))}
 

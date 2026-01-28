@@ -15,8 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { Production } from "@/types/production";
+import { useTranslations } from "next-intl";
 
 export default function Home() {
+  const t = useTranslations("eventTracking");
   const [baseUrl, setBaseUrl] = useState("");
   const [baseUrlInput, setBaseUrlInput] = useState("");
   const [events, setEvents] = useState<EventWithStats[]>([]);
@@ -112,10 +114,10 @@ export default function Home() {
       });
       const data = await res.json();
       setBaseUrl(data.baseUrl);
-      alert("Base URL saved successfully!");
+      alert(t("baseUrlSaved"));
     } catch (error) {
       console.error("Failed to save base URL:", error);
-      alert("Failed to save base URL");
+      alert(t("baseUrlSaveFailed"));
     }
   };
 
@@ -134,7 +136,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to create event:", error);
-      alert("Failed to create event");
+      alert(t("createEventFailed"));
     }
   };
 
@@ -144,7 +146,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to delete event:", error);
-      alert("Failed to delete event");
+      alert(t("deleteEventFailed"));
     }
   };
 
@@ -158,7 +160,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to add media:", error);
-      alert("Failed to add media");
+      alert(t("addMediaFailed"));
     }
   };
 
@@ -168,7 +170,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to delete media:", error);
-      alert("Failed to delete media");
+      alert(t("deleteMediaFailed"));
     }
   };
 
@@ -186,7 +188,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to add route:", error);
-      alert("Failed to add route");
+      alert(t("addRouteFailed"));
     }
   };
 
@@ -196,7 +198,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to delete route:", error);
-      alert("Failed to delete route");
+      alert(t("deleteRouteFailed"));
     }
   };
 
@@ -210,7 +212,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to adjust route click:", error);
-      alert("Failed to adjust route click");
+      alert(t("adjustRouteFailed"));
     }
   };
 
@@ -225,7 +227,7 @@ export default function Home() {
       setQrModal({ qrCode: data.qrCode, routeName });
     } catch (error) {
       console.error("Failed to generate QR code:", error);
-      alert("Failed to generate QR code");
+      alert(t("generateQrFailed"));
     }
   };
 
@@ -239,7 +241,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to update event:", error);
-      alert("Failed to update event");
+      alert(t("updateEventFailed"));
     }
   };
 
@@ -253,7 +255,7 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to update media:", error);
-      alert("Failed to update media");
+      alert(t("updateMediaFailed"));
     }
   };
 
@@ -267,46 +269,47 @@ export default function Home() {
       fetchStats();
     } catch (error) {
       console.error("Failed to update route:", error);
-      alert("Failed to update route");
+      alert(t("updateRouteFailed"));
     }
   };
 
   return (
     <>
-      <LoadingOverlay isLoading={loading} message="Loading..." />
+      <LoadingOverlay isLoading={loading} message={t("loading")} />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
         <div className="max-w-7xl mx-auto space-y-8">
           <header className="space-y-2">
             <h1 className="text-4xl font-bold text-gray-900">
-              Event Tracking Dashboard
+              {t("title")}
             </h1>
             <p className="text-gray-600">
-              Manage your events, media campaigns, and track link clicks
+              {t("subtitle")}
             </p>
           </header>
 
           <Card>
             <CardHeader>
-              <CardTitle>Base URL Configuration</CardTitle>
+              <CardTitle>{t("baseUrlTitle")}</CardTitle>
               <CardDescription>
-                Set the base URL used for QR and tracking links.
+                {t("baseUrlDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex flex-col gap-3 md:flex-row">
                 <Input
                   type="url"
-                  placeholder="Enter your base URL (e.g., https://yourdomain.com)"
+                  placeholder={t("baseUrlPlaceholder")}
                   value={baseUrlInput}
                   onChange={(e) => setBaseUrlInput(e.target.value)}
                 />
                 <Button onClick={saveBaseUrl} className="md:self-start">
-                  Save Base URL
+                  {t("saveBaseUrl")}
                 </Button>
               </div>
               {baseUrl && (
                 <p className="text-sm text-muted-foreground">
-                  Current base URL: <span className="font-semibold text-gray-900">{baseUrl}</span>
+                  {t("baseUrlCurrent")}{" "}
+                  <span className="font-semibold text-gray-900">{baseUrl}</span>
                 </p>
               )}
             </CardContent>
@@ -315,16 +318,16 @@ export default function Home() {
           <Card>
             <CardHeader className="flex items-start justify-between gap-4 md:flex-row md:items-center">
               <div>
-                <CardTitle>Create Event</CardTitle>
+                <CardTitle>{t("createEventTitle")}</CardTitle>
                 <CardDescription>
-                  Add a new event and start tracking its media routes.
+                  {t("createEventDescription")}
                 </CardDescription>
               </div>
               <Button
                 variant={isAddingEvent ? "outline" : "default"}
                 onClick={() => setIsAddingEvent(!isAddingEvent)}
               >
-                {isAddingEvent ? "Cancel" : "Create New Event"}
+                {isAddingEvent ? t("cancel") : t("createEventToggle")}
               </Button>
             </CardHeader>
             {isAddingEvent && (
@@ -332,12 +335,12 @@ export default function Home() {
                 <form onSubmit={createEvent} className="flex flex-col gap-3 md:flex-row">
                   <Input
                     type="text"
-                    placeholder="Event name (e.g., Chinese New Year Show)"
+                    placeholder={t("eventNamePlaceholder")}
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value)}
                     required
                   />
-                  <Button type="submit">Create Event</Button>
+                  <Button type="submit">{t("createEventSubmit")}</Button>
                 </form>
               </CardContent>
             )}
@@ -370,7 +373,7 @@ export default function Home() {
               <Card>
                 <CardContent className="py-12 text-center">
                   <p className="text-lg text-muted-foreground">
-                    No events yet. Create one above!
+                    {t("noEvents")}
                   </p>
                 </CardContent>
               </Card>

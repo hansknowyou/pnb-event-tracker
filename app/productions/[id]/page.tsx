@@ -184,7 +184,10 @@ export default function ProductionEditPage() {
         ...prod.step5_materials,
       },
       step6_venueInfo: prod.step6_venueInfo.filter(venue =>
-        !isEmpty(venue.venueName) || !isEmpty(venue.address)
+        !isEmpty(venue.venueName) ||
+        !isEmpty(venue.address) ||
+        !isEmpty(venue.linkedVenueId) ||
+        !isEmpty(venue.linkedCityId)
       ),
       step7_designs: {
         ...prod.step7_designs,

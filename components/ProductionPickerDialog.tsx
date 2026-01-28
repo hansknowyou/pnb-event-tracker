@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Search } from 'lucide-react';
 import type { Production } from '@/types/production';
+import { useTranslations } from 'next-intl';
 
 interface ProductionPickerDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ export default function ProductionPickerDialog({
   onSelect,
   onClose,
 }: ProductionPickerDialogProps) {
+  const t = useTranslations('eventTracking');
   const [productions, setProductions] = useState<Production[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,16 +64,14 @@ export default function ProductionPickerDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Link Production to Event</DialogTitle>
-          <DialogDescription>
-            Select a production to link to this event
-          </DialogDescription>
+          <DialogTitle>{t('pickerTitle')}</DialogTitle>
+          <DialogDescription>{t('pickerDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Search productions..."
+            placeholder={t('pickerSearchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -80,10 +80,10 @@ export default function ProductionPickerDialog({
 
         <div className="flex-1 overflow-y-auto space-y-2">
           {loading ? (
-            <div className="text-center py-8 text-gray-500">Loading productions...</div>
+            <div className="text-center py-8 text-gray-500">{t('pickerLoading')}</div>
           ) : filteredProductions.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              {searchQuery ? 'No productions found matching your search' : 'No productions available'}
+              {searchQuery ? t('pickerNoResults') : t('pickerEmpty')}
             </div>
           ) : (
             filteredProductions.map((prod) => (
@@ -96,12 +96,12 @@ export default function ProductionPickerDialog({
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{prod.title}</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      Created: {new Date(prod.createdAt).toLocaleDateString()}
+                      {t('pickerCreated')} {new Date(prod.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="ml-4">
                     <div className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                      {prod.completionPercentage || 0}% Complete
+                      {t('pickerCompletion', { percent: prod.completionPercentage || 0 })}
                     </div>
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export default function ProductionPickerDialog({
 
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('cancel')}
           </Button>
         </div>
       </DialogContent>

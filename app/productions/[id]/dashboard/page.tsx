@@ -219,6 +219,257 @@ export default function ProductionDashboard() {
     return new Date(dateString).toLocaleString();
   };
 
+  const buildExportHtml = (prod: Production) => {
+    const escapeHtml = (value: string) =>
+      value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const toText = (value?: string) => (value ? escapeHtml(value).replace(/\n/g, '<br/>') : '');
+    const toLink = (value?: string) =>
+      value && value.trim()
+        ? `<a class="link" href="${escapeHtml(value)}" target="_blank" rel="noreferrer">Open</a>`
+        : '';
+
+    const row = (label: string, value?: string, link?: string) => {
+      const hasValue = value && value.trim();
+      const hasLink = link && link.trim();
+      if (!hasValue && !hasLink) {
+        return `<div class="row empty"><div class="label">${escapeHtml(label)}</div><div class="value muted">${escapeHtml(t('notFilled'))}</div></div>`;
+      }
+      return `<div class="row"><div class="label">${escapeHtml(label)}</div><div class="value">${hasValue ? toText(value) : ''}</div>${hasLink ? `<div class="actions">${toLink(link)}</div>` : '<div class="actions"></div>'}</div>`;
+    };
+
+    const section = (title: string, body: string) =>
+      `<section class="section"><div class="section-title">${escapeHtml(title)}</div>${body}</section>`;
+
+    const renderLinksMap = (links?: Record<string, string>) => {
+      if (!links) return '';
+      const items = Object.values(links).filter((link) => link && link.trim());
+      if (items.length === 0) return '';
+      return `<div class="sublist">${items
+        .map((link) => `<div class="row compact"><div class="label">Media Files</div><div class="value"></div><div class="actions">${toLink(link)}</div></div>`)
+        .join('')}</div>`;
+    };
+
+    const renderMediaItems = (items?: { title?: string; description?: string; mediaPackageLinks?: Record<string, string> }[]) => {
+      if (!items || items.length === 0) {
+        return `<div class="muted">${escapeHtml(t('notFilled'))}</div>`;
+      }
+      return items
+        .map((item, index) => {
+          const title = item.title?.trim() || `Media ${index + 1}`;
+          return `<div class="subcard">
+            <div class="subcard-title">${escapeHtml(title)}</div>
+            ${item.description ? `<div class="subcard-desc">${toText(item.description)}</div>` : ''}
+            ${renderLinksMap(item.mediaPackageLinks)}
+          </div>`;
+        })
+        .join('');
+    };
+
+    const citiesBody =
+      prod.step2_cities.length === 0
+        ? `<div class="muted">No cities added yet</div>`
+        : prod.step2_cities
+            .map((city, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(`${index + 1}. ${city.city || 'Unnamed City'}`)}</div>
+                <div class="subcard-desc">${escapeHtml(`Date: ${city.date || 'Not set'} • Time: ${city.time || 'Not set'}`)}</div>
+                ${city.notes ? `<div class="subcard-desc">${toText(`Notes: ${city.notes}`)}</div>` : ''}
+              </div>
+            `)
+            .join('');
+
+    const venueContractsBody =
+      prod.step3_venueContracts.length === 0
+        ? `<div class="muted">No venue contracts added</div>`
+        : prod.step3_venueContracts
+            .map((venue, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(`${index + 1}. ${venue.venueName || 'Unnamed Venue'}`)}</div>
+                ${venue.notes ? `<div class="subcard-desc">${toText(venue.notes)}</div>` : ''}
+                ${venue.contractLink ? `<div class="row compact"><div class="label">Contract</div><div class="value"></div><div class="actions">${toLink(venue.contractLink)}</div></div>` : ''}
+              </div>
+            `)
+            .join('');
+
+    const venueInfoBody =
+      prod.step6_venueInfo.length === 0
+        ? `<div class="muted">No venue info added</div>`
+        : prod.step6_venueInfo
+            .map((venue, index) => {
+              const city = prod.step2_cities.find((c) => c.id === venue.linkedCityId);
+              const cityLine = city
+                ? `${city.city || 'City'}${city.date ? ` • ${city.date}` : ''}${city.time ? ` ${city.time}` : ''}`
+                : '';
+              return `
+                <div class="subcard">
+                  <div class="subcard-title">${escapeHtml(`${index + 1}. ${venue.venueName || 'Unnamed Venue'}`)}</div>
+                  ${cityLine ? `<div class="subcard-desc">${escapeHtml(cityLine)}</div>` : ''}
+                  <div class="subcard-desc">${escapeHtml(venue.address || 'No address')}</div>
+                  ${venue.contacts ? `<div class="subcard-desc">${toText(venue.contacts)}</div>` : ''}
+                  ${venue.otherInfo ? `<div class="subcard-desc">${toText(venue.otherInfo)}</div>` : ''}
+                  ${venue.previewImage ? `<div class="row compact"><div class="label">Preview Image</div><div class="value"></div><div class="actions">${toLink(venue.previewImage)}</div></div>` : ''}
+                  ${venue.requiredForms?.link ? `<div class="row compact"><div class="label">Forms Link</div><div class="value"></div><div class="actions">${toLink(venue.requiredForms.link)}</div></div>` : ''}
+                  ${venue.ticketDesign?.link ? `<div class="row compact"><div class="label">Ticket Design</div><div class="value"></div><div class="actions">${toLink(venue.ticketDesign.link)}</div></div>` : ''}
+                  ${venue.ticketDesign?.pricing ? `<div class="subcard-desc">${toText(`Pricing: ${venue.ticketDesign.pricing}`)}</div>` : ''}
+                  ${venue.seatMap?.link ? `<div class="row compact"><div class="label">Seat Map</div><div class="value"></div><div class="actions">${toLink(venue.seatMap.link)}</div></div>` : ''}
+                  ${venue.ticketLink?.link ? `<div class="row compact"><div class="label">Ticket Link</div><div class="value"></div><div class="actions">${toLink(venue.ticketLink.link)}</div></div>` : ''}
+                </div>
+              `;
+            })
+            .join('');
+
+    const sponsorshipBody =
+      !prod.step14_sponsorshipPackages || prod.step14_sponsorshipPackages.length === 0
+        ? `<div class="muted">No sponsorship packages added</div>`
+        : prod.step14_sponsorshipPackages
+            .map((pkg, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(`${index + 1}. ${pkg.name || 'Unnamed Package'}`)}</div>
+                ${pkg.planDetail ? `<div class="subcard-desc">${toText(pkg.planDetail)}</div>` : ''}
+                ${pkg.fileLink ? `<div class="row compact"><div class="label">File</div><div class="value"></div><div class="actions">${toLink(pkg.fileLink)}</div></div>` : ''}
+              </div>
+            `)
+            .join('');
+
+    const alliancesBody =
+      !prod.step15_communityAlliances || prod.step15_communityAlliances.length === 0
+        ? `<div class="muted">No community alliances added</div>`
+        : prod.step15_communityAlliances
+            .map((alliance, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(`${index + 1}. ${alliance.communityName || 'Unnamed Community'}`)}</div>
+                ${alliance.allianceDetail ? `<div class="subcard-desc">${toText(alliance.allianceDetail)}</div>` : ''}
+                ${alliance.files ? `<div class="row compact"><div class="label">Files</div><div class="value"></div><div class="actions">${toLink(alliance.files)}</div></div>` : ''}
+              </div>
+            `)
+            .join('');
+
+    const meetupsBody =
+      prod.step17_meetups.length === 0
+        ? `<div class="muted">No meet-ups added</div>`
+        : prod.step17_meetups
+            .map((meetup, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(`${index + 1}. ${meetup.title || 'Untitled Meet-up'}`)}</div>
+                <div class="subcard-desc">${escapeHtml([meetup.datetime, meetup.location].filter(Boolean).join(' • ') || 'No details')}</div>
+                ${meetup.description ? `<div class="subcard-desc">${toText(meetup.description)}</div>` : ''}
+                ${meetup.notes ? `<div class="subcard-desc">${toText(`Notes: ${meetup.notes}`)}</div>` : ''}
+                ${meetup.fileLink ? `<div class="row compact"><div class="label">File</div><div class="value"></div><div class="actions">${toLink(meetup.fileLink)}</div></div>` : ''}
+              </div>
+            `)
+            .join('');
+
+    const promotionsBody =
+      prod.step12_socialMedia.promotions?.length === 0
+        ? `<div class="muted">No promotions added</div>`
+        : prod.step12_socialMedia.promotions
+            .map((promo, index) => `
+              <div class="subcard">
+                <div class="subcard-title">${escapeHtml(promo.title || `Promotion ${index + 1}`)}</div>
+                ${promo.description ? `<div class="subcard-desc">${toText(promo.description)}</div>` : ''}
+                ${
+                  promo.mediaFiles?.length
+                    ? promo.mediaFiles
+                        .map((file) =>
+                          `<div class="row compact"><div class="label">${escapeHtml(file.name || 'Media File')}</div><div class="value"></div><div class="actions">${toLink(file.link)}</div></div>`
+                        )
+                        .join('')
+                    : ''
+                }
+              </div>
+            `)
+            .join('');
+
+    return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>${escapeHtml(prod.title || t('titlePlaceholder'))}</title>
+    <style>
+      :root { color-scheme: light; }
+      body { font-family: Arial, sans-serif; background: #f8fafc; margin: 0; padding: 24px; color: #0f172a; }
+      .header { margin-bottom: 16px; }
+      .title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+      .meta { font-size: 12px; color: #475569; display: flex; gap: 12px; flex-wrap: wrap; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+      .section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
+      .section-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+      .row { display: grid; grid-template-columns: 140px 1fr auto; gap: 8px; padding: 4px 0; border-bottom: 1px dashed #e2e8f0; }
+      .row:last-child { border-bottom: none; }
+      .row.compact { grid-template-columns: 140px 1fr auto; }
+      .label { font-size: 12px; font-weight: 600; color: #334155; }
+      .value { font-size: 12px; color: #0f172a; }
+      .actions { font-size: 12px; }
+      .link { color: #2563eb; text-decoration: none; font-weight: 600; }
+      .muted { font-size: 12px; color: #94a3b8; }
+      .subcard { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+      .subcard:last-child { margin-bottom: 0; }
+      .subcard-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+      .subcard-desc { font-size: 12px; color: #475569; margin-bottom: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">${escapeHtml(prod.title || t('titlePlaceholder'))}</div>
+      <div class="meta">
+        <div>${escapeHtml(`${t('created')}: ${formatDate(prod.createdAt)}`)}</div>
+        <div>${escapeHtml(`${t('updated')}: ${formatDate(prod.updatedAt)}`)}</div>
+        <div>${escapeHtml(`${t('completion')}: ${prod.completionPercentage || 0}%`)}</div>
+      </div>
+    </div>
+    <div class="grid">
+      ${section(tStep('step1'), row('Contract', undefined, prod.step1_contract.link) + row('Notes', prod.step1_contract.notes))}
+      ${section(tStep('step2'), citiesBody)}
+      ${section(tStep('step3'), venueContractsBody)}
+      ${section(tStep('step4'), row('Itinerary', undefined, prod.step4_itinerary.link) + row('Notes', prod.step4_itinerary.notes))}
+      ${section(tStep('step5'), [
+        row('Past Performance Videos', undefined, prod.step5_materials.videos?.link || ''),
+        row('Performer Videos', undefined, prod.step5_materials.performerVideos?.link || ''),
+        row('Music Collection', undefined, prod.step5_materials.musicCollection?.link || ''),
+        row('Performance Scene Photos', undefined, prod.step5_materials.photos?.link || ''),
+        row('Performer Photos', undefined, prod.step5_materials.actorPhotos?.link || ''),
+        row('Other Photos', undefined, prod.step5_materials.otherPhotos?.link || ''),
+        row('Logos', undefined, prod.step5_materials.logos?.link || ''),
+        row('Text Folder', undefined, prod.step5_materials.texts?.link || ''),
+      ].join(''))}
+      ${section(tStep('step6'), venueInfoBody)}
+      ${section(tStep('step7'), renderMediaItems(prod.step7_designs.media))}
+      ${section(tStep('step16'), renderMediaItems(prod.step16_venueMediaDesign.media))}
+      ${section(tStep('step8'), renderMediaItems(prod.step8_promotionalImages.media))}
+      ${section(tStep('step9'), renderMediaItems(prod.step9_videos.media))}
+      ${section(tStep('step10'), [
+        row('Press Conference Location', prod.step10_pressConference.location),
+        row('Invitation Letter', undefined, prod.step10_pressConference.invitationLetter.link),
+        row('Guest List', undefined, prod.step10_pressConference.guestList.link),
+        row('Official Press Release', undefined, prod.step10_pressConference.pressRelease.link),
+        prod.step10_pressConference.media?.length ? renderMediaItems(prod.step10_pressConference.media) : '',
+      ].join(''))}
+      ${section(tStep('step11'), row('Google Drive', undefined, prod.step11_performanceShooting.googleDriveLink) + row('Notes', prod.step11_performanceShooting.notes))}
+      ${section(tStep('step12'), row('Strategy Link', undefined, prod.step12_socialMedia.strategyLink?.link || '') + promotionsBody)}
+      ${section(tStep('step13'), row('Event Summary', undefined, prod.step13_afterEvent.eventSummary.link) + row('Event Retrospective', undefined, prod.step13_afterEvent.eventRetrospective.link))}
+      ${section(tStep('step14'), sponsorshipBody)}
+      ${section(tStep('step15'), alliancesBody)}
+      ${section(tStep('step17'), meetupsBody)}
+    </div>
+  </body>
+</html>`;
+  };
+
+  const handleExportHtml = () => {
+    if (!production) return;
+    const exportWindow = window.open('', '_blank');
+    if (!exportWindow) return;
+    exportWindow.document.open();
+    exportWindow.document.write(buildExportHtml(production));
+    exportWindow.document.close();
+  };
+
   return (
     <>
       <LoadingOverlay isLoading={isSavingTitle} message="Saving..." />
@@ -253,7 +504,7 @@ export default function ProductionDashboard() {
                   <Edit className="w-4 h-4 mr-2" />
                   {t('editForm')}
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleExportHtml}>
                   <FileDown className="w-4 h-4 mr-2" />
                   {t('exportPDF')}
                 </Button>
@@ -430,12 +681,54 @@ export default function ProductionDashboard() {
               <div className="text-gray-500"><span className="text-red-500">✗</span> No venue info added</div>
             ) : (
               <div className="space-y-3">
-                {production.step6_venueInfo.map((venue, i) => (
-                  <div key={venue.id} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="font-semibold">{i + 1}. {venue.venueName || 'Unnamed Venue'}</div>
-                    <div className="text-sm text-gray-600">{venue.address || 'No address'}</div>
-                  </div>
-                ))}
+                {production.step6_venueInfo.map((venue, i) => {
+                  const linkedCity = production.step2_cities.find((city) => city.id === venue.linkedCityId);
+                  return (
+                    <div key={venue.id} className="p-3 bg-gray-50 rounded-lg space-y-2">
+                      <div className="font-semibold">{i + 1}. {venue.venueName || 'Unnamed Venue'}</div>
+                      {linkedCity && (
+                        <div className="text-sm text-gray-600">
+                          {linkedCity.city}{linkedCity.date ? ` • ${linkedCity.date}` : ''}{linkedCity.time ? ` ${linkedCity.time}` : ''}
+                        </div>
+                      )}
+                      <div className="text-sm text-gray-600">{venue.address || 'No address'}</div>
+                      {venue.contacts && (
+                        <div className="text-sm text-gray-700 whitespace-pre-line">{venue.contacts}</div>
+                      )}
+                      {venue.otherInfo && (
+                        <div className="text-sm text-gray-700 whitespace-pre-line">{venue.otherInfo}</div>
+                      )}
+                      {venue.previewImage && (
+                        <div className="mt-2">
+                          <LinkButton url={venue.previewImage} />
+                        </div>
+                      )}
+                      {venue.requiredForms?.link && (
+                        <div className="mt-1">
+                          <LinkButton url={venue.requiredForms.link} />
+                        </div>
+                      )}
+                      {venue.ticketDesign?.link && (
+                        <div className="mt-1">
+                          <LinkButton url={venue.ticketDesign.link} />
+                        </div>
+                      )}
+                      {venue.ticketDesign?.pricing && (
+                        <div className="text-sm text-gray-600">Pricing: {venue.ticketDesign.pricing}</div>
+                      )}
+                      {venue.seatMap?.link && (
+                        <div className="mt-1">
+                          <LinkButton url={venue.seatMap.link} />
+                        </div>
+                      )}
+                      {venue.ticketLink?.link && (
+                        <div className="mt-1">
+                          <LinkButton url={venue.ticketLink.link} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>

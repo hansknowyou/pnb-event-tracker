@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from 'next-intl';
 
 interface MediaItemProps {
   media: MediaWithStats;
@@ -37,6 +38,7 @@ export default function MediaItem({
   onAdjustRouteClick,
   onGenerateQR,
 }: MediaItemProps) {
+  const t = useTranslations('eventTracking');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddingRoute, setIsAddingRoute] = useState(false);
   const [routeName, setRouteName] = useState('');
@@ -46,7 +48,7 @@ export default function MediaItem({
   const [editedName, setEditedName] = useState(media.name);
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete "${media.name}" and all its routes?`)) return;
+    if (!confirm(t('confirmDeleteMedia', { name: media.name }))) return;
     setIsDeleting(true);
     await onDelete();
     setIsDeleting(false);
@@ -90,7 +92,7 @@ export default function MediaItem({
             size="icon"
             className="mt-1"
             onClick={() => setIsExpanded(!isExpanded)}
-            aria-label={isExpanded ? 'Collapse media' : 'Expand media'}
+            aria-label={isExpanded ? t('collapseMedia') : t('expandMedia')}
           >
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </Button>
@@ -108,13 +110,13 @@ export default function MediaItem({
               <CardTitle
                 className="cursor-pointer hover:text-blue-600"
                 onClick={() => setIsEditingName(true)}
-                title="Click to edit"
+                title={t('clickToEdit')}
               >
                 {media.name}
               </CardTitle>
             )}
             <CardDescription>
-              Total Clicks: <span className="font-semibold text-foreground">{media.totalClicks || 0}</span>
+              {t('totalClicks')}: <span className="font-semibold text-foreground">{media.totalClicks || 0}</span>
             </CardDescription>
           </div>
         </div>
@@ -123,14 +125,14 @@ export default function MediaItem({
             variant={isAddingRoute ? 'outline' : 'default'}
             onClick={() => setIsAddingRoute(!isAddingRoute)}
           >
-            {isAddingRoute ? 'Cancel' : 'Add Route'}
+            {isAddingRoute ? t('cancel') : t('addRoute')}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Deleting...' : 'Delete Media'}
+            {isDeleting ? t('deleting') : t('deleteMedia')}
           </Button>
         </div>
       </CardHeader>
@@ -141,19 +143,19 @@ export default function MediaItem({
             <form onSubmit={handleAddRoute} className="grid grid-cols-1 gap-2 md:grid-cols-3">
               <Input
                 type="text"
-                placeholder="Route name (e.g., facebook ad 1)"
+                placeholder={t('routeNamePlaceholder')}
                 value={routeName}
                 onChange={(e) => setRouteName(e.target.value)}
                 required
               />
               <Input
                 type="url"
-                placeholder="Redirect URL (3rd party ticket link)"
+                placeholder={t('redirectUrlPlaceholder')}
                 value={redirectUrl}
                 onChange={(e) => setRedirectUrl(e.target.value)}
                 required
               />
-              <Button type="submit">Create Route</Button>
+              <Button type="submit">{t('createRoute')}</Button>
             </form>
           )}
 
@@ -173,7 +175,7 @@ export default function MediaItem({
                 />
               ))
             ) : (
-              <p className="text-sm text-muted-foreground italic">No routes yet. Add one above!</p>
+              <p className="text-sm text-muted-foreground italic">{t('noRoutes')}</p>
             )}
           </div>
         </CardContent>

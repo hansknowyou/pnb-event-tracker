@@ -15,6 +15,7 @@ import ProductionPickerDialog from './ProductionPickerDialog';
 import type { Event } from '@/types';
 import type { Production } from '@/types/production';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface ProductionLinkButtonsProps {
   event: Event;
@@ -27,6 +28,7 @@ export default function ProductionLinkButtons({
   linkedProduction,
   onUpdate,
 }: ProductionLinkButtonsProps) {
+  const t = useTranslations('eventTracking');
   const router = useRouter();
   const [showPicker, setShowPicker] = useState(false);
   const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false);
@@ -45,11 +47,11 @@ export default function ProductionLinkButtons({
         onUpdate();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to link production');
+        alert(data.error || t('linkProductionFailed'));
       }
     } catch (error) {
       console.error('Error linking production:', error);
-      alert('Failed to link production');
+      alert(t('linkProductionFailed'));
     } finally {
       setLoading(false);
     }
@@ -67,11 +69,11 @@ export default function ProductionLinkButtons({
         onUpdate();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to unlink production');
+        alert(data.error || t('unlinkProductionFailed'));
       }
     } catch (error) {
       console.error('Error unlinking production:', error);
-      alert('Failed to unlink production');
+      alert(t('unlinkProductionFailed'));
     } finally {
       setLoading(false);
     }
@@ -86,7 +88,7 @@ export default function ProductionLinkButtons({
           onClick={() => setShowPicker(true)}
         >
           <LinkIcon className="w-4 h-4 mr-2" />
-          Link Production
+          {t('linkProduction')}
         </Button>
 
         <ProductionPickerDialog
@@ -115,7 +117,7 @@ export default function ProductionLinkButtons({
           onClick={() => router.push(`/productions/${linkedProduction._id}/dashboard`)}
         >
           <ExternalLink className="w-4 h-4 mr-2" />
-          View
+          {t('viewProduction')}
         </Button>
         <Button
           variant="ghost"
@@ -129,9 +131,9 @@ export default function ProductionLinkButtons({
       <Dialog open={showUnlinkConfirm} onOpenChange={setShowUnlinkConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Unlink Production</DialogTitle>
+            <DialogTitle>{t('unlinkTitle')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to unlink "{linkedProduction.title}" from this event?
+              {t('unlinkDescription', { title: linkedProduction.title })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -140,14 +142,14 @@ export default function ProductionLinkButtons({
               onClick={() => setShowUnlinkConfirm(false)}
               disabled={loading}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleUnlink}
               disabled={loading}
             >
-              {loading ? 'Unlinking...' : 'Unlink'}
+              {loading ? t('unlinking') : t('unlink')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from 'next-intl';
 
 interface RouteItemProps {
   route: Route;
@@ -29,6 +30,7 @@ export default function RouteItem({
   onAdjustClick,
   onGenerateQR,
 }: RouteItemProps) {
+  const t = useTranslations('eventTracking');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(route.routeName);
@@ -36,7 +38,7 @@ export default function RouteItem({
   const trackingUrl = `${baseUrl}/api/track/${route._id}`;
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this route?')) return;
+    if (!confirm(t('confirmDeleteRoute'))) return;
     setIsDeleting(true);
     await onDelete();
     setIsDeleting(false);
@@ -77,14 +79,14 @@ export default function RouteItem({
           <CardTitle
             className="cursor-pointer hover:text-blue-600"
             onClick={() => setIsEditingName(true)}
-            title="Click to edit"
+            title={t('clickToEdit')}
           >
             {route.routeName}
           </CardTitle>
         )}
         <CardDescription className="space-y-1">
           <div>
-            <span className="font-semibold text-foreground">Tracking URL:</span>{' '}
+            <span className="font-semibold text-foreground">{t('trackingUrlLabel')}:</span>{' '}
             <a
               href={trackingUrl}
               target="_blank"
@@ -95,7 +97,7 @@ export default function RouteItem({
             </a>
           </div>
           <div>
-            <span className="font-semibold text-foreground">Redirects to:</span>{' '}
+            <span className="font-semibold text-foreground">{t('redirectsToLabel')}:</span>{' '}
             <a
               href={route.redirectUrl}
               target="_blank"
@@ -109,13 +111,13 @@ export default function RouteItem({
       </CardHeader>
       <CardContent className="flex flex-col gap-3 border-t pt-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-muted-foreground">Clicks:</span>
+          <span className="text-sm font-semibold text-muted-foreground">{t('clicksLabel')}:</span>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
               onClick={() => onAdjustClick(-1)}
-              title="Decrease click count"
+              title={t('decreaseClicks')}
             >
               -
             </Button>
@@ -126,7 +128,7 @@ export default function RouteItem({
               variant="outline"
               size="icon"
               onClick={() => onAdjustClick(1)}
-              title="Increase click count"
+              title={t('increaseClicks')}
             >
               +
             </Button>
@@ -135,7 +137,7 @@ export default function RouteItem({
 
         <div className="flex gap-2">
           <Button onClick={onGenerateQR} size="sm">
-            QR Code
+            {t('qrCode')}
           </Button>
           <Button
             variant="destructive"
@@ -143,7 +145,7 @@ export default function RouteItem({
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? t('deleting') : t('delete')}
           </Button>
         </div>
       </CardContent>

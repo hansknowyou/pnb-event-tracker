@@ -15,6 +15,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import type { Production } from '@/types/production';
+import { useTranslations } from 'next-intl';
 
 interface EventCardProps {
   event: EventWithStats;
@@ -49,6 +50,7 @@ export default function EventCard({
   onUpdateEvent,
   onUpdate,
 }: EventCardProps) {
+  const t = useTranslations('eventTracking');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddingMedia, setIsAddingMedia] = useState(false);
   const [mediaName, setMediaName] = useState('');
@@ -59,7 +61,7 @@ export default function EventCard({
   const handleDelete = async () => {
     if (
       !confirm(
-        `Are you sure you want to delete "${event.name}" and all its media and routes?`
+        t('confirmDeleteEvent', { name: event.name })
       )
     )
       return;
@@ -105,7 +107,7 @@ export default function EventCard({
             size="icon"
             className="mt-1"
             onClick={() => setIsExpanded(!isExpanded)}
-            aria-label={isExpanded ? 'Collapse event' : 'Expand event'}
+            aria-label={isExpanded ? t('collapseEvent') : t('expandEvent')}
           >
             {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
           </Button>
@@ -123,13 +125,13 @@ export default function EventCard({
               <CardTitle
                 className="cursor-pointer hover:text-blue-600"
                 onClick={() => setIsEditingTitle(true)}
-                title="Click to edit"
+                title={t('clickToEdit')}
               >
                 {event.name}
               </CardTitle>
             )}
             <CardDescription>
-              Total Clicks: <span className="font-semibold text-foreground">{event.totalClicks || 0}</span>
+              {t('totalClicks')}: <span className="font-semibold text-foreground">{event.totalClicks || 0}</span>
             </CardDescription>
             <div>
               <ProductionLinkButtons
@@ -145,14 +147,14 @@ export default function EventCard({
             variant={isAddingMedia ? 'outline' : 'default'}
             onClick={() => setIsAddingMedia(!isAddingMedia)}
           >
-            {isAddingMedia ? 'Cancel' : 'Add Media'}
+            {isAddingMedia ? t('cancel') : t('addMedia')}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Deleting...' : 'Delete Event'}
+            {isDeleting ? t('deleting') : t('deleteEvent')}
           </Button>
         </div>
       </CardHeader>
@@ -163,12 +165,12 @@ export default function EventCard({
             <form onSubmit={handleAddMedia} className="flex flex-col gap-2 md:flex-row">
               <Input
                 type="text"
-                placeholder="Media name (e.g., Facebook, Instagram)"
+                placeholder={t('mediaNamePlaceholder')}
                 value={mediaName}
                 onChange={(e) => setMediaName(e.target.value)}
                 required
               />
-              <Button type="submit">Create Media</Button>
+              <Button type="submit">{t('createMedia')}</Button>
             </form>
           )}
 
@@ -190,7 +192,7 @@ export default function EventCard({
               ))
             ) : (
               <p className="text-sm text-muted-foreground italic">
-                No media yet. Add one above!
+                {t('noMedia')}
               </p>
             )}
           </div>
