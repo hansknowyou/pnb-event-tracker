@@ -116,7 +116,7 @@ export default function ProductionsPage() {
             <Card
               key={production._id}
               className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => router.push(`/productions/${production._id}`)}
+              onClick={() => router.push(`/productions/${production._id}/dashboard`)}
             >
               <CardHeader>
                 <div className="flex justify-between items-start">

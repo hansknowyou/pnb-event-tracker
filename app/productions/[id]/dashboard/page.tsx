@@ -146,10 +146,15 @@ export default function ProductionDashboard() {
                 </span>
               </div>
             </div>
-            <Button onClick={() => router.push(`/productions/${productionId}`)}>
-              <Edit className="w-4 h-4 mr-2" />
-              {t('editForm')}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => router.push('/productions')}>
+                Back to Productions
+              </Button>
+              <Button onClick={() => router.push(`/productions/${productionId}`)}>
+                <Edit className="w-4 h-4 mr-2" />
+                {t('editForm')}
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
